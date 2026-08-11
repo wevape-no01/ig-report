@@ -1,0 +1,7 @@
+# 토큰이 든 파일 — 절대 올리면 안 됨
+accounts.json
+config.json
+
+__pycache__/
+*.pyc
+preview*.png
