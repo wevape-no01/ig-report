@@ -1,187 +1,288 @@
 """
-인스타그램 Graph API에서 계정/게시물 인사이트를 가져온다. (여러 계정 지원)
+인스타그램 Graph API 수집기 (여러 계정 지원 + 전체 백필 + 캐싱)
 
-설정값은 아래 순서로 찾는다:
-  1) 환경변수 IG_ACCOUNTS  (GitHub Actions에서 Secrets로 주입)
-  2) 같은 폴더의 accounts.json  (내 컴퓨터에서 테스트할 때)
+동작:
+  1) 계정의 모든 게시물 목록을 페이지 넘기며 가져온다 (캡션은 자르지 않음)
+  2) 게시물별 인사이트는 posts_cache.json 에 저장해두고 재사용한다
+     - 최근 REFRESH_DAYS 일 이내 게시물만 매번 다시 조회 (오래된 값은 거의 안 변함)
+     - 인사이트가 아예 없는 게시물(프로 전환 이전)은 표시해두고 다시 시도하지 않음
+  3) 계정 인사이트, 팔로워/비팔로워 도달, 팔로워 인구통계를 함께 수집
 
-형식 (JSON 배열):
-[
-  {"label": "위베이프", "ig_id": "1784...", "token": "EAGL..."},
-  {"label": "재팬",     "ig_id": "1784...", "token": "EAGL..."}
-]
+설정: 환경변수 IG_ACCOUNTS 또는 같은 폴더의 accounts.json
+  [{"label":"이름","ig_id":"1784...","token":"EAGL..."}]
 
-토큰은 페이지 액세스 토큰이라 만료 기한이 없다.
+출력:
+  posts_cache.json  전체 게시물 + 인사이트 (분석용)
+  report_data.json  최근 게시물 요약 (일일 리포트용)
+  history.json      날짜별 스냅샷 (팔로워 추이, 신규 유입 추이)
 """
 
 import json
 import os
-from datetime import datetime, timezone
+import sys
+from datetime import datetime, timedelta, timezone
 from urllib.request import urlopen, Request
 from urllib.parse import urlencode
 from urllib.error import HTTPError
 
-GRAPH_API_VERSION = "v21.0"
-BASE_URL = f"https://graph.facebook.com/{GRAPH_API_VERSION}"
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ACCOUNTS_PATH = os.path.join(BASE_DIR, "accounts.json")
+V = "v21.0"
+BASE = f"https://graph.facebook.com/{V}"
+DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 계정 레벨 인사이트 (total_value 방식)
-ACCOUNT_METRICS = ["reach", "profile_views", "accounts_engaged", "total_interactions"]
+REFRESH_DAYS = 30      # 이 기간 내 게시물은 매 실행마다 인사이트 재조회
+REPORT_POSTS = 12      # 일일 리포트에 보여줄 최근 게시물 수
 
-# 게시물 인사이트. 미디어 타입에 따라 지원 여부가 달라서 실패하면 개별 재시도한다.
-MEDIA_METRICS = ["reach", "saved", "shares", "total_interactions", "views"]
+MEDIA_METRICS = ["reach", "views", "saved", "shares", "total_interactions",
+                 "profile_visits", "follows"]
+ACCOUNT_METRICS = ["reach", "views", "profile_views", "accounts_engaged",
+                   "total_interactions"]
+DEMO_BREAKDOWNS = ["age", "gender", "city", "country"]
+
+P = lambda *a: print(*a, flush=True)
 
 
-def _get(path, params):
-    url = f"{BASE_URL}/{path}?{urlencode(params)}"
-    req = Request(url, headers={"User-Agent": "ig-dashboard/1.0"})
-    try:
-        with urlopen(req, timeout=30) as resp:
-            return json.loads(resp.read().decode())
-    except HTTPError as e:
-        raise RuntimeError(f"({e.code}) {path}: {e.read().decode()[:300]}") from None
+def get(path, params, tries=3):
+    url = f"{BASE}/{path}?{urlencode(params)}"
+    last = None
+    for _ in range(tries):
+        try:
+            with urlopen(Request(url, headers={"User-Agent": "ig-report/2.0"}), timeout=40) as r:
+                return json.loads(r.read().decode())
+        except HTTPError as e:
+            body = e.read().decode()[:300]
+            # 4xx 는 재시도해도 같으므로 즉시 반환
+            if 400 <= e.code < 500:
+                raise ApiError(e.code, body)
+            last = ApiError(e.code, body)
+        except Exception as e:                      # 네트워크 일시 오류
+            last = ApiError(0, str(e)[:200])
+    raise last
+
+
+class ApiError(RuntimeError):
+    def __init__(self, code, body):
+        super().__init__(f"({code}) {body}")
+        self.code, self.body = code, body
 
 
 def load_accounts():
     raw = os.environ.get("IG_ACCOUNTS", "").strip()
-    if not raw and os.path.exists(ACCOUNTS_PATH):
-        with open(ACCOUNTS_PATH, encoding="utf-8") as f:
-            raw = f.read()
+    path = os.path.join(DIR, "accounts.json")
+    if not raw and os.path.exists(path):
+        raw = open(path, encoding="utf-8").read()
     if not raw:
-        raise SystemExit(
-            "설정이 없습니다. 환경변수 IG_ACCOUNTS 를 넣거나 accounts.json 을 만들어주세요.\n"
-            "형식: [{\"label\":\"이름\",\"ig_id\":\"...\",\"token\":\"...\"}]"
-        )
+        sys.exit("설정 없음: 환경변수 IG_ACCOUNTS 또는 accounts.json 이 필요합니다.")
     accounts = json.loads(raw)
     if not isinstance(accounts, list) or not accounts:
-        raise SystemExit("IG_ACCOUNTS 는 비어있지 않은 JSON 배열이어야 합니다.")
+        sys.exit("IG_ACCOUNTS 는 비어있지 않은 JSON 배열이어야 합니다.")
     return accounts
 
 
-def fetch_profile(acc):
-    return _get(acc["ig_id"], {
-        "fields": "username,name,followers_count,follows_count,media_count",
-        "access_token": acc["token"],
-    })
+def load_json(name, default):
+    path = os.path.join(DIR, name)
+    if not os.path.exists(path):
+        return default
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return default
 
 
-def fetch_account_insights(acc):
-    """계정 전체 인사이트. 지원 안 되는 메트릭은 조용히 건너뛴다."""
-    result = {}
-    for metric in ACCOUNT_METRICS:
-        try:
-            data = _get(f"{acc['ig_id']}/insights", {
-                "metric": metric,
-                "period": "day",
-                "metric_type": "total_value",
-                "access_token": acc["token"],
-            })
-            for m in data.get("data", []):
-                val = m.get("total_value", {}).get("value")
-                if val is None and m.get("values"):
-                    val = m["values"][0].get("value")
-                result[m["name"]] = val
-        except RuntimeError:
-            continue
-    return result
+def save_json(name, obj):
+    with open(os.path.join(DIR, name), "w", encoding="utf-8") as f:
+        json.dump(obj, f, ensure_ascii=False, indent=1)
 
 
-def fetch_recent_media(acc, limit=12):
-    return _get(f"{acc['ig_id']}/media", {
+# ---------------------------------------------------------------- 수집
+
+def fetch_all_media(acc):
+    """모든 게시물을 페이지 넘기며 수집. 캡션은 자르지 않는다."""
+    out = []
+    params = {
         "fields": "id,caption,media_type,media_product_type,timestamp,permalink,"
                   "like_count,comments_count,thumbnail_url,media_url",
-        "limit": limit,
-        "access_token": acc["token"],
-    }).get("data", [])
+        "limit": 100, "access_token": acc["token"],
+    }
+    path, guard = f"{acc['ig_id']}/media", 0
+    while path and guard < 30:
+        data = get(path, params) if params else get(path, {})
+        out.extend(data.get("data", []))
+        nxt = data.get("paging", {}).get("next")
+        if not nxt:
+            break
+        path, params, guard = nxt.split(f"{BASE}/")[-1], None, guard + 1
+    return out
 
 
 def fetch_media_insights(acc, media_id):
-    """메트릭을 한꺼번에 요청하면 하나만 미지원이어도 전체가 실패하므로,
-    실패 시 메트릭을 하나씩 다시 시도한다."""
+    """묶음 요청 실패 시 메트릭을 하나씩 시도. (지원 여부가 미디어 타입마다 다름)
+    반환: (dict, supported)  supported=False 면 이 게시물은 인사이트 자체가 없음."""
     try:
-        data = _get(f"{media_id}/insights", {
-            "metric": ",".join(MEDIA_METRICS), "access_token": acc["token"],
-        })
-        return {m["name"]: m["values"][0]["value"] for m in data.get("data", [])}
-    except RuntimeError:
+        d = get(f"{media_id}/insights",
+                {"metric": ",".join(MEDIA_METRICS), "access_token": acc["token"]})
+        return {m["name"]: m["values"][0]["value"] for m in d.get("data", [])}, True
+    except ApiError:
         pass
 
-    result = {}
-    for metric in MEDIA_METRICS:
+    res = {}
+    for m in MEDIA_METRICS:
         try:
-            data = _get(f"{media_id}/insights", {
-                "metric": metric, "access_token": acc["token"],
-            })
-            for m in data.get("data", []):
-                result[m["name"]] = m["values"][0]["value"]
-        except RuntimeError:
+            d = get(f"{media_id}/insights", {"metric": m, "access_token": acc["token"]})
+            for row in d.get("data", []):
+                res[row["name"]] = row["values"][0]["value"]
+        except ApiError:
             continue
-    return result
+    return res, bool(res)
 
 
-def collect_account(acc):
-    profile = fetch_profile(acc)
-    posts = []
-    for item in fetch_recent_media(acc):
-        posts.append({
-            "id": item["id"],
-            "caption": (item.get("caption") or "")[:100],
+def fetch_account_insights(acc):
+    out = {}
+    for m in ACCOUNT_METRICS:
+        try:
+            d = get(f"{acc['ig_id']}/insights", {
+                "metric": m, "period": "day", "metric_type": "total_value",
+                "access_token": acc["token"]})
+            for row in d.get("data", []):
+                out[row["name"]] = row.get("total_value", {}).get("value")
+        except ApiError:
+            continue
+
+    # 팔로워 / 비팔로워 분리 — 신규 유입(해시태그·탐색탭·공유) 대리 지표
+    for m in ("reach", "views"):
+        try:
+            d = get(f"{acc['ig_id']}/insights", {
+                "metric": m, "period": "day", "metric_type": "total_value",
+                "breakdown": "follow_type", "access_token": acc["token"]})
+            for row in d.get("data", []):
+                for bd in row.get("total_value", {}).get("breakdowns", []):
+                    for r in bd.get("results", []):
+                        key = f"{m}_{r['dimension_values'][0].lower()}"
+                        out[key] = r["value"]
+        except ApiError:
+            continue
+    return out
+
+
+def fetch_demographics(acc):
+    out = {}
+    for bd in DEMO_BREAKDOWNS:
+        try:
+            d = get(f"{acc['ig_id']}/insights", {
+                "metric": "follower_demographics", "period": "lifetime",
+                "metric_type": "total_value", "timeframe": "this_month",
+                "breakdown": bd, "access_token": acc["token"]})
+            rows = d["data"][0]["total_value"]["breakdowns"][0]["results"]
+            out[bd] = {r["dimension_values"][0]: r["value"] for r in rows}
+        except (ApiError, KeyError, IndexError):
+            continue
+    return out
+
+
+# ---------------------------------------------------------------- 메인
+
+def collect(acc, cache):
+    ig = acc["ig_id"]
+    slot = cache.setdefault(ig, {})
+    profile = get(ig, {
+        "fields": "username,name,followers_count,follows_count,media_count",
+        "access_token": acc["token"]})
+    uname = profile.get("username", ig)
+
+    media = fetch_all_media(acc)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=REFRESH_DAYS)
+    fresh = reused = skipped = no_ins = 0
+
+    for item in media:
+        mid = item["id"]
+        old = slot.get(mid, {})
+        ts = item.get("timestamp", "")
+        try:
+            dt = datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S%z")
+        except ValueError:
+            dt = datetime.now(timezone.utc)
+
+        rec = {
+            "id": mid,
+            "caption": item.get("caption") or "",          # 자르지 않음
             "media_type": item.get("media_type"),
-            "timestamp": item.get("timestamp"),
+            "media_product_type": item.get("media_product_type"),
+            "timestamp": ts,
             "permalink": item.get("permalink"),
             "like_count": item.get("like_count", 0),
             "comments_count": item.get("comments_count", 0),
-            "insights": fetch_media_insights(acc, item["id"]),
-        })
+        }
+
+        if old.get("no_insights"):                          # 프로 전환 이전 → 재시도 안 함
+            rec.update(insights={}, no_insights=True)
+            no_ins += 1
+        elif dt >= cutoff or "insights" not in old:         # 최신이거나 아직 안 받은 것
+            ins, ok = fetch_media_insights(acc, mid)
+            rec["insights"] = ins
+            if not ok:
+                rec["no_insights"] = True
+                no_ins += 1
+            else:
+                fresh += 1
+        else:                                               # 오래된 것 → 캐시 재사용
+            rec["insights"] = old.get("insights", {})
+            reused += 1
+            skipped += 1
+
+        slot[mid] = rec
+
+    posts = sorted(slot.values(), key=lambda p: p.get("timestamp", ""), reverse=True)
+    with_ins = [p for p in posts if p.get("insights", {}).get("reach") is not None]
+    P(f"@{uname}: 게시물 {len(posts)}개 (신규조회 {fresh} · 캐시재사용 {reused} · "
+      f"인사이트없음 {no_ins}) → 분석가능 {len(with_ins)}개")
+    if with_ins:
+        P(f"          인사이트 수집 범위: {with_ins[-1]['timestamp'][:10]} ~ {with_ins[0]['timestamp'][:10]}")
+
     return {
-        "label": acc.get("label") or profile.get("username"),
+        "label": acc.get("label") or uname,
         "profile": profile,
         "account_insights": fetch_account_insights(acc),
-        "posts": posts,
-    }
-
-
-def collect_report():
-    accounts = load_accounts()
-    return {
-        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "accounts": [collect_account(a) for a in accounts],
+        "demographics": fetch_demographics(acc),
+        "posts_total": len(posts),
+        "posts_analyzable": len(with_ins),
+        "posts": posts[:REPORT_POSTS],
     }
 
 
 def update_history(report):
-    """API가 과거 팔로워 수를 주지 않으므로, 실행할 때마다 그날 값을 누적 저장한다."""
-    path = os.path.join(BASE_DIR, "history.json")
+    """API가 과거 값을 주지 않으므로 매 실행마다 그날의 스냅샷을 누적한다."""
+    hist = load_json("history.json", {})
+    if not isinstance(hist, dict):
+        hist = {}
     today = datetime.now(timezone.utc).date().isoformat()
 
-    history = {}
-    if os.path.exists(path):
-        with open(path, encoding="utf-8") as f:
-            history = json.load(f)
-    if not isinstance(history, dict):
-        history = {}   # 예전 리스트 형식이면 새로 시작
-
     for acc in report["accounts"]:
-        key = acc["profile"].get("username", acc["label"])
-        rows = history.setdefault(key, [])
-        followers = acc["profile"].get("followers_count", 0)
+        u = acc["profile"].get("username", acc["label"])
+        ins = acc["account_insights"]
+        row = {
+            "date": today,
+            "followers_count": acc["profile"].get("followers_count", 0),
+            "reach": ins.get("reach"),
+            "reach_non_follower": ins.get("reach_non_follower"),
+            "views": ins.get("views"),
+            "views_non_follower": ins.get("views_non_follower"),
+        }
+        rows = hist.setdefault(u, [])
         if rows and rows[-1]["date"] == today:
-            rows[-1]["followers_count"] = followers
+            rows[-1] = row
         else:
-            rows.append({"date": today, "followers_count": followers})
-
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(history, f, ensure_ascii=False, indent=2)
-    return history
+            rows.append(row)
+    save_json("history.json", hist)
+    return hist
 
 
 if __name__ == "__main__":
-    report = collect_report()
-    with open(os.path.join(BASE_DIR, "report_data.json"), "w", encoding="utf-8") as f:
-        json.dump(report, f, ensure_ascii=False, indent=2)
+    accounts = load_accounts()
+    cache = load_json("posts_cache.json", {})
+    report = {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+              "accounts": [collect(a, cache) for a in accounts]}
+
+    save_json("posts_cache.json", cache)
+    save_json("report_data.json", report)
     hist = update_history(report)
-    for acc in report["accounts"]:
-        u = acc["profile"].get("username")
-        print(f"@{u}: 팔로워 {acc['profile'].get('followers_count')}명, "
-              f"게시물 {len(acc['posts'])}개 수집, 기록 {len(hist.get(u, []))}일치")
+    P("기록 일수: " + ", ".join(f"{k} {len(v)}일" for k, v in hist.items()))
