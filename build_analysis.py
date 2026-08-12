@@ -23,6 +23,11 @@ RANK_LIMIT = 10                    # 랭킹은 10위까지만
 TOP_VISIBLE = 3                    # 상위 3개만 펼쳐서 보여줌
 MIN_N = 5                          # 이 미만이면 "표본 부족" 경고
 
+# 오래된 게시물은 인스타그램이 도달을 과소 집계해 좋아요보다 도달이 작아지는 경우가 있다
+# (예: 2019년 게시물 도달 27 · 좋아요 42 → 참여율 150%). 그래서 최근 기간만 분석한다.
+ANALYSIS_MONTHS = 24
+MIN_POSTS = 10          # 이보다 적으면 비율 분석이 무의미해 요약만 보여준다
+
 TYPE_KO = {"IMAGE": "단일 이미지", "CAROUSEL_ALBUM": "캐러셀",
            "VIDEO": "동영상", "REELS": "릴스"}
 DOW = ["월", "화", "수", "목", "금", "토", "일"]
@@ -64,6 +69,9 @@ def prep(cache, report):
         if slot is None:
             slot = list(cache.values())[0] if len(cache) == 1 else {}
         posts = []
+        excluded_old = excluded_bad = 0
+        cutoff = (datetime.now(timezone.utc) + timedelta(hours=9)
+                  - timedelta(days=int(ANALYSIS_MONTHS * 30.44)))
         for p in slot.values():
             ins = p.get("insights") or {}
             if ins.get("reach") is None:
@@ -72,6 +80,15 @@ def prep(cache, report):
             try:
                 dt = datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S%z") + timedelta(hours=9)
             except ValueError:
+                continue
+            if dt < cutoff:                       # 분석 기간 밖
+                excluded_old += 1
+                continue
+            _inter = ((p.get("like_count") or 0) + (p.get("comments_count") or 0)
+                      + (ins.get("saved") or 0) + (ins.get("shares") or 0))
+            # 도달이 0이거나 반응보다 작으면 비율 계산이 불가능/무의미하다
+            if not ins["reach"] or _inter > ins["reach"]:
+                excluded_bad += 1
                 continue
             cap = p.get("caption") or ""
             tags = list(dict.fromkeys(t.lower() for t in HASHTAG_RX.findall(cap)))
@@ -99,7 +116,8 @@ def prep(cache, report):
             })
         posts.sort(key=lambda x: x["dt"], reverse=True)
         if posts:
-            accounts.append({"acc": acc, "posts": posts})
+            accounts.append({"acc": acc, "posts": posts,
+                             "excluded_old": excluded_old, "excluded_bad": excluded_bad})
     return accounts
 
 
@@ -196,6 +214,33 @@ def line_chart(rows, key, label):
 
 
 # ------------------------------------------------------------ 섹션 렌더
+
+def render_thin(a):
+    """게시물이 너무 적어 비율 분석이 무의미한 계정 — 원시 숫자만 보여준다."""
+    acc, posts = a["acc"], a["posts"]
+    prof = acc["profile"]
+    uname = prof.get("username", "?")
+    rows = "".join(
+        f'<tr><td class="nw">{p["date"]}</td>'
+        f'<td><span class="chip">{TYPE_KO.get(p["type"], p["type"])}</span></td>'
+        f'<td class="cap">{esc(p["body"][:34] or "(내용 없음)")}</td>'
+        f'<td class="num">{p["reach"]}</td><td class="num">{p["likes"]}</td>'
+        f'<td class="num">{p["comments"]}</td></tr>'
+        for p in posts)
+    return f"""
+<section class="acct">
+  <div class="acct-h">
+    <h2>@{esc(uname)}</h2>
+    <span class="dim">분석 가능 게시물 {len(posts)}개 · 팔로워 {prof.get("followers_count", 0):,}명</span>
+  </div>
+  <div class="warn">게시물이 {MIN_POSTS}개 미만이라 참여율·저장률 같은 비율 지표를 계산하지 않았습니다.
+  도달이 한 자릿수라 비율로 바꾸면 수치가 크게 튀어 잘못된 판단을 유도합니다.
+  게시물이 {MIN_POSTS}개 이상 쌓이면 자동으로 전체 분석이 표시됩니다.</div>
+  <table><thead><tr><th>게시일</th><th>포맷</th><th>내용</th>
+    <th class="num">도달</th><th class="num">좋아요</th><th class="num">댓글</th></tr></thead>
+    <tbody>{rows}</tbody></table>
+</section>"""
+
 
 def render_account(a, hist):
     acc, posts = a["acc"], a["posts"]
@@ -343,12 +388,23 @@ def render_account(a, hist):
                  f'제품 비교, 사용법, 매장 정보처럼 <b>다시 꺼내볼 이유가 있는 콘텐츠</b>가 저장을 만듭니다.</p>')
 
     period = f'{posts[-1]["date"]} ~ {posts[0]["date"]}'
+    ex_old, ex_bad = a.get("excluded_old", 0), a.get("excluded_bad", 0)
+    ex_parts = []
+    if ex_old:
+        ex_parts.append(f"{ANALYSIS_MONTHS}개월 이전 {ex_old}개")
+    if ex_bad:
+        ex_parts.append(f"도달 집계 오류 {ex_bad}개")
+    ex_note = (f'<div class="warn" style="margin-top:12px">제외된 게시물: {" · ".join(ex_parts)}. '
+               f'오래된 게시물은 인스타그램이 도달을 과소 집계해 참여율이 비정상으로 나오므로 '
+               f'최근 {ANALYSIS_MONTHS}개월만 분석합니다.</div>') if ex_parts else ""
+
     return f"""
 <section class="acct">
   <div class="acct-h">
     <h2>@{esc(uname)}</h2>
     <span class="dim">{esc(period)} · 분석 게시물 {n}개 · 팔로워 {F:,}명</span>
   </div>
+  {ex_note}
 
   <div class="verdict">
     <div class="hero">{er_fol:.2f}<span class="hu">%</span></div>
@@ -505,7 +561,8 @@ def build():
     accounts = prep(cache, report)
 
     gen = report.get("generated_at", "")
-    body = "".join(render_account(a, hist) for a in accounts) or \
+    body = "".join(render_account(a, hist) if len(a["posts"]) >= MIN_POSTS
+                   else render_thin(a) for a in accounts) or \
         '<section class="acct"><p class="empty">분석할 데이터가 없습니다. instagram_api.py 를 먼저 실행하세요.</p></section>'
 
     total = sum(a["acc"].get("posts_total", 0) for a in accounts)
