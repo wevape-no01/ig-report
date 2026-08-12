@@ -97,21 +97,29 @@ def save_json(name, obj):
 # ---------------------------------------------------------------- 수집
 
 def fetch_all_media(acc):
-    """모든 게시물을 페이지 넘기며 수집. 캡션은 자르지 않는다."""
+    """모든 게시물을 페이지 넘기며 수집. 캡션은 자르지 않는다.
+    paging.next URL 을 그대로 쓰면 API 버전이 달라 깨지므로 after 커서만 이어받는다."""
     out = []
-    params = {
+    base = {
         "fields": "id,caption,media_type,media_product_type,timestamp,permalink,"
                   "like_count,comments_count,thumbnail_url,media_url",
         "limit": 100, "access_token": acc["token"],
     }
-    path, guard = f"{acc['ig_id']}/media", 0
-    while path and guard < 30:
-        data = get(path, params) if params else get(path, {})
-        out.extend(data.get("data", []))
-        nxt = data.get("paging", {}).get("next")
-        if not nxt:
+    after, guard = None, 0
+    while guard < 30:
+        params = dict(base)
+        if after:
+            params["after"] = after
+        data = get(f"{acc['ig_id']}/media", params)
+        rows = data.get("data", [])
+        out.extend(rows)
+        paging = data.get("paging", {})
+        if not rows or not paging.get("next"):
             break
-        path, params, guard = nxt.split(f"{BASE}/")[-1], None, guard + 1
+        after = paging.get("cursors", {}).get("after")
+        if not after:
+            break
+        guard += 1
     return out
 
 
