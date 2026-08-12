@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>성과 분석</title>
+<style>
+:root { color-scheme: light only;
+  --text:#111; --text2:#444; --muted:#6b6b6b; --grid:#e6e6e6; --border:rgba(17,17,17,.14);
+  --accent:#1f6fc7; --accent-soft:#cde2fb; --gray:#c9c9c9;
+  --good:#046a04; --warnc:#8a5a00; --bad:#b32626; }
+* { box-sizing:border-box; }
+html, body { background:#fff; }
+body { margin:0; color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+.wrap { max-width:960px; margin:0 auto; padding:26px 18px 80px; }
+.nav { display:flex; gap:10px; align-items:center; font-size:13px; margin-bottom:22px; }
+.nav a { color:var(--accent); text-decoration:none; padding:6px 12px; border:1px solid var(--border); border-radius:999px; }
+.nav a.on { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+h1 { font-size:22px; margin:0 0 4px; }
+.updated { font-size:12px; color:var(--muted); margin-bottom:26px; }
+section.acct { border:1px solid var(--border); border-radius:12px; padding:20px 22px; margin-bottom:26px; }
+.acct-h { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px;
+  padding-bottom:12px; border-bottom:1px solid var(--grid); }
+.acct-h h2 { font-size:19px; margin:0; }
+h3 { font-size:15px; margin:30px 0 3px; }
+.sub { font-size:12px; color:var(--muted); margin:0 0 14px; }
+.dim { color:var(--muted); } .nw { white-space:nowrap; }
+.verdict { display:flex; align-items:baseline; gap:13px; flex-wrap:wrap; margin-bottom:4px; }
+.hero { font-size:44px; font-weight:650; line-height:1; }
+.hu { font-size:16px; color:var(--muted); font-weight:400; }
+.badge { font-size:12px; font-weight:600; padding:4px 10px; border-radius:999px; }
+.badge.good { background:#e6f4e6; color:var(--good); }
+.badge.warn { background:#fdf1dc; color:var(--warnc); }
+.kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); gap:11px; }
+.kpi { border:1px solid var(--border); border-radius:10px; padding:13px 14px; }
+.kpi .lbl { font-size:12px; color:var(--text2); margin-bottom:7px; }
+.kpi .v { font-size:24px; font-weight:620; line-height:1; }
+.kpi .cmp { font-size:11px; margin-top:6px; color:var(--muted); }
+.kpi .cmp.good { color:var(--good); } .kpi .cmp.bad { color:var(--bad); }
+svg { display:block; width:100%; height:auto; overflow:visible; }
+.bar { fill:var(--accent); } .bar.muted { fill:var(--gray); }
+.cat { fill:var(--text2); font-size:12px; }
+.val { fill:var(--text); font-size:12px; font-weight:600; }
+.dim2 { fill:var(--muted); font-weight:400; font-size:11px; }
+.ax { fill:var(--muted); font-size:10px; }
+.grid { stroke:var(--grid); stroke-width:1; }
+.ln { fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.dot { fill:var(--accent); }
+.legend { display:flex; gap:16px; font-size:11.5px; color:var(--text2); margin-top:11px; }
+.sw { display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--accent); margin-right:5px; }
+.sw.g { background:var(--gray); }
+table { width:100%; border-collapse:collapse; font-size:12.5px; }
+th, td { text-align:left; padding:8px 7px; border-bottom:1px solid var(--grid); }
+th { font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; font-weight:500; }
+td.num { text-align:right; font-variant-numeric:tabular-nums; }
+td.strong { font-weight:650; color:var(--accent); }
+td.cap { color:var(--text2); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+td.cap a { color:var(--text2); text-decoration:none; }
+td.cap a:hover { color:var(--accent); text-decoration:underline; }
+.chip { display:inline-block; font-size:10.5px; padding:2px 7px; border-radius:5px;
+  background:var(--accent-soft); color:#164a86; white-space:nowrap; }
+.reads p { font-size:13.5px; line-height:1.65; margin:12px 0 0; }
+.reads p:first-child { margin-top:0; }
+.reads b { color:var(--accent); }
+.reads-box { border:1px solid var(--border); border-left:3px solid var(--accent);
+  border-radius:9px; padding:14px 16px; background:#fbfcfe; }
+.warn { background:#fdf6e6; border:1px solid #f0dca0; color:#6b5300;
+  border-radius:8px; padding:9px 12px; font-size:12px; margin-bottom:12px; }
+.empty { color:var(--muted); font-size:13px; }
+details.tg { border:1px solid var(--border); border-radius:9px; margin-bottom:9px; }
+details.tg summary { cursor:pointer; padding:11px 14px; font-size:13px; font-weight:600;
+  color:var(--text2); list-style:none; display:flex; align-items:center; gap:7px; }
+details.tg summary::-webkit-details-marker { display:none; }
+details.tg summary::before { content:"▸"; color:var(--accent); font-size:11px; }
+details.tg[open] summary::before { content:"▾"; }
+details.tg[open] summary { border-bottom:1px solid var(--grid); }
+.tg-body { padding:14px; }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+@media (max-width:700px) { .two { grid-template-columns:1fr; } }
+.mini-t { font-size:12px; color:var(--text2); font-weight:600; margin-bottom:9px; }
+.demos { display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:16px; }
+.dm-box { border:1px solid var(--border); border-radius:10px; padding:13px 14px; }
+.dm-t { font-size:12px; font-weight:600; color:var(--text2); margin-bottom:10px; }
+.dm { display:grid; grid-template-columns:74px 1fr 40px; align-items:center; gap:8px; margin-bottom:6px; font-size:11.5px; }
+.dm-k { color:var(--text2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dm-bar { background:var(--grid); border-radius:3px; height:8px; overflow:hidden; }
+.dm-bar i { display:block; height:100%; background:var(--accent); border-radius:3px; }
+.dm-v { text-align:right; font-variant-numeric:tabular-nums; color:var(--text); }
+.limits { font-size:12.5px; color:var(--text2); line-height:1.75; }
+</style></head><body><div class="wrap">
+<div class="nav"><a href="./">일일 리포트</a><a class="on" href="./analysis.html">성과 분석</a></div>
+<h1>성과 분석</h1>
+<div class="updated">업데이트: 2026-08-12T09:03:31+00:00 · 전체 게시물 252개 중 인사이트 있는 149개 분석</div>
+
+<section class="acct">
+  <div class="acct-h">
+    <h2>@wevape.no01</h2>
+    <span class="dim">2019-10-21 ~ 2026-08-07 · 분석 게시물 142개 · 팔로워 717명</span>
+  </div>
+
+  <div class="verdict">
+    <div class="hero">1.59<span class="hu">%</span></div>
+    <span class="badge good">업계 평균의 3.3배</span>
+    <span class="badge warn">저장률 0.15%</span>
+  </div>
+  <p class="sub">참여율(팔로워 기준). 2026년 인스타그램 유기적 참여율 평균은 0.48%입니다.</p>
+
+  <div class="kpis">
+    <div class="kpi"><div class="lbl">참여율 (도달 기준)</div><div class="v">6.4%</div>
+      <div class="cmp">본 사람 100명 중 6명이 반응</div></div>
+    <div class="kpi"><div class="lbl">참여율 (팔로워 기준)</div><div class="v">1.59%</div>
+      <div class="cmp good">업계 평균 대비 +231%</div></div>
+    <div class="kpi"><div class="lbl">도달률</div><div class="v">24.6%</div>
+      <div class="cmp">평균 177명에게 노출</div></div>
+    <div class="kpi"><div class="lbl">저장률</div><div class="v">0.15%</div>
+      <div class="cmp">합계 37건</div></div>
+    <div class="kpi"><div class="lbl">공유율</div><div class="v">0.11%</div>
+      <div class="cmp">합계 27건</div></div>
+  </div>
+
+  <h3>자동 해석</h3>
+  <p class="sub">갱신될 때마다 데이터에 맞춰 다시 쓰입니다</p>
+  <div class="reads reads-box"><p>1위는 <b>10-24 단일 이미지</b>로 참여율 387.5%입니다. 도달 16명 중 62명이 반응했고, 전체 평균(6.4%)의 60.1배입니다.</p><p>상위 3개 중 <b>0개가 캐러셀</b>입니다.</p><p>도달이 가장 높았던 게시물(11-01, 도달 2434)은 참여율로는 139위입니다. <b>도달과 참여율은 별개</b>이므로 도달만 보면 판단을 틀리게 됩니다.</p><p>저장 37건, 공유 27건입니다 (게시물 142개 합계). 알고리즘이 가중치를 크게 주는 신호입니다. 제품 비교, 사용법, 매장 정보처럼 <b>다시 꺼내볼 이유가 있는 콘텐츠</b>가 저장을 만듭니다.</p></div>
+
+  <h3>포맷별 성과</h3>
+  <p class="sub">참여율(도달 기준) — 본 사람 대비 반응 비율</p>
+  <svg viewBox="0 0 860 125"><text class="cat" x="0" y="24">캐러셀</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">7.1%<tspan class="dim2"> · 71개 · 도달 156</tspan></text><text class="cat" x="0" y="63">단일 이미지</text><rect class="bar muted" x="150" y="45" width="498.5" height="28" rx="4"/><text class="val" x="656.5" y="63">6.9%<tspan class="dim2"> · 60개 · 도달 175</tspan></text><text class="cat" x="0" y="102">동영상</text><rect class="bar muted" x="150" y="84" width="224.6" height="28" rx="4"/><text class="val" x="382.6" y="102">3.1%<tspan class="dim2"> · 11개 · 도달 318</tspan></text></svg>
+  <div class="legend"><span><i class="sw"></i>가장 성과가 좋은 포맷</span>
+    <span><i class="sw g"></i>비교군</span></div>
+  <div class="reads"><p><b>캐러셀가 단일 이미지보다 참여율 1.0배 높습니다.</b> 각각 게시물 71개 / 60개 기준입니다. 업계 벤치마크도 캐러셀 0.55% / 이미지 0.37%로 같은 방향입니다.</p></div>
+
+  <h3>해시태그별 성과</h3>
+  <p class="sub">5회 이상 사용한 해시태그만 · 참여율(도달 기준) 순</p>
+  <svg viewBox="0 0 860 593"><text class="cat" x="0" y="24">#국민청원</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">183.4%<tspan class="dim2"> · 7개</tspan></text><text class="cat" x="0" y="63">#액상형전자담배</text><rect class="bar" x="150" y="45" width="437.6" height="28" rx="4"/><text class="val" x="595.6" y="63">157.4%<tspan class="dim2"> · 6개</tspan></text><text class="cat" x="0" y="102">#뉴턴전자담배</text><rect class="bar" x="150" y="84" width="419.8" height="28" rx="4"/><text class="val" x="577.8" y="102">151.0%<tspan class="dim2"> · 6개</tspan></text><text class="cat" x="0" y="141">#인천모드기기</text><rect class="bar" x="150" y="123" width="403.0" height="28" rx="4"/><text class="val" x="561.0" y="141">145.0%<tspan class="dim2"> · 5개</tspan></text><text class="cat" x="0" y="180">#만수동전자담배</text><rect class="bar" x="150" y="162" width="322.0" height="28" rx="4"/><text class="val" x="480.0" y="180">115.8%<tspan class="dim2"> · 9개</tspan></text><text class="cat" x="0" y="219">#구월동전자담배</text><rect class="bar" x="150" y="201" width="314.9" height="28" rx="4"/><text class="val" x="472.9" y="219">113.2%<tspan class="dim2"> · 17개</tspan></text><text class="cat" x="0" y="258">#인천</text><rect class="bar" x="150" y="240" width="296.7" height="28" rx="4"/><text class="val" x="454.7" y="258">106.7%<tspan class="dim2"> · 13개</tspan></text><text class="cat" x="0" y="297">#인천전자담배</text><rect class="bar" x="150" y="279" width="280.6" height="28" rx="4"/><text class="val" x="438.6" y="297">100.9%<tspan class="dim2"> · 15개</tspan></text><text class="cat" x="0" y="336">#액상추천</text><rect class="bar" x="150" y="318" width="233.8" height="28" rx="4"/><text class="val" x="391.8" y="336">84.1%<tspan class="dim2"> · 8개</tspan></text><text class="cat" x="0" y="375">#구월동</text><rect class="bar" x="150" y="357" width="217.6" height="28" rx="4"/><text class="val" x="375.6" y="375">78.3%<tspan class="dim2"> · 22개</tspan></text><text class="cat" x="0" y="414">#전담액상</text><rect class="bar" x="150" y="396" width="214.6" height="28" rx="4"/><text class="val" x="372.6" y="414">77.2%<tspan class="dim2"> · 5개</tspan></text><text class="cat" x="0" y="453">#액상</text><rect class="bar" x="150" y="435" width="175.1" height="28" rx="4"/><text class="val" x="333.1" y="453">63.0%<tspan class="dim2"> · 10개</tspan></text><text class="cat" x="0" y="492">#전자담배</text><rect class="bar" x="150" y="474" width="168.9" height="28" rx="4"/><text class="val" x="326.9" y="492">60.8%<tspan class="dim2"> · 20개</tspan></text><text class="cat" x="0" y="531">#전담</text><rect class="bar" x="150" y="513" width="162.1" height="28" rx="4"/><text class="val" x="320.1" y="531">58.3%<tspan class="dim2"> · 9개</tspan></text><text class="cat" x="0" y="570">#csv</text><rect class="bar" x="150" y="552" width="136.5" height="28" rx="4"/><text class="val" x="294.5" y="570">49.1%<tspan class="dim2"> · 5개</tspan></text></svg>
+  <div class="reads"><p>해시태그가 있는 게시물은 94개, 없는 게시물은 48개입니다. 게시물당 평균 3.4개를 사용했습니다 (인스타그램 허용 한도는 30개).</p></div>
+
+  <h3>해시태그 개수 · 캡션 길이</h3>
+  <p class="sub">참여율(도달 기준)</p>
+  <div class="two">
+    <div><div class="mini-t">해시태그 개수</div><svg viewBox="0 0 400 152"><text class="cat" x="0" y="23">8개 이상</text><rect class="bar" x="78" y="6" width="218.0" height="26" rx="4"/><text class="val" x="304.0" y="23">47.6%<tspan class="dim2"> · 25개</tspan></text><text class="cat" x="0" y="59">4–7개</text><rect class="bar" x="78" y="42" width="44.9" height="26" rx="4"/><text class="val" x="130.9" y="59">9.8%<tspan class="dim2"> · 12개</tspan></text><text class="cat" x="0" y="95">0개</text><rect class="bar" x="78" y="78" width="17.1" height="26" rx="4"/><text class="val" x="103.1" y="95">3.7%<tspan class="dim2"> · 48개</tspan></text><text class="cat" x="0" y="131">1–3개</text><rect class="bar" x="78" y="114" width="14.0" height="26" rx="4"/><text class="val" x="100.0" y="131">3.0%<tspan class="dim2"> · 57개</tspan></text></svg></div>
+    <div><div class="mini-t">캡션 길이(해시태그 제외)</div><svg viewBox="0 0 400 152"><text class="cat" x="0" y="23">151–400자</text><rect class="bar" x="78" y="6" width="218.0" height="26" rx="4"/><text class="val" x="304.0" y="23">13.8%<tspan class="dim2"> · 56개</tspan></text><text class="cat" x="0" y="59">51–150자</text><rect class="bar" x="78" y="42" width="71.4" height="26" rx="4"/><text class="val" x="157.4" y="59">4.5%<tspan class="dim2"> · 65개</tspan></text><text class="cat" x="0" y="95">400자 초과</text><rect class="bar" x="78" y="78" width="53.5" height="26" rx="4"/><text class="val" x="139.5" y="95">3.4%<tspan class="dim2"> · 3개</tspan></text><text class="cat" x="0" y="131">~50자</text><rect class="bar" x="78" y="114" width="34.7" height="26" rx="4"/><text class="val" x="120.7" y="131">2.2%<tspan class="dim2"> · 18개</tspan></text></svg></div>
+  </div>
+
+  <h3>신규 유입</h3>
+  <div class="kpis"><div class="kpi"><div class="lbl">오늘 도달</div><div class="v">12</div></div><div class="kpi"><div class="lbl">비팔로워 도달</div><div class="v">4</div><div class="cmp">전체 도달의 33%</div></div><div class="kpi"><div class="lbl">누적 프로필 방문</div><div class="v">1241</div><div class="cmp">게시물 142개 합계</div></div><div class="kpi"><div class="lbl">게시물發 팔로우</div><div class="v">55</div><div class="cmp">게시물 142개 합계</div></div></div><p class="sub" style="margin-top:14px">비팔로워 도달은 해시태그·탐색탭·공유를 타고 새로 들어온 사람입니다. 이 비율이 오르면 신규 유입이 늘고 있다는 뜻입니다.</p><svg viewBox="0 0 860 120"><text class="cat" x="430" y="60" text-anchor="middle">2026-08-12 · 4 (내일부터 선이 그려집니다)</text></svg>
+
+  <h3>팔로워 구성</h3>
+  <p class="sub">인스타그램이 추정한 값입니다</p>
+  <div class="demos"><div class="dm-box"><div class="dm-t">연령</div><div class="dm"><span class="dm-k">25-34</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">240</span></div><div class="dm"><span class="dm-k">35-44</span><span class="dm-bar"><i style="width:89%"></i></span><span class="dm-v">213</span></div><div class="dm"><span class="dm-k">45-54</span><span class="dm-bar"><i style="width:48%"></i></span><span class="dm-v">114</span></div><div class="dm"><span class="dm-k">55-64</span><span class="dm-bar"><i style="width:16%"></i></span><span class="dm-v">38</span></div><div class="dm"><span class="dm-k">18-24</span><span class="dm-bar"><i style="width:15%"></i></span><span class="dm-v">36</span></div><div class="dm"><span class="dm-k">65+</span><span class="dm-bar"><i style="width:2%"></i></span><span class="dm-v">5</span></div></div><div class="dm-box"><div class="dm-t">성별</div><div class="dm"><span class="dm-k">M</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">276</span></div><div class="dm"><span class="dm-k">U</span><span class="dm-bar"><i style="width:99%"></i></span><span class="dm-v">273</span></div><div class="dm"><span class="dm-k">F</span><span class="dm-bar"><i style="width:36%"></i></span><span class="dm-v">98</span></div></div><div class="dm-box"><div class="dm-t">도시</div><div class="dm"><span class="dm-k">Seoul, Seoul</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">129</span></div><div class="dm"><span class="dm-k">Incheon, Incheon</span><span class="dm-bar"><i style="width:64%"></i></span><span class="dm-v">83</span></div><div class="dm"><span class="dm-k">Busan, Busan</span><span class="dm-bar"><i style="width:31%"></i></span><span class="dm-v">40</span></div><div class="dm"><span class="dm-k">Shenzhen, Guangdong</span><span class="dm-bar"><i style="width:22%"></i></span><span class="dm-v">29</span></div><div class="dm"><span class="dm-k">Daejeon, Daejeon</span><span class="dm-bar"><i style="width:16%"></i></span><span class="dm-v">21</span></div><div class="dm"><span class="dm-k">Shanghai, Shanghai</span><span class="dm-bar"><i style="width:15%"></i></span><span class="dm-v">19</span></div></div><div class="dm-box"><div class="dm-t">국가</div><div class="dm"><span class="dm-k">KR</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">471</span></div><div class="dm"><span class="dm-k">CN</span><span class="dm-bar"><i style="width:24%"></i></span><span class="dm-v">112</span></div><div class="dm"><span class="dm-k">JP</span><span class="dm-bar"><i style="width:3%"></i></span><span class="dm-v">12</span></div><div class="dm"><span class="dm-k">US</span><span class="dm-bar"><i style="width:2%"></i></span><span class="dm-v">10</span></div><div class="dm"><span class="dm-k">MY</span><span class="dm-bar"><i style="width:1%"></i></span><span class="dm-v">5</span></div><div class="dm"><span class="dm-k">FR</span><span class="dm-bar"><i style="width:1%"></i></span><span class="dm-v">4</span></div></div></div>
+
+  <h3>게시물 랭킹</h3>
+  <p class="sub">참여율(도달 기준) 순 · 상위 10위까지</p>
+  <table><thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th><th class="num">참여율</th><th class="num">도달</th><th class="num">반응</th><th class="num">저장+공유</th></tr></thead><tbody><tr><td class="num">1</td><td class="nw">10-24<span class="dim"> 목 20시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/B3_69TeFoCN/" target="_blank" rel="noopener">정부는 국민에게 올바른 정보를 알려야 합니다 . 액상형 전자담</a></td><td class="num strong">387.5%</td><td class="num">16</td><td class="num">62</td><td class="num">–</td></tr><tr><td class="num">2</td><td class="nw">10-21<span class="dim"> 월 17시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/B336uNVF-pB/" target="_blank" rel="noopener">newton.guwol
+Vape Lounge X Newton
+</a></td><td class="num strong">273.7%</td><td class="num">19</td><td class="num">52</td><td class="num">–</td></tr><tr><td class="num">3</td><td class="nw">10-26<span class="dim"> 토 19시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/B4FBWwllGh9/" target="_blank" rel="noopener">일반 연초 담배 사용자중 한해 평균 6만명.하루평균160명 이</a></td><td class="num strong">189.5%</td><td class="num">19</td><td class="num">36</td><td class="num">–</td></tr></tbody></table><details class="tg"><summary>4위 ~ 10위 보기</summary><div class="tg-body"><table><thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th><th class="num">참여율</th><th class="num">도달</th><th class="num">반응</th><th class="num">저장+공유</th></tr></thead><tbody><tr><td class="num">4</td><td class="nw">10-23<span class="dim"> 수 20시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/B39VSAalR1z/" target="_blank" rel="noopener">액상형 전자담배 잘못된 언론보도를  멈춰주세요. 사망사고가 일</a></td><td class="num strong">185.7%</td><td class="num">21</td><td class="num">39</td><td class="num">1</td></tr><tr><td class="num">5</td><td class="nw">02-02<span class="dim"> 일 21시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/B8EIZZ1F119/" target="_blank" rel="noopener">캡틴리퀴드에서 CSV출격!
+AMMO 엠오킷:D
+캡틴쥬스 샤인머</a></td><td class="num strong">183.3%</td><td class="num">24</td><td class="num">44</td><td class="num">–</td></tr><tr><td class="num">6</td><td class="nw">01-05<span class="dim"> 일 18시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/B67tM-tlMMr/" target="_blank" rel="noopener">CSV 최강 맛표현 정점의 귀환 지금 . 뉴턴구월점에서 향상된</a></td><td class="num strong">179.2%</td><td class="num">24</td><td class="num">43</td><td class="num">1</td></tr><tr><td class="num">7</td><td class="nw">12-29<span class="dim"> 일 19시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/B6pzMctlvjY/" target="_blank" rel="noopener">기다리시던 잽쥬스알로에베라 재입고!!
+뉴턴구월점으로 놀러오세요</a></td><td class="num strong">175.0%</td><td class="num">24</td><td class="num">42</td><td class="num">–</td></tr><tr><td class="num">8</td><td class="nw">11-07<span class="dim"> 목 17시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/B4jqfvrlnQE/" target="_blank" rel="noopener">Newton.guwol
+전자담배에 대한 정확한 진실을 알고 싶</a></td><td class="num strong">162.1%</td><td class="num">29</td><td class="num">47</td><td class="num">–</td></tr><tr><td class="num">9</td><td class="nw">03-13<span class="dim"> 금 17시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/B9qu9zIF1TM/" target="_blank" rel="noopener">뉴턴구월 길병원점이라는 섬에
+강렬한 햇빛을 피해 선베드에 앉았</a></td><td class="num strong">159.1%</td><td class="num">22</td><td class="num">35</td><td class="num">–</td></tr><tr><td class="num">10</td><td class="nw">10-28<span class="dim"> 월 19시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/B4KMOTqldeW/" target="_blank" rel="noopener">뉴턴전자담배 구월점입니다.
+
+국민은 무지하지 않습니다.
+눈가림</a></td><td class="num strong">141.4%</td><td class="num">29</td><td class="num">41</td><td class="num">–</td></tr></tbody></table></div></details>
+
+  <h3>참고 지표</h3>
+  <p class="sub">표본이 적어 참고용입니다. 필요할 때 펼쳐 보세요.</p>
+  <details class="tg"><summary>언어별 성과</summary><div class="tg-body"><div class="warn">⚠️ 언어별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 203"><text class="cat" x="0" y="24">한국어</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">12.2%<tspan class="dim2"> · 71개</tspan></text><text class="cat" x="0" y="63">중국어</text><rect class="bar" x="150" y="45" width="161.9" height="28" rx="4"/><text class="val" x="319.9" y="63">3.9%<tspan class="dim2"> · 16개</tspan></text><text class="cat" x="0" y="102">일본어</text><rect class="bar" x="150" y="84" width="124.7" height="28" rx="4"/><text class="val" x="282.7" y="102">3.0%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="141">영문</text><rect class="bar" x="150" y="123" width="123.2" height="28" rx="4"/><text class="val" x="281.2" y="141">2.9%<tspan class="dim2"> · 50개</tspan></text><text class="cat" x="0" y="180">기타</text><rect class="bar" x="150" y="162" width="9.8" height="28" rx="4"/><text class="val" x="167.8" y="180">0.2%<tspan class="dim2"> · 1개</tspan></text></svg></div></details>
+  <details class="tg"><summary>게시 시각별 성과</summary><div class="tg-body"><div class="warn">⚠️ 시각별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 476"><text class="cat" x="0" y="24">17시</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">176.6%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="63">16시</text><rect class="bar" x="150" y="45" width="117.5" height="28" rx="4"/><text class="val" x="275.5" y="63">40.7%<tspan class="dim2"> · 3개</tspan></text><text class="cat" x="0" y="102">22시</text><rect class="bar" x="150" y="84" width="58.3" height="28" rx="4"/><text class="val" x="216.3" y="102">20.2%<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="141">13시</text><rect class="bar" x="150" y="123" width="40.4" height="28" rx="4"/><text class="val" x="198.4" y="141">14.0%<tspan class="dim2"> · 1개</tspan></text><text class="cat" x="0" y="180">15시</text><rect class="bar" x="150" y="162" width="33.2" height="28" rx="4"/><text class="val" x="191.2" y="180">11.5%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="219">18시</text><rect class="bar" x="150" y="201" width="23.4" height="28" rx="4"/><text class="val" x="181.4" y="219">8.1%<tspan class="dim2"> · 8개</tspan></text><text class="cat" x="0" y="258">19시</text><rect class="bar" x="150" y="240" width="18.6" height="28" rx="4"/><text class="val" x="176.6" y="258">6.4%<tspan class="dim2"> · 20개</tspan></text><text class="cat" x="0" y="297">20시</text><rect class="bar" x="150" y="279" width="16.3" height="28" rx="4"/><text class="val" x="174.3" y="297">5.7%<tspan class="dim2"> · 45개</tspan></text><text class="cat" x="0" y="336">21시</text><rect class="bar" x="150" y="318" width="13.2" height="28" rx="4"/><text class="val" x="171.2" y="336">4.6%<tspan class="dim2"> · 46개</tspan></text><text class="cat" x="0" y="375">12시</text><rect class="bar" x="150" y="357" width="10.6" height="28" rx="4"/><text class="val" x="168.6" y="375">3.7%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="414">14시</text><rect class="bar" x="150" y="396" width="6.5" height="28" rx="4"/><text class="val" x="164.5" y="414">2.2%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="453">11시</text><rect class="bar" x="150" y="435" width="4.5" height="28" rx="4"/><text class="val" x="162.5" y="453">1.6%<tspan class="dim2"> · 1개</tspan></text></svg></div></details>
+  <details class="tg"><summary>요일별 성과</summary><div class="tg-body"><svg viewBox="0 0 860 281"><text class="cat" x="0" y="24">수요일</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">11.2%<tspan class="dim2"> · 16개</tspan></text><text class="cat" x="0" y="63">일요일</text><rect class="bar" x="150" y="45" width="448.5" height="28" rx="4"/><text class="val" x="606.5" y="63">9.8%<tspan class="dim2"> · 17개</tspan></text><text class="cat" x="0" y="102">월요일</text><rect class="bar" x="150" y="84" width="346.6" height="28" rx="4"/><text class="val" x="504.6" y="102">7.6%<tspan class="dim2"> · 18개</tspan></text><text class="cat" x="0" y="141">목요일</text><rect class="bar" x="150" y="123" width="316.1" height="28" rx="4"/><text class="val" x="474.1" y="141">6.9%<tspan class="dim2"> · 28개</tspan></text><text class="cat" x="0" y="180">화요일</text><rect class="bar" x="150" y="162" width="301.1" height="28" rx="4"/><text class="val" x="459.1" y="180">6.6%<tspan class="dim2"> · 20개</tspan></text><text class="cat" x="0" y="219">금요일</text><rect class="bar" x="150" y="201" width="239.2" height="28" rx="4"/><text class="val" x="397.2" y="219">5.2%<tspan class="dim2"> · 23개</tspan></text><text class="cat" x="0" y="258">토요일</text><rect class="bar" x="150" y="240" width="132.4" height="28" rx="4"/><text class="val" x="290.4" y="258">2.9%<tspan class="dim2"> · 20개</tspan></text></svg></div></details>
+</section>
+<section class="acct">
+  <div class="acct-h">
+    <h2>@wevape_japan</h2>
+    <span class="dim">2026-07-24 ~ 2026-08-11 · 분석 게시물 7개 · 팔로워 4명</span>
+  </div>
+
+  <div class="verdict">
+    <div class="hero">64.29<span class="hu">%</span></div>
+    <span class="badge good">업계 평균의 133.9배</span>
+    <span class="badge warn">저장률 0.00%</span>
+  </div>
+  <p class="sub">참여율(팔로워 기준). 2026년 인스타그램 유기적 참여율 평균은 0.48%입니다.</p>
+
+  <div class="kpis">
+    <div class="kpi"><div class="lbl">참여율 (도달 기준)</div><div class="v">200.0%</div>
+      <div class="cmp">본 사람 100명 중 200명이 반응</div></div>
+    <div class="kpi"><div class="lbl">참여율 (팔로워 기준)</div><div class="v">64.29%</div>
+      <div class="cmp good">업계 평균 대비 +13293%</div></div>
+    <div class="kpi"><div class="lbl">도달률</div><div class="v">32.1%</div>
+      <div class="cmp">평균 1명에게 노출</div></div>
+    <div class="kpi"><div class="lbl">저장률</div><div class="v">0.00%</div>
+      <div class="cmp">합계 0건</div></div>
+    <div class="kpi"><div class="lbl">공유율</div><div class="v">0.00%</div>
+      <div class="cmp">합계 0건</div></div>
+  </div>
+
+  <h3>자동 해석</h3>
+  <p class="sub">갱신될 때마다 데이터에 맞춰 다시 쓰입니다</p>
+  <div class="reads reads-box"><p>1위는 <b>08-08 단일 이미지</b>로 참여율 200.0%입니다. 도달 1명 중 2명이 반응했고, 전체 평균(200.0%)의 1.0배입니다.</p><p>상위 3개 중 <b>3개가 단일 이미지</b>입니다.</p><p>도달이 가장 높았던 게시물(07-25, 도달 3)은 참여율로는 5위입니다. <b>도달과 참여율은 별개</b>이므로 도달만 보면 판단을 틀리게 됩니다.</p><p>저장 0건, 공유 0건입니다 (게시물 7개 합계). 알고리즘이 가중치를 크게 주는 신호입니다. 제품 비교, 사용법, 매장 정보처럼 <b>다시 꺼내볼 이유가 있는 콘텐츠</b>가 저장을 만듭니다.</p></div>
+
+  <h3>포맷별 성과</h3>
+  <p class="sub">참여율(도달 기준) — 본 사람 대비 반응 비율</p>
+  <svg viewBox="0 0 860 86"><text class="cat" x="0" y="24">단일 이미지</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">166.7%<tspan class="dim2"> · 6개 · 도달 2</tspan></text><text class="cat" x="0" y="63">캐러셀</text><rect class="bar muted" x="150" y="45" width="2.0" height="28" rx="4"/><text class="val" x="160.0" y="63">0.0%<tspan class="dim2"> · 1개 · 도달 0</tspan></text></svg>
+  <div class="legend"><span><i class="sw"></i>가장 성과가 좋은 포맷</span>
+    <span><i class="sw g"></i>비교군</span></div>
+  <div class="reads"></div>
+
+  <h3>해시태그별 성과</h3>
+  <p class="sub">5회 이상 사용한 해시태그만 · 참여율(도달 기준) 순</p>
+  <svg viewBox="0 0 860 47"><text class="cat" x="0" y="24">(태그 없음)</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">200.0%<tspan class="dim2"> · 7개</tspan></text></svg>
+  <div class="reads"><p>해시태그가 있는 게시물은 0개, 없는 게시물은 7개입니다. 게시물당 평균 0.0개를 사용했습니다 (인스타그램 허용 한도는 30개).</p></div>
+
+  <h3>해시태그 개수 · 캡션 길이</h3>
+  <p class="sub">참여율(도달 기준)</p>
+  <div class="two">
+    <div><div class="mini-t">해시태그 개수</div><svg viewBox="0 0 400 44"><text class="cat" x="0" y="23">0개</text><rect class="bar" x="78" y="6" width="218.0" height="26" rx="4"/><text class="val" x="304.0" y="23">200.0%<tspan class="dim2"> · 7개</tspan></text></svg></div>
+    <div><div class="mini-t">캡션 길이(해시태그 제외)</div><svg viewBox="0 0 400 80"><text class="cat" x="0" y="23">151–400자</text><rect class="bar" x="78" y="6" width="218.0" height="26" rx="4"/><text class="val" x="304.0" y="23">214.3%<tspan class="dim2"> · 6개</tspan></text><text class="cat" x="0" y="59">400자 초과</text><rect class="bar" x="78" y="42" width="152.6" height="26" rx="4"/><text class="val" x="238.6" y="59">150.0%<tspan class="dim2"> · 1개</tspan></text></svg></div>
+  </div>
+
+  <h3>신규 유입</h3>
+  <div class="kpis"><div class="kpi"><div class="lbl">오늘 도달</div><div class="v">–</div></div><div class="kpi"><div class="lbl">비팔로워 도달</div><div class="v">–</div><div class="cmp">수집 대기</div></div><div class="kpi"><div class="lbl">누적 프로필 방문</div><div class="v">0</div><div class="cmp">게시물 7개 합계</div></div><div class="kpi"><div class="lbl">게시물發 팔로우</div><div class="v">0</div><div class="cmp">게시물 7개 합계</div></div></div><p class="sub" style="margin-top:14px">비팔로워 도달은 해시태그·탐색탭·공유를 타고 새로 들어온 사람입니다. 이 비율이 오르면 신규 유입이 늘고 있다는 뜻입니다.</p><svg viewBox="0 0 860 120"><text class="cat" x="430" y="60" text-anchor="middle">기록이 아직 없습니다</text></svg>
+
+  <h3>팔로워 구성</h3>
+  <p class="sub">인스타그램이 추정한 값입니다</p>
+  <div class="demos"><p class="empty">인구통계 데이터가 아직 없습니다</p></div>
+
+  <h3>게시물 랭킹</h3>
+  <p class="sub">참여율(도달 기준) 순 · 상위 10위까지</p>
+  <table><thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th><th class="num">참여율</th><th class="num">도달</th><th class="num">반응</th><th class="num">저장+공유</th></tr></thead><tbody><tr><td class="num">1</td><td class="nw">08-08<span class="dim"> 토 18시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/DbxkYS4knXr/" target="_blank" rel="noopener">韓国旅行の途中に、ちょっと寄り道。🇰🇷✨
+
+仁川でVAPEショップを</a></td><td class="num strong">200.0%</td><td class="num">1</td><td class="num">2</td><td class="num">–</td></tr><tr><td class="num">2</td><td class="nw">08-07<span class="dim"> 금 15시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/DbuncUrks9_/" target="_blank" rel="noopener">Welcome to Korea. Welcome to WEVAP</a></td><td class="num strong">200.0%</td><td class="num">1</td><td class="num">2</td><td class="num">–</td></tr><tr><td class="num">3</td><td class="nw">07-27<span class="dim"> 월 19시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/DbSzPPTEm51/" target="_blank" rel="noopener">BEYOND GLOW, BEYOND LIMITS.
+
+光は、
+た</a></td><td class="num strong">200.0%</td><td class="num">2</td><td class="num">4</td><td class="num">–</td></tr></tbody></table><details class="tg"><summary>4위 ~ 7위 보기</summary><div class="tg-body"><table><thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th><th class="num">참여율</th><th class="num">도달</th><th class="num">반응</th><th class="num">저장+공유</th></tr></thead><tbody><tr><td class="num">4</td><td class="nw">07-24<span class="dim"> 금 17시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/DbKy6qkkhR6/" target="_blank" rel="noopener">Find Your Favorite Flavor. 🍃
+
+気分で選</a></td><td class="num strong">150.0%</td><td class="num">2</td><td class="num">3</td><td class="num">–</td></tr><tr><td class="num">5</td><td class="nw">07-25<span class="dim"> 토 20시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/DbNtYTHkqei/" target="_blank" rel="noopener">EXCLUSIVE FOR VIP STORES.
+
+限られた場所で</a></td><td class="num strong">100.0%</td><td class="num">3</td><td class="num">3</td><td class="num">–</td></tr><tr><td class="num">6</td><td class="nw">08-11<span class="dim"> 화 14시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/Db40NIwkm8a/" target="_blank" rel="noopener">韓国旅行の途中に、気軽にVAPEを。🇰🇷✈️
+
+仁川でVAPEショッ</a></td><td class="num strong">0.0%</td><td class="num">0</td><td class="num">1</td><td class="num">–</td></tr><tr><td class="num">7</td><td class="nw">08-03<span class="dim"> 월 17시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DbklHIVkhb8/" target="_blank" rel="noopener">UPGRADED OPEN SYSTEM DEVICE.
+
+美しさは</a></td><td class="num strong">0.0%</td><td class="num">0</td><td class="num">3</td><td class="num">–</td></tr></tbody></table></div></details>
+
+  <h3>참고 지표</h3>
+  <p class="sub">표본이 적어 참고용입니다. 필요할 때 펼쳐 보세요.</p>
+  <details class="tg"><summary>언어별 성과</summary><div class="tg-body"><svg viewBox="0 0 860 47"><text class="cat" x="0" y="24">일본어</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">200.0%<tspan class="dim2"> · 7개</tspan></text></svg></div></details>
+  <details class="tg"><summary>게시 시각별 성과</summary><div class="tg-body"><div class="warn">⚠️ 시각별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 242"><text class="cat" x="0" y="24">17시</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">300.0%<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="63">18시</text><rect class="bar" x="150" y="45" width="340.0" height="28" rx="4"/><text class="val" x="498.0" y="63">200.0%<tspan class="dim2"> · 1개</tspan></text><text class="cat" x="0" y="102">15시</text><rect class="bar" x="150" y="84" width="340.0" height="28" rx="4"/><text class="val" x="498.0" y="102">200.0%<tspan class="dim2"> · 1개</tspan></text><text class="cat" x="0" y="141">19시</text><rect class="bar" x="150" y="123" width="340.0" height="28" rx="4"/><text class="val" x="498.0" y="141">200.0%<tspan class="dim2"> · 1개</tspan></text><text class="cat" x="0" y="180">20시</text><rect class="bar" x="150" y="162" width="170.0" height="28" rx="4"/><text class="val" x="328.0" y="180">100.0%<tspan class="dim2"> · 1개</tspan></text><text class="cat" x="0" y="219">14시</text><rect class="bar" x="150" y="201" width="2.0" height="28" rx="4"/><text class="val" x="160.0" y="219">0.0%<tspan class="dim2"> · 1개</tspan></text></svg></div></details>
+  <details class="tg"><summary>요일별 성과</summary><div class="tg-body"><svg viewBox="0 0 860 164"><text class="cat" x="0" y="24">월요일</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">350.0%<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="63">금요일</text><rect class="bar" x="150" y="45" width="242.9" height="28" rx="4"/><text class="val" x="400.9" y="63">166.7%<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="102">토요일</text><rect class="bar" x="150" y="84" width="182.1" height="28" rx="4"/><text class="val" x="340.1" y="102">125.0%<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="141">화요일</text><rect class="bar" x="150" y="123" width="2.0" height="28" rx="4"/><text class="val" x="160.0" y="141">0.0%<tspan class="dim2"> · 1개</tspan></text></svg></div></details>
+</section>
+<section class="acct">
+  <h2 style="font-size:15px;margin:0 0 12px">이 분석의 한계</h2>
+  <div class="limits">
+    인사이트(도달·조회·저장)는 계정을 프로페셔널로 전환한 이후 게시물에만 존재합니다. 그 이전 게시물은 좋아요·댓글·해시태그만 남아 분석에서 제외됩니다.<br>
+    표본이 5개 미만인 항목은 경고를 붙였습니다. 우연일 가능성이 높아 판단 근거로 쓰지 마세요.<br>
+    게시물별로 "해시태그를 타고 들어왔는지"는 API가 제공하지 않습니다. 비팔로워 도달로 신규 유입 총량만 알 수 있고, 경로별 구분은 인스타그램 앱에서 직접 확인해야 합니다.<br>
+    "왜 좋았는지"의 진짜 원인(이미지의 매력, 소재의 시의성)은 숫자로 나오지 않습니다.
+  </div>
+</section>
+</div></body></html>
