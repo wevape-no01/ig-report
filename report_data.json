@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T00:08:00+00:00",
+  "generated_at": "2026-08-12T07:11:16+00:00",
   "accounts": [
     {
       "label": "위베이프",
@@ -12,10 +12,10 @@
         "id": "17841409002160818"
       },
       "account_insights": {
-        "reach": 24,
-        "profile_views": 24,
-        "accounts_engaged": 2,
-        "total_interactions": 2
+        "reach": 12,
+        "profile_views": 9,
+        "accounts_engaged": 1,
+        "total_interactions": 1
       },
       "posts": [
         {
@@ -24,14 +24,14 @@
           "media_type": "CAROUSEL_ALBUM",
           "timestamp": "2026-08-07T05:57:02+0000",
           "permalink": "https://www.instagram.com/p/DbuluR9ExoI/",
-          "like_count": 4,
+          "like_count": 5,
           "comments_count": 1,
           "insights": {
-            "reach": 53,
+            "reach": 57,
             "saved": 0,
             "shares": 0,
-            "total_interactions": 5,
-            "views": 131
+            "total_interactions": 6,
+            "views": 139
           }
         },
         {
@@ -43,11 +43,11 @@
           "like_count": 8,
           "comments_count": 2,
           "insights": {
-            "reach": 118,
+            "reach": 119,
             "saved": 0,
             "shares": 0,
             "total_interactions": 10,
-            "views": 312
+            "views": 313
           }
         },
         {
@@ -59,11 +59,11 @@
           "like_count": 5,
           "comments_count": 1,
           "insights": {
-            "reach": 159,
+            "reach": 160,
             "saved": 0,
             "shares": 0,
             "total_interactions": 6,
-            "views": 332
+            "views": 333
           }
         },
         {
@@ -75,11 +75,11 @@
           "like_count": 2,
           "comments_count": 1,
           "insights": {
-            "reach": 141,
+            "reach": 142,
             "saved": 0,
             "shares": 1,
             "total_interactions": 4,
-            "views": 270
+            "views": 271
           }
         },
         {
@@ -91,11 +91,11 @@
           "like_count": 4,
           "comments_count": 1,
           "insights": {
-            "reach": 139,
+            "reach": 140,
             "saved": 0,
             "shares": 0,
             "total_interactions": 5,
-            "views": 252
+            "views": 253
           }
         },
         {
@@ -107,11 +107,11 @@
           "like_count": 2,
           "comments_count": 1,
           "insights": {
-            "reach": 175,
+            "reach": 176,
             "saved": 0,
             "shares": 0,
             "total_interactions": 3,
-            "views": 286
+            "views": 287
           }
         },
         {
@@ -123,11 +123,11 @@
           "like_count": 4,
           "comments_count": 1,
           "insights": {
-            "reach": 159,
+            "reach": 160,
             "saved": 0,
             "shares": 0,
             "total_interactions": 5,
-            "views": 271
+            "views": 272
           }
         },
         {
@@ -139,11 +139,11 @@
           "like_count": 4,
           "comments_count": 1,
           "insights": {
-            "reach": 168,
+            "reach": 169,
             "saved": 0,
             "shares": 0,
             "total_interactions": 5,
-            "views": 278
+            "views": 279
           }
         },
         {
@@ -155,11 +155,11 @@
           "like_count": 3,
           "comments_count": 1,
           "insights": {
-            "reach": 133,
+            "reach": 134,
             "saved": 0,
             "shares": 1,
             "total_interactions": 5,
-            "views": 207
+            "views": 209
           }
         },
         {
@@ -171,11 +171,11 @@
           "like_count": 3,
           "comments_count": 1,
           "insights": {
-            "reach": 154,
+            "reach": 155,
             "saved": 0,
             "shares": 0,
             "total_interactions": 4,
-            "views": 273
+            "views": 275
           }
         },
         {
@@ -187,11 +187,11 @@
           "like_count": 3,
           "comments_count": 1,
           "insights": {
-            "reach": 141,
+            "reach": 142,
             "saved": 0,
             "shares": 0,
             "total_interactions": 4,
-            "views": 237
+            "views": 239
           }
         },
         {
@@ -203,11 +203,11 @@
           "like_count": 5,
           "comments_count": 2,
           "insights": {
-            "reach": 223,
+            "reach": 224,
             "saved": 1,
             "shares": 0,
             "total_interactions": 8,
-            "views": 445
+            "views": 448
           }
         }
       ]
@@ -225,8 +225,8 @@
       "account_insights": {
         "reach": 0,
         "profile_views": 0,
-        "accounts_engaged": 1,
-        "total_interactions": 1
+        "accounts_engaged": 0,
+        "total_interactions": 0
       },
       "posts": [
         {
