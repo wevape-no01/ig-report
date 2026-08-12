@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-11T12:58:54+00:00",
+  "generated_at": "2026-08-12T00:08:00+00:00",
   "accounts": [
     {
       "label": "위베이프",
@@ -7,13 +7,13 @@
         "username": "wevape.no01",
         "name": "위베이프 전자담배 인천/경기 대표지점",
         "followers_count": 717,
-        "follows_count": 1245,
+        "follows_count": 1247,
         "media_count": 240,
         "id": "17841409002160818"
       },
       "account_insights": {
-        "reach": 22,
-        "profile_views": 23,
+        "reach": 24,
+        "profile_views": 24,
         "accounts_engaged": 2,
         "total_interactions": 2
       },
@@ -27,11 +27,11 @@
           "like_count": 4,
           "comments_count": 1,
           "insights": {
-            "reach": 52,
+            "reach": 53,
             "saved": 0,
             "shares": 0,
             "total_interactions": 5,
-            "views": 129
+            "views": 131
           }
         },
         {
@@ -43,11 +43,11 @@
           "like_count": 8,
           "comments_count": 2,
           "insights": {
-            "reach": 116,
+            "reach": 118,
             "saved": 0,
             "shares": 0,
             "total_interactions": 10,
-            "views": 309
+            "views": 312
           }
         },
         {
@@ -63,7 +63,7 @@
             "saved": 0,
             "shares": 0,
             "total_interactions": 6,
-            "views": 331
+            "views": 332
           }
         },
         {
@@ -91,11 +91,11 @@
           "like_count": 4,
           "comments_count": 1,
           "insights": {
-            "reach": 138,
+            "reach": 139,
             "saved": 0,
             "shares": 0,
             "total_interactions": 5,
-            "views": 251
+            "views": 252
           }
         },
         {
@@ -111,7 +111,7 @@
             "saved": 0,
             "shares": 0,
             "total_interactions": 3,
-            "views": 285
+            "views": 286
           }
         },
         {
@@ -139,11 +139,11 @@
           "like_count": 4,
           "comments_count": 1,
           "insights": {
-            "reach": 167,
+            "reach": 168,
             "saved": 0,
             "shares": 0,
             "total_interactions": 5,
-            "views": 277
+            "views": 278
           }
         },
         {
@@ -159,7 +159,7 @@
             "saved": 0,
             "shares": 1,
             "total_interactions": 5,
-            "views": 206
+            "views": 207
           }
         },
         {
@@ -203,11 +203,11 @@
           "like_count": 5,
           "comments_count": 2,
           "insights": {
-            "reach": 222,
+            "reach": 223,
             "saved": 1,
             "shares": 0,
             "total_interactions": 8,
-            "views": 443
+            "views": 445
           }
         }
       ]
