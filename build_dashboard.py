@@ -71,29 +71,23 @@ TEMPLATE = """<!doctype html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light" />
 <title>인스타그램 리포트</title>
 <style>
-  .viz-root {
-    color-scheme: light;
-    --surface-1:#fcfcfb; --page-plane:#f9f9f7;
-    --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#898781;
-    --gridline:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,0.10);
-    --series-1:#2a78d6; --seq-400:#3987e5; --seq-100:#cde2fb;
-    --good:#006300; --critical:#d03b3b;
-  }
-  @media (prefers-color-scheme: dark) {
-    .viz-root {
-      color-scheme: dark;
-      --surface-1:#1a1a19; --page-plane:#0d0d0d;
-      --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
-      --gridline:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
-      --series-1:#3987e5; --seq-400:#3987e5; --seq-100:#184f95;
-      --good:#0ca30c; --critical:#e66767;
-    }
+  /* 항상 밝은 배경으로 고정 (기기가 다크 모드여도 흰 배경 유지).
+     변수를 :root 에 두어야 body 배경에도 적용된다. */
+  :root, .viz-root {
+    color-scheme: light only;
+    --surface-1:#ffffff; --page-plane:#ffffff;
+    --text-primary:#111111; --text-secondary:#444444; --text-muted:#6b6b6b;
+    --gridline:#e6e6e6; --baseline:#cccccc; --border:rgba(17,17,17,0.14);
+    --series-1:#1f6fc7; --seq-400:#2a78d6; --seq-100:#cde2fb;
+    --good:#006300; --critical:#c02a2a;
   }
   * { box-sizing:border-box; }
+  html, body { background:#ffffff; }
   body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
-         background:var(--page-plane); color:var(--text-primary); }
+         color:#111111; }
   .wrap { max-width:920px; margin:0 auto; padding:24px 16px 64px; }
   header.top { display:flex; justify-content:space-between; align-items:baseline;
                flex-wrap:wrap; gap:8px; margin-bottom:12px; }
@@ -101,9 +95,6 @@ TEMPLATE = """<!doctype html>
   .updated { font-size:12px; color:var(--text-muted); }
   .sample-banner { background:#fff8e1; color:#6b5300; border:1px solid #f0dca0;
                    border-radius:8px; padding:10px 14px; font-size:13px; margin:12px 0 20px; }
-  @media (prefers-color-scheme: dark) {
-    .sample-banner { background:#332b00; color:#f0dca0; border-color:#5a4a00; }
-  }
   .tabs { display:flex; gap:6px; margin:16px 0 20px; flex-wrap:wrap; }
   .tab { padding:7px 14px; border-radius:999px; border:1px solid var(--border);
          background:var(--surface-1); color:var(--text-secondary);
