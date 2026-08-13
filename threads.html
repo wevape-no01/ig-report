@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>스레드</title>
+<style>
+:root {
+  color-scheme: light only;
+  --surface-1:#ffffff;
+  --text-primary:#111111; --text-secondary:#444444; --text-muted:#6b6b6b;
+  --gridline:#e6e6e6; --border:rgba(17,17,17,0.14);
+  --series-1:#1f6fc7; --gray:#c9c9c9;
+  --good:#046a04; --critical:#b32626;
+}
+* { box-sizing:border-box; }
+html, body { background:#ffffff; }
+body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
+.wrap { max-width:920px; margin:0 auto; padding:24px 16px 72px; }
+.nav { display:flex; gap:10px; align-items:center; font-size:13px; margin-bottom:20px; flex-wrap:wrap; }
+.nav a { color:var(--series-1); text-decoration:none; padding:6px 12px;
+         border:1px solid var(--border); border-radius:999px; }
+.nav a.on { background:var(--series-1); border-color:var(--series-1); color:#fff; font-weight:600; }
+header.top { display:flex; justify-content:space-between; align-items:baseline;
+             flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+header.top h1 { font-size:21px; margin:0; }
+.updated { font-size:12px; color:var(--text-muted); }
+.kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+           gap:12px; margin:20px 0 24px; }
+.stat-tile { border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+.stat-tile .label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; font-weight:600; }
+.stat-tile .value { font-size:26px; font-weight:650; line-height:1.1; }
+.stat-tile .note { font-size:11px; color:var(--text-muted); margin-top:5px; line-height:1.45; }
+section { border:1px solid var(--border); border-radius:10px;
+          padding:18px 18px 16px; margin-bottom:20px; }
+.sec-h { display:flex; justify-content:space-between; align-items:flex-start;
+         gap:12px; flex-wrap:wrap; margin-bottom:4px; }
+section h2 { font-size:16px; margin:0; color:var(--text-primary); font-weight:700;
+             letter-spacing:-0.01em; }
+section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.55; }
+.seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.seg button { border:0; background:#fff; color:var(--text-secondary);
+              font-family:inherit; font-size:12px; padding:6px 13px; cursor:pointer; }
+.seg button + button { border-left:1px solid var(--border); }
+.seg button[aria-pressed="true"] { background:var(--series-1); color:#fff; font-weight:600; }
+svg { display:block; width:100%; height:auto; overflow:visible; }
+.axis-label { fill:var(--text-muted); font-size:10.5px; }
+.val-label { fill:var(--text-primary); font-size:11px; font-weight:600; }
+.gridline { stroke:var(--gridline); stroke-width:1; }
+.bar { fill:var(--series-1); }
+table { width:100%; border-collapse:collapse; font-size:12.5px; }
+th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--gridline); vertical-align:top; }
+th { color:var(--text-muted); font-weight:500; font-size:10.5px;
+     text-transform:uppercase; letter-spacing:.02em; white-space:nowrap; }
+td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+td.cap { max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+         color:var(--text-secondary); }
+td.strong { font-weight:650; color:var(--series-1); }
+tr.extra { display:none; } tr.extra.on { display:table-row; }
+a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:underline; }
+.more { margin-top:12px; border:1px solid var(--border); background:#fff;
+        color:var(--series-1); font-family:inherit; font-size:12.5px; font-weight:600;
+        padding:8px 15px; border-radius:8px; cursor:pointer; }
+.empty { color:var(--text-muted); font-size:12.5px; padding:10px 0; }
+.foot { font-size:11.5px; color:var(--text-muted); line-height:1.8; }
+.foot b { color:var(--text-secondary); }
+details.tg { border:1px solid var(--border); border-radius:9px; margin-bottom:9px; }
+details.tg summary { cursor:pointer; padding:11px 14px; font-size:13px; font-weight:600;
+  color:var(--text-secondary); list-style:none; display:flex; align-items:center; gap:7px; }
+details.tg summary::-webkit-details-marker { display:none; }
+details.tg summary::before { content:"\25b8"; color:var(--series-1); font-size:11px; }
+details.tg[open] summary::before { content:"\25be"; }
+details.tg[open] summary { border-bottom:1px solid var(--gridline); }
+.tg-body { padding:14px; }
+.demos { display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:16px; }
+.dm-box { border:1px solid var(--border); border-radius:10px; padding:13px 14px; }
+.dm-t { font-size:12px; font-weight:700; color:var(--text-primary); margin-bottom:10px; }
+.dm { display:grid; grid-template-columns:74px 1fr 44px; align-items:center;
+      gap:8px; margin-bottom:6px; font-size:11.5px; }
+.dm-k { color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dm-bar { background:var(--gridline); border-radius:3px; height:8px; overflow:hidden; }
+.dm-bar i { display:block; height:100%; background:var(--series-1); border-radius:3px; }
+.dm-v { text-align:right; font-variant-numeric:tabular-nums; }
+.setup { border:1px solid #f0dca0; background:#fff8e1; color:#6b5300;
+         border-radius:10px; padding:18px 20px; font-size:13.5px; line-height:1.75; }
+.setup b { color:#4a3900; }
+.setup ol { margin:10px 0 0; padding-left:20px; }
+.setup li { margin-bottom:7px; }
+</style></head><body><div class="wrap">
+<div class="nav"><a href="./">일일 리포트</a><a href="./analysis.html">콘텐츠 분석</a><a class="on" href="./threads.html">스레드</a></div>
+<header class="top"><h1>스레드</h1><span class="updated"></span></header>
+
+<div class="setup">
+<b>아직 스레드 연결이 끝나지 않았습니다.</b> 아래 두 단계가 남아 있습니다.
+<ol>
+  <li>스레드 앱 → 프로필 → 설정 → <b>웹사이트 권한</b> 에서 "wevape analytics report" 초대를 <b>수락</b></li>
+  <li>Meta 개발자 페이지에서 <b>장기 액세스 토큰</b>을 만들어 GitHub 시크릿 <b>THREADS_TOKEN</b> 에 저장</li>
+</ol>
+두 단계가 끝나고 리포트가 한 번 갱신되면 이 페이지가 자동으로 채워집니다.
+</div>
+</div></body></html>
