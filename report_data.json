@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-13T09:27:40+00:00",
+ "generated_at": "2026-08-13T09:31:59+00:00",
  "accounts": [
   {
    "label": "위베이프",
@@ -17,10 +17,10 @@
     "profile_views": 18,
     "accounts_engaged": 0,
     "total_interactions": 0,
-    "reach_non_follower": 6,
     "reach_follower": 4,
-    "views_follower": 12,
-    "views_non_follower": 112
+    "reach_non_follower": 6,
+    "views_non_follower": 112,
+    "views_follower": 12
    },
    "demographics": {
     "age": {
