@@ -19,6 +19,9 @@ jobs:
     # 시크릿은 step 의 if 에서 직접 못 읽는다. 그래서 env 로 한 번 옮겨둔다.
     env:
       HAS_THREADS: ${{ secrets.THREADS_TOKEN != '' }}
+      HAS_WEBHOOK: ${{ secrets.ALERT_WEBHOOK != '' }}
+      ALERT_WEBHOOK: ${{ secrets.ALERT_WEBHOOK }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       - name: 저장소 가져오기
         uses: actions/checkout@v4
@@ -40,6 +43,7 @@ jobs:
         run: pip install pynacl
 
       - name: 스레드 데이터 수집
+        id: threads
         if: env.HAS_THREADS == 'true'
         continue-on-error: true      # 스레드가 실패해도 인스타 리포트는 나가게 한다
         env:
@@ -47,20 +51,21 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: python threads_api.py
 
-      - name: 일일 리포트 생성
-        run: python build_dashboard.py
-
-      - name: 콘텐츠 분석 페이지 생성
-        run: python build_analysis.py
+      - name: 인스타그램 페이지 생성
+        run: |
+          python build_dashboard.py
+          python build_analysis.py
 
       - name: 스레드 페이지 생성
-        run: python build_threads.py
+        run: |
+          python build_threads.py
+          python build_threads_analysis.py
 
       - name: 변경사항 커밋
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html analysis.html threads.html \
+          git add index.html analysis.html threads.html threads-analysis.html \
                   history.json report_data.json posts_cache.json
           for f in threads_history.json threads_report.json \
                    threads_cache.json threads_token_meta.json; do
@@ -72,3 +77,16 @@ jobs:
             git commit -m "리포트 자동 갱신 $(date -u +'%Y-%m-%d')"
             git push
           fi
+
+      # ---------------- 실패 알림 ----------------
+      # ALERT_WEBHOOK 시크릿에 슬랙/디스코드 웹훅 주소를 넣으면 켜진다.
+      - name: 실패 알림
+        if: failure() && env.HAS_WEBHOOK == 'true'
+        continue-on-error: true
+        run: python alert.py "🔴 WEVAPE SNS — 데이터 수집이 실패했습니다. 리포트가 갱신되지 않았습니다."
+
+      # 스레드만 실패한 경우(전체 job 은 성공) 따로 알린다.
+      - name: 스레드만 실패 알림
+        if: steps.threads.outcome == 'failure' && env.HAS_WEBHOOK == 'true'
+        continue-on-error: true
+        run: python alert.py "🟠 WEVAPE SNS — 스레드 수집만 실패했습니다. 인스타그램 리포트는 정상 갱신됐습니다."
