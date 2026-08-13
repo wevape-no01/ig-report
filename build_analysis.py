@@ -675,6 +675,12 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .dm-bar i { display:block; height:100%; background:var(--accent); border-radius:3px; }
 .dm-v { text-align:right; font-variant-numeric:tabular-nums; color:var(--text); }
 .limits { font-size:12.5px; color:var(--text2); line-height:1.75; }
+.tabs { display:flex; gap:6px; flex-wrap:wrap; margin:-10px 0 20px; }
+.tabs .tab { padding:7px 14px; border-radius:999px; border:1px solid var(--border);
+  background:#fff; color:var(--text2); font-size:13px; cursor:pointer; font-family:inherit; }
+.tabs .tab[aria-selected="true"] { background:var(--accent); border-color:var(--accent);
+  color:#fff; font-weight:600; }
+.pane[hidden] { display:none; }
 .ins-box, .chk-box { border:1px solid var(--border); border-radius:10px;
   padding:14px 16px; margin-bottom:11px; }
 .ins-box { border-left:3px solid var(--accent); background:#fbfcfe; }
@@ -703,8 +709,21 @@ def build():
     accounts = prep(cache, report)
 
     gen = report.get("generated_at", "")
-    body = "".join(render_account(a) if len(a["posts"]) >= MIN_POSTS
-                   else render_thin(a) for a in accounts) or \
+
+    # 계정별 탭 — 일일 리포트와 같은 방식으로 하나씩 골라 본다
+    tabs, panes = [], []
+    for i, a in enumerate(accounts):
+        prof = a["acc"].get("profile", {})
+        u = prof.get("username") or a["acc"].get("label") or "?"
+        inner = render_account(a) if len(a["posts"]) >= MIN_POSTS else render_thin(a)
+        sel = "true" if i == 0 else "false"
+        hid = "" if i == 0 else " hidden"
+        tabs.append(f'<button class="tab" role="tab" data-i="{i}" aria-selected="{sel}">'
+                    f'@{esc(u)}</button>')
+        panes.append(f'<div class="pane" data-i="{i}"{hid}>{inner}</div>')
+
+    tabbar = f'<div class="tabs" role="tablist">{"".join(tabs)}</div>' if len(accounts) > 1 else ""
+    body = "".join(panes) or \
         '<section class="acct"><p class="empty">분석할 데이터가 없습니다. instagram_api.py 를 먼저 실행하세요.</p></section>'
 
     total = sum(a["acc"].get("posts_total", 0) for a in accounts)
@@ -719,6 +738,7 @@ def build():
 <div class="nav"><a href="./">일일 리포트</a><a class="on" href="./analysis.html">콘텐츠 분석</a></div>
 <h1>콘텐츠 분석</h1>
 <div class="updated">업데이트: {esc(gen)} · 전체 게시물 {total}개 중 인사이트 있는 {anal}개 분석</div>
+{tabbar}
 {body}
 <section class="acct">
   <h2 style="font-size:15px;margin:0 0 12px">이 분석의 한계</h2>
@@ -730,7 +750,23 @@ def build():
     "왜 좋았는지"의 진짜 원인(이미지의 매력, 소재의 시의성)은 숫자로 나오지 않습니다.
   </div>
 </section>
-</div></body></html>"""
+</div>
+<script>
+// 계정 탭 전환
+document.querySelectorAll('.tabs .tab').forEach(function (b) {{
+  b.addEventListener('click', function () {{
+    var i = b.dataset.i;
+    document.querySelectorAll('.tabs .tab').forEach(function (x) {{
+      x.setAttribute('aria-selected', x === b ? 'true' : 'false');
+    }});
+    document.querySelectorAll('.pane').forEach(function (p) {{
+      p.hidden = (p.dataset.i !== i);
+    }});
+    window.scrollTo({{ top: 0 }});
+  }});
+}});
+</script>
+</body></html>"""
 
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(html)
