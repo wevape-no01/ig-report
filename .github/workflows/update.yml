@@ -7,7 +7,7 @@ on:
   workflow_dispatch:        # Actions 탭에서 손으로도 실행 가능
 
 permissions:
-  contents: write           # 갱신된 index.html / history.json 을 저장소에 다시 커밋
+  contents: write           # 갱신된 html / json 을 저장소에 다시 커밋
 
 concurrency:
   group: ig-report
@@ -16,6 +16,9 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
+    # 시크릿은 step 의 if 에서 직접 못 읽는다. 그래서 env 로 한 번 옮겨둔다.
+    env:
+      HAS_THREADS: ${{ secrets.THREADS_TOKEN != '' }}
     steps:
       - name: 저장소 가져오기
         uses: actions/checkout@v4
@@ -30,17 +33,39 @@ jobs:
           IG_ACCOUNTS: ${{ secrets.IG_ACCOUNTS }}
         run: python instagram_api.py
 
-      - name: 대시보드 생성
+      # 스레드는 THREADS_TOKEN 이 설정된 뒤에만 동작한다.
+      # 토큰 갱신 후 시크릿에 다시 저장할 때 pynacl 과 GH_PAT 가 필요하다.
+      - name: 스레드 준비물 설치
+        if: env.HAS_THREADS == 'true'
+        run: pip install pynacl
+
+      - name: 스레드 데이터 수집
+        if: env.HAS_THREADS == 'true'
+        continue-on-error: true      # 스레드가 실패해도 인스타 리포트는 나가게 한다
+        env:
+          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: python threads_api.py
+
+      - name: 일일 리포트 생성
         run: python build_dashboard.py
 
-      - name: 성과 분석 페이지 생성
+      - name: 콘텐츠 분석 페이지 생성
         run: python build_analysis.py
+
+      - name: 스레드 페이지 생성
+        run: python build_threads.py
 
       - name: 변경사항 커밋
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html analysis.html history.json report_data.json posts_cache.json
+          git add index.html analysis.html threads.html \
+                  history.json report_data.json posts_cache.json
+          for f in threads_history.json threads_report.json \
+                   threads_cache.json threads_token_meta.json; do
+            [ -f "$f" ] && git add "$f"
+          done
           if git diff --staged --quiet; then
             echo "변경사항 없음 — 커밋 생략"
           else
