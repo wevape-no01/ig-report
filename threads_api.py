@@ -121,6 +121,25 @@ def write_repo_secret(name, value, repo, pat):
            {"encrypted_value": enc, "key_id": key["key_id"]})
 
 
+def check_pat():
+    """GH_PAT 가 시크릿 쓰기 권한을 실제로 갖고 있는지 미리 확인한다.
+    읽기 요청 한 번이라 부담이 없고, 갱신일이 와서야 문제를 발견하는 걸 막아준다."""
+    repo, pat = os.environ.get("GITHUB_REPOSITORY"), os.environ.get("GH_PAT")
+    if not pat:
+        P("GH_PAT 없음 — 토큰 자동 갱신이 비활성 상태입니다 (60일 뒤 스레드가 멈춥니다).")
+        return
+    if not repo:
+        P("GITHUB_REPOSITORY 없음 — 자동 갱신을 건너뜁니다.")
+        return
+    try:
+        gh_api("GET", f"/repos/{repo}/actions/secrets/public-key", pat)
+        P("GH_PAT 확인 완료 — 시크릿 쓰기 권한 정상.")
+    except Exception as e:                            # noqa: BLE001
+        P(f"GH_PAT 확인 실패: {type(e).__name__} {e}")
+        P("→ 토큰 만료 또는 권한 부족. Secrets: Read and write 인지, "
+          "대상 저장소가 ig-report 인지 확인하세요.")
+
+
 def maybe_refresh_token(token):
     """필요하면 토큰을 갱신하고 새 토큰을 반환한다. 실패해도 기존 토큰으로 계속 진행한다."""
     meta = load_json("threads_token_meta.json", {})
@@ -376,6 +395,7 @@ if __name__ == "__main__":
     if not tok:
         sys.exit("설정 없음: 환경변수 THREADS_TOKEN 이 필요합니다.")
 
+    check_pat()
     tok = maybe_refresh_token(tok)
 
     cache = load_json("threads_cache.json", {})
