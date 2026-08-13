@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-13T09:39:05+00:00",
+ "generated_at": "2026-08-13T12:39:56+00:00",
  "accounts": [
   {
    "label": "위베이프",
@@ -12,15 +12,15 @@
     "id": "17841409002160818"
    },
    "account_insights": {
-    "reach": 10,
-    "views": 124,
-    "profile_views": 18,
+    "reach": 12,
+    "views": 169,
+    "profile_views": 21,
     "accounts_engaged": 0,
     "total_interactions": 0,
+    "reach_non_follower": 8,
     "reach_follower": 4,
-    "reach_non_follower": 6,
-    "views_follower": 12,
-    "views_non_follower": 112
+    "views_follower": 13,
+    "views_non_follower": 156
    },
    "demographics": {
     "age": {
@@ -129,8 +129,8 @@
      "like_count": 5,
      "comments_count": 1,
      "insights": {
-      "reach": 62,
-      "views": 153,
+      "reach": 63,
+      "views": 154,
       "saved": 0,
       "shares": 0,
       "total_interactions": 6,
@@ -148,8 +148,8 @@
      "like_count": 8,
      "comments_count": 2,
      "insights": {
-      "reach": 124,
-      "views": 324,
+      "reach": 125,
+      "views": 326,
       "saved": 0,
       "shares": 0,
       "total_interactions": 10,

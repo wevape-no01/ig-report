@@ -1,9 +1,55 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8">
+<html lang="ko"><head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>콘텐츠 분석</title>
+<title>콘텐츠 분석 · 인스타그램 · WEVAPE SNS</title>
 <style>
+:root { color-scheme: light only;
+  --sh-text:#111; --sh-text2:#444; --sh-muted:#6b6b6b;
+  --sh-line:#e6e6e6; --sh-border:rgba(17,17,17,.14); --sh-accent:#1f6fc7; }
+* { box-sizing:border-box; }
+html, body { background:#fff; }
+body { margin:0; color:var(--sh-text);
+       font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+.site-h { border-bottom:1px solid var(--sh-line); background:#fff;
+          position:sticky; top:0; z-index:20; }
+.site-h .inner { max-width:1180px; margin:0 auto; padding:16px 20px 0;
+                 display:flex; flex-direction:column; gap:12px; }
+.brand { font-size:15px; font-weight:750; letter-spacing:-0.01em; }
+.brand span { color:var(--sh-muted); font-weight:400; font-size:12px; margin-left:8px; }
+.plat { display:flex; gap:24px; }
+.plat a { font-size:15px; font-weight:600; color:var(--sh-muted); text-decoration:none;
+          padding:6px 2px 11px; border-bottom:2px solid transparent; }
+.plat a:hover { color:var(--sh-text2); }
+.plat a.on { color:var(--sh-accent); border-bottom-color:var(--sh-accent); }
+.cols { max-width:1180px; margin:0 auto; padding:24px 20px 72px;
+        display:grid; grid-template-columns:172px 1fr; gap:32px; align-items:start; }
+.side { position:sticky; top:96px; display:flex; flex-direction:column; gap:3px; }
+.side a { font-size:13.5px; color:var(--sh-text2); text-decoration:none;
+          padding:9px 12px; border-radius:8px; }
+.side a:hover { background:#f4f6f9; }
+.side a.on { background:var(--sh-accent); color:#fff; font-weight:650; }
+.main { min-width:0; }
+.page-h { display:flex; justify-content:space-between; align-items:baseline;
+          flex-wrap:wrap; gap:10px; margin-bottom:18px; }
+.page-h h1 { font-size:22px; margin:0; letter-spacing:-0.01em; }
+.page-h .updated { font-size:12px; color:var(--sh-muted); }
+.stale { display:none; background:#fdecec; border:1px solid #f3b9b9; color:#8a1f1f;
+  border-radius:10px; padding:12px 16px; font-size:13px; line-height:1.65; margin-bottom:18px; }
+.stale.on { display:block; }
+.stale b { color:#6b1414; }
+.stale a { color:#8a1f1f; text-decoration:underline; }
+@media (max-width:820px) {
+  .cols { grid-template-columns:1fr; gap:18px; padding:18px 14px 64px; }
+  .side { position:static; flex-direction:row; gap:6px; flex-wrap:wrap;
+          border-bottom:1px solid var(--sh-line); padding-bottom:14px; }
+  .side a { border:1px solid var(--sh-border); border-radius:999px; padding:7px 14px; }
+  .side a.on { border-color:var(--sh-accent); }
+  .site-h .inner { padding:14px 14px 0; }
+  .plat { gap:18px; }
+}
+
 :root { color-scheme: light only;
   --text:#111; --text2:#444; --muted:#6b6b6b; --grid:#e6e6e6; --border:rgba(17,17,17,.14);
   --accent:#1f6fc7; --accent-soft:#cde2fb; --gray:#c9c9c9;
@@ -11,12 +57,6 @@
 * { box-sizing:border-box; }
 html, body { background:#fff; }
 body { margin:0; color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
-.wrap { max-width:960px; margin:0 auto; padding:26px 18px 80px; }
-.nav { display:flex; gap:10px; align-items:center; font-size:13px; margin-bottom:22px; flex-wrap:wrap; }
-.nav a { color:var(--accent); text-decoration:none; padding:6px 12px; border:1px solid var(--border); border-radius:999px; }
-.nav a.on { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
-h1 { font-size:22px; margin:0 0 4px; }
-.updated { font-size:12px; color:var(--muted); margin-bottom:26px; }
 section.acct { border:1px solid var(--border); border-radius:12px; padding:20px 22px; margin-bottom:26px; }
 .acct-h { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px;
   padding-bottom:12px; border-bottom:1px solid var(--grid); }
@@ -85,6 +125,7 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .dm-bar { background:var(--grid); border-radius:3px; height:8px; overflow:hidden; }
 .dm-bar i { display:block; height:100%; background:var(--accent); border-radius:3px; }
 .dm-v { text-align:right; font-variant-numeric:tabular-nums; color:var(--text); }
+.scope { font-size:12px; color:var(--muted); margin:-8px 0 20px; }
 .limits { font-size:12.5px; color:var(--text2); line-height:1.75; }
 .tabs { display:flex; gap:6px; flex-wrap:wrap; margin:-10px 0 20px; }
 .tabs .tab { padding:7px 14px; border-radius:999px; border:1px solid var(--border);
@@ -111,10 +152,19 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .champ-k { font-size:11.5px; color:var(--muted); font-variant-numeric:tabular-nums;
   line-height:1.6; padding-bottom:10px; border-bottom:1px solid var(--grid); }
 .champ-note { font-size:13px; line-height:1.7; color:var(--text); margin:10px 0 0; }
-</style></head><body><div class="wrap">
-<div class="nav"><a href="./">일일 리포트</a><a class="on" href="./analysis.html">콘텐츠 분석</a><a href="./threads.html">스레드</a></div>
-<h1>콘텐츠 분석</h1>
-<div class="updated">업데이트: 2026-08-13T09:39:05+00:00 · 전체 게시물 252개 중 인사이트 있는 116개 분석</div>
+</style>
+</head><body>
+<header class="site-h"><div class="inner">
+  <div class="brand">WEVAPE SNS 운영 현황</div>
+  <nav class="plat"><a class="on" href="./">인스타그램</a><a class="" href="./threads.html">스레드</a></nav>
+</div></header>
+<div class="cols">
+  <aside class="side"><a class="" href="./">일일 리포트</a><a class="on" href="./analysis.html">콘텐츠 분석</a></aside>
+  <main class="main">
+    <div class="page-h"><h1>콘텐츠 분석</h1>
+      <span class="updated">업데이트: 2026-08-13 21:39 (한국시간)</span></div>
+    <div class="stale" id="stale" data-generated="2026-08-13T12:39:56+00:00"></div>
+<p class="scope">전체 게시물 252개 중 인사이트 있는 116개 분석</p>
 <div class="tabs" role="tablist"><button class="tab" role="tab" data-i="0" aria-selected="true">@wevape.no01</button><button class="tab" role="tab" data-i="1" aria-selected="false">@wevape_japan</button></div>
 <div class="pane" data-i="0">
 <section class="acct">
@@ -158,7 +208,7 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
   <div class="champ">
     <div class="champ-h"><span class="badge good">전체 1위</span>
       <b>캐러셀</b>
-      <span class="champ-er">반응률 9.7%</span>
+      <span class="champ-er">반응률 9.5%</span>
       <span class="dim">2026-08-07 금요일 14시</span></div>
     <p class="champ-cap"><a href="https://www.instagram.com/p/DbuluR9ExoI/" target="_blank" rel="noopener">简约的设计，
 还有愈发深沉的存在感。
@@ -170,7 +220,7 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 最大25W输出，
 1500mAh大容量电池，
 孩子气</a></p>
-    <div class="champ-k">도달(본 사람 수) 62 · 반응 6 ·
+    <div class="champ-k">도달(본 사람 수) 63 · 반응 6 ·
       좋아요 5 · 댓글 1 · 저장 0 ·
       공유 0 · 팔로워 +0</div>
     <p class="champ-note">전체 평균 반응률 3.1%의 3.1배입니다. 캐러셀 평균(3.8%)보다도 높습니다. 다만 저장·공유는 없었습니다. 좋아요 위주의 반응이라 노출이 더 퍼지는 힘까지는 만들지 못했습니다. 해시태그 없이 캡션 144자만으로 나온 결과입니다.</p>
@@ -178,10 +228,10 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
   <table><thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th><th class="num">반응률</th><th class="num">도달<br>(본 사람 수)</th><th class="num">반응</th><th class="num">저장+공유</th></tr></thead><tbody><tr><td class="num">1</td><td class="nw">08-07<span class="dim"> 금 14시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DbuluR9ExoI/" target="_blank" rel="noopener">简约的设计，
 还有愈发深沉的存在感。
 
-握在手中的瞬间，能感受到稳定</a></td><td class="num strong">9.7%</td><td class="num">62</td><td class="num">6</td><td class="num">–</td></tr><tr><td class="num">2</td><td class="nw">08-02<span class="dim"> 일 19시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DbiK6c5k6N1/" target="_blank" rel="noopener">BUBBLE MON LOLLIPOT J
+握在手中的瞬间，能感受到稳定</a></td><td class="num strong">9.5%</td><td class="num">63</td><td class="num">6</td><td class="num">–</td></tr><tr><td class="num">2</td><td class="nw">08-02<span class="dim"> 일 19시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DbiK6c5k6N1/" target="_blank" rel="noopener">BUBBLE MON LOLLIPOT J
 
 절제된 디자인,
-그리</a></td><td class="num strong">8.1%</td><td class="num">124</td><td class="num">10</td><td class="num">–</td></tr><tr><td class="num">3</td><td class="nw">01-22<span class="dim"> 목 21시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DT0AO_XE6kn/" target="_blank" rel="noopener">역대급 성능과 화려한 LED와 따스한 파스텔톤의 만남!
+그리</a></td><td class="num strong">8.0%</td><td class="num">125</td><td class="num">10</td><td class="num">–</td></tr><tr><td class="num">3</td><td class="nw">01-22<span class="dim"> 목 21시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DT0AO_XE6kn/" target="_blank" rel="noopener">역대급 성능과 화려한 LED와 따스한 파스텔톤의 만남!
 디자인</a></td><td class="num strong">7.9%</td><td class="num">114</td><td class="num">9</td><td class="num">2</td></tr></tbody></table><details class="tg"><summary>4위 ~ 10위 보기</summary><div class="tg-body"><table><thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th><th class="num">반응률</th><th class="num">도달<br>(본 사람 수)</th><th class="num">반응</th><th class="num">저장+공유</th></tr></thead><tbody><tr><td class="num">4</td><td class="nw">01-24<span class="dim"> 토 21시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DT5JZxBE7ru/" target="_blank" rel="noopener">요즘 누수때문에 고민이 심하다면? 디자인과 누수, 맛표현을 다</a></td><td class="num strong">6.9%</td><td class="num">144</td><td class="num">10</td><td class="num">1</td></tr><tr><td class="num">5</td><td class="nw">01-26<span class="dim"> 월 18시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DT-B5Fck4uj/" target="_blank" rel="noopener">성능과 외관을 다잡은 기기를 원한다면?
  
 ♥️근처에 있는 위</a></td><td class="num strong">6.7%</td><td class="num">149</td><td class="num">10</td><td class="num">–</td></tr><tr><td class="num">6</td><td class="nw">12-11<span class="dim"> 목 21시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/DSH2rmFE4TI/" target="_blank" rel="noopener">Where is the Incheon-Gyeonggi dist</a></td><td class="num strong">6.3%</td><td class="num">126</td><td class="num">8</td><td class="num">1</td></tr><tr><td class="num">7</td><td class="nw">01-07<span class="dim"> 수 20시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DTNVajykzmO/" target="_blank" rel="noopener">The unwavering passion! New flavor</a></td><td class="num strong">6.3%</td><td class="num">142</td><td class="num">9</td><td class="num">1</td></tr><tr><td class="num">8</td><td class="nw">10-31<span class="dim"> 금 16시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DQduuLDE4QO/" target="_blank" rel="noopener">bubblemongraffiti不用担心缺货或数量问题。联系我们，</a></td><td class="num strong">6.2%</td><td class="num">113</td><td class="num">7</td><td class="num">–</td></tr><tr><td class="num">9</td><td class="nw">01-26<span class="dim"> 월 20시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DT-L3qFE1BR/" target="_blank" rel="noopener">맛표현,디자인,가격까지 다 잡은 리필형 기기를 찾는다면?  🔥</a></td><td class="num strong">5.9%</td><td class="num">119</td><td class="num">7</td><td class="num">1</td></tr><tr><td class="num">10</td><td class="nw">02-08<span class="dim"> 일 21시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DUfxcaFkwQM/" target="_blank" rel="noopener">핫한 을지로에서 요즘 더욱 핫한  즐겨보고 사고싶다면? -&gt; </a></td><td class="num strong">5.9%</td><td class="num">188</td><td class="num">11</td><td class="num">3</td></tr></tbody></table></div></details>
@@ -190,7 +240,7 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 
   <h3>포맷별 성과</h3>
   <p class="sub">반응률 — 본 사람 대비 반응 비율</p>
-  <svg viewBox="0 0 860 125"><text class="cat" x="0" y="24">캐러셀</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.8%<tspan class="dim2"> · 60개 · 도달 179</tspan></text><text class="cat" x="0" y="63">단일 이미지</text><rect class="bar muted" x="150" y="45" width="367.2" height="28" rx="4"/><text class="val" x="525.2" y="63">2.8%<tspan class="dim2"> · 45개 · 도달 220</tspan></text><text class="cat" x="0" y="102">동영상</text><rect class="bar muted" x="150" y="84" width="258.2" height="28" rx="4"/><text class="val" x="416.2" y="102">1.9%<tspan class="dim2"> · 10개 · 도달 345</tspan></text></svg>
+  <svg viewBox="0 0 860 125"><text class="cat" x="0" y="24">캐러셀</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.8%<tspan class="dim2"> · 60개 · 도달 179</tspan></text><text class="cat" x="0" y="63">단일 이미지</text><rect class="bar muted" x="150" y="45" width="367.3" height="28" rx="4"/><text class="val" x="525.3" y="63">2.8%<tspan class="dim2"> · 45개 · 도달 220</tspan></text><text class="cat" x="0" y="102">동영상</text><rect class="bar muted" x="150" y="84" width="258.3" height="28" rx="4"/><text class="val" x="416.3" y="102">1.9%<tspan class="dim2"> · 10개 · 도달 345</tspan></text></svg>
   <div class="legend"><span><i class="sw"></i>가장 성과가 좋은 포맷</span>
     <span><i class="sw g"></i>비교군</span></div>
   <div class="reads"><p><b>캐러셀가 단일 이미지보다 반응률 1.4배 높습니다.</b> 각각 게시물 60개 / 45개 기준입니다. 업계 벤치마크도 캐러셀 0.55% / 이미지 0.37%로 같은 방향입니다.</p></div>
@@ -213,9 +263,9 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 
   <h3>참고 지표</h3>
   <p class="sub">표본이 적어 참고용입니다. 필요할 때 펼쳐 보세요.</p>
-  <details class="tg"><summary>언어별 성과</summary><div class="tg-body"><div class="warn">⚠️ 언어별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 203"><text class="cat" x="0" y="24">중국어</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.9%<tspan class="dim2"> · 16개</tspan></text><text class="cat" x="0" y="63">한국어</text><rect class="bar" x="150" y="45" width="441.1" height="28" rx="4"/><text class="val" x="599.1" y="63">3.3%<tspan class="dim2"> · 44개</tspan></text><text class="cat" x="0" y="102">일본어</text><rect class="bar" x="150" y="84" width="393.6" height="28" rx="4"/><text class="val" x="551.6" y="102">3.0%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="141">영문</text><rect class="bar" x="150" y="123" width="388.7" height="28" rx="4"/><text class="val" x="546.7" y="141">2.9%<tspan class="dim2"> · 50개</tspan></text><text class="cat" x="0" y="180">기타</text><rect class="bar" x="150" y="162" width="30.8" height="28" rx="4"/><text class="val" x="188.8" y="180">0.2%<tspan class="dim2"> · 1개</tspan></text></svg></div></details>
-  <details class="tg"><summary>게시 시각별 성과</summary><div class="tg-body"><div class="warn">⚠️ 시각별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 359"><text class="cat" x="0" y="24">16시</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">6.2%<tspan class="dim2"> · 1개</tspan></text><text class="cat" x="0" y="63">18시</text><rect class="bar" x="150" y="45" width="362.8" height="28" rx="4"/><text class="val" x="520.8" y="63">4.4%<tspan class="dim2"> · 7개</tspan></text><text class="cat" x="0" y="102">21시</text><rect class="bar" x="150" y="84" width="281.6" height="28" rx="4"/><text class="val" x="439.6" y="102">3.4%<tspan class="dim2"> · 43개</tspan></text><text class="cat" x="0" y="141">20시</text><rect class="bar" x="150" y="123" width="263.6" height="28" rx="4"/><text class="val" x="421.6" y="141">3.2%<tspan class="dim2"> · 39개</tspan></text><text class="cat" x="0" y="180">15시</text><rect class="bar" x="150" y="162" width="221.8" height="28" rx="4"/><text class="val" x="379.8" y="180">2.7%<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="219">19시</text><rect class="bar" x="150" y="201" width="210.9" height="28" rx="4"/><text class="val" x="368.9" y="219">2.6%<tspan class="dim2"> · 15개</tspan></text><text class="cat" x="0" y="258">14시</text><rect class="bar" x="150" y="240" width="183.4" height="28" rx="4"/><text class="val" x="341.4" y="258">2.2%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="297">12시</text><rect class="bar" x="150" y="279" width="146.3" height="28" rx="4"/><text class="val" x="304.3" y="297">1.8%<tspan class="dim2"> · 3개</tspan></text><text class="cat" x="0" y="336">11시</text><rect class="bar" x="150" y="318" width="128.0" height="28" rx="4"/><text class="val" x="286.0" y="336">1.6%<tspan class="dim2"> · 1개</tspan></text></svg></div></details>
-  <details class="tg"><summary>요일별 성과</summary><div class="tg-body"><svg viewBox="0 0 860 281"><text class="cat" x="0" y="24">목요일</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.9%<tspan class="dim2"> · 24개</tspan></text><text class="cat" x="0" y="63">수요일</text><rect class="bar" x="150" y="45" width="431.7" height="28" rx="4"/><text class="val" x="589.7" y="63">3.3%<tspan class="dim2"> · 10개</tspan></text><text class="cat" x="0" y="102">금요일</text><rect class="bar" x="150" y="84" width="428.7" height="28" rx="4"/><text class="val" x="586.7" y="102">3.3%<tspan class="dim2"> · 20개</tspan></text><text class="cat" x="0" y="141">화요일</text><rect class="bar" x="150" y="123" width="422.2" height="28" rx="4"/><text class="val" x="580.2" y="141">3.3%<tspan class="dim2"> · 16개</tspan></text><text class="cat" x="0" y="180">월요일</text><rect class="bar" x="150" y="162" width="411.3" height="28" rx="4"/><text class="val" x="569.3" y="180">3.2%<tspan class="dim2"> · 14개</tspan></text><text class="cat" x="0" y="219">일요일</text><rect class="bar" x="150" y="201" width="397.4" height="28" rx="4"/><text class="val" x="555.4" y="219">3.1%<tspan class="dim2"> · 12개</tspan></text><text class="cat" x="0" y="258">토요일</text><rect class="bar" x="150" y="240" width="298.4" height="28" rx="4"/><text class="val" x="456.4" y="258">2.3%<tspan class="dim2"> · 19개</tspan></text></svg></div></details>
+  <details class="tg"><summary>언어별 성과</summary><div class="tg-body"><div class="warn">⚠️ 언어별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 203"><text class="cat" x="0" y="24">중국어</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.9%<tspan class="dim2"> · 16개</tspan></text><text class="cat" x="0" y="63">한국어</text><rect class="bar" x="150" y="45" width="441.2" height="28" rx="4"/><text class="val" x="599.2" y="63">3.3%<tspan class="dim2"> · 44개</tspan></text><text class="cat" x="0" y="102">일본어</text><rect class="bar" x="150" y="84" width="393.8" height="28" rx="4"/><text class="val" x="551.8" y="102">3.0%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="141">영문</text><rect class="bar" x="150" y="123" width="388.9" height="28" rx="4"/><text class="val" x="546.9" y="141">2.9%<tspan class="dim2"> · 50개</tspan></text><text class="cat" x="0" y="180">기타</text><rect class="bar" x="150" y="162" width="30.8" height="28" rx="4"/><text class="val" x="188.8" y="180">0.2%<tspan class="dim2"> · 1개</tspan></text></svg></div></details>
+  <details class="tg"><summary>게시 시각별 성과</summary><div class="tg-body"><div class="warn">⚠️ 시각별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 359"><text class="cat" x="0" y="24">16시</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">6.2%<tspan class="dim2"> · 1개</tspan></text><text class="cat" x="0" y="63">18시</text><rect class="bar" x="150" y="45" width="362.8" height="28" rx="4"/><text class="val" x="520.8" y="63">4.4%<tspan class="dim2"> · 7개</tspan></text><text class="cat" x="0" y="102">21시</text><rect class="bar" x="150" y="84" width="281.6" height="28" rx="4"/><text class="val" x="439.6" y="102">3.4%<tspan class="dim2"> · 43개</tspan></text><text class="cat" x="0" y="141">20시</text><rect class="bar" x="150" y="123" width="263.6" height="28" rx="4"/><text class="val" x="421.6" y="141">3.2%<tspan class="dim2"> · 39개</tspan></text><text class="cat" x="0" y="180">15시</text><rect class="bar" x="150" y="162" width="221.8" height="28" rx="4"/><text class="val" x="379.8" y="180">2.7%<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="219">19시</text><rect class="bar" x="150" y="201" width="210.9" height="28" rx="4"/><text class="val" x="368.9" y="219">2.6%<tspan class="dim2"> · 15개</tspan></text><text class="cat" x="0" y="258">14시</text><rect class="bar" x="150" y="240" width="183.3" height="28" rx="4"/><text class="val" x="341.3" y="258">2.2%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="297">12시</text><rect class="bar" x="150" y="279" width="146.3" height="28" rx="4"/><text class="val" x="304.3" y="297">1.8%<tspan class="dim2"> · 3개</tspan></text><text class="cat" x="0" y="336">11시</text><rect class="bar" x="150" y="318" width="128.0" height="28" rx="4"/><text class="val" x="286.0" y="336">1.6%<tspan class="dim2"> · 1개</tspan></text></svg></div></details>
+  <details class="tg"><summary>요일별 성과</summary><div class="tg-body"><svg viewBox="0 0 860 281"><text class="cat" x="0" y="24">목요일</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.9%<tspan class="dim2"> · 24개</tspan></text><text class="cat" x="0" y="63">수요일</text><rect class="bar" x="150" y="45" width="431.7" height="28" rx="4"/><text class="val" x="589.7" y="63">3.3%<tspan class="dim2"> · 10개</tspan></text><text class="cat" x="0" y="102">금요일</text><rect class="bar" x="150" y="84" width="428.6" height="28" rx="4"/><text class="val" x="586.6" y="102">3.3%<tspan class="dim2"> · 20개</tspan></text><text class="cat" x="0" y="141">화요일</text><rect class="bar" x="150" y="123" width="422.2" height="28" rx="4"/><text class="val" x="580.2" y="141">3.3%<tspan class="dim2"> · 16개</tspan></text><text class="cat" x="0" y="180">월요일</text><rect class="bar" x="150" y="162" width="411.3" height="28" rx="4"/><text class="val" x="569.3" y="180">3.2%<tspan class="dim2"> · 14개</tspan></text><text class="cat" x="0" y="219">일요일</text><rect class="bar" x="150" y="201" width="397.2" height="28" rx="4"/><text class="val" x="555.2" y="219">3.1%<tspan class="dim2"> · 12개</tspan></text><text class="cat" x="0" y="258">토요일</text><rect class="bar" x="150" y="240" width="298.4" height="28" rx="4"/><text class="val" x="456.4" y="258">2.3%<tspan class="dim2"> · 19개</tspan></text></svg></div></details>
 </section></div><div class="pane" data-i="1" hidden>
 <section class="acct">
   <div class="acct-h">
@@ -241,6 +291,8 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
     "왜 좋았는지"의 진짜 원인(이미지의 매력, 소재의 시의성)은 숫자로 나오지 않습니다.
   </div>
 </section>
+
+  </main>
 </div>
 <script>
 // 계정 탭 전환
@@ -256,5 +308,26 @@ document.querySelectorAll('.tabs .tab').forEach(function (b) {
     window.scrollTo({ top: 0 });
   });
 });
+</script>
+<script>
+(function () {
+  // 수집이 실패하면 페이지가 다시 만들어지지 않는다.
+  // 그래서 "마지막 갱신이 언제였는지"만 보면 실패를 알아챌 수 있다.
+  var el = document.getElementById('stale');
+  if (!el) return;
+  var iso = el.dataset.generated;
+  if (!iso) return;
+  var t = new Date(iso);
+  if (isNaN(t)) return;
+  var hours = (Date.now() - t.getTime()) / 3600000;
+  if (hours < 36) return;
+  var days = Math.floor(hours / 24);
+  var when = days >= 1 ? (days + '일') : (Math.floor(hours) + '시간');
+  el.innerHTML = '⚠️ <b>' + when + '째 데이터가 갱신되지 않았습니다.</b> ' +
+    '매일 아침 7시에 자동 수집되어야 하는데 실패한 것으로 보입니다. ' +
+    '<a href="https://github.com/wevape-no01/ig-report/actions" target="_blank" rel="noopener">' +
+    '실행 기록 확인</a> · 아래 숫자는 마지막으로 성공한 시점의 값입니다.';
+  el.className = 'stale on';
+})();
 </script>
 </body></html>
