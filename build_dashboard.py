@@ -384,7 +384,9 @@ TEMPLATE = """<!doctype html>
       <div class="stat-tile"><div class="label">팔로워</div>
         <div class="value">${n(prof.followers_count)}</div>
         <div class="delta ${delta>0?'up':delta<0?'down':''}">${
-          delta === null ? '기록 쌓이는 중' : (delta>0?'+':'') + delta + '명 (전일 대비)'}</div></div>
+          delta === null ? '기록 쌓이는 중'
+          : delta === 0 ? '변동 없음 (전일 대비)'
+          : (delta>0?'+':'') + delta + '명 (전일 대비)'}</div></div>
       <div class="stat-tile"><div class="label">게시물</div>
         <div class="value">${n(prof.media_count)}</div>
         <div class="note">계정에 올라가 있는 전체 수</div></div>
@@ -492,7 +494,7 @@ TEMPLATE = """<!doctype html>
       ? `<div class="big"><span class="n">${last.new_followers > 0 ? '+' : ''}${n(last.new_followers)}</span>
            <span class="u">명 · ${last.date}</span>
            <span class="u ${dl>0?'delta up':dl<0?'delta down':''}">${
-             dl === null ? '' : (dl>0?'+':'') + dl + '명 (전일 대비)'}</span></div>
+             (dl === null || dl === 0) ? '' : (dl>0?'+':'') + dl + '명 (전일 대비)'}</span></div>
          <p class="mini-s">최근 7일 합계 ${n(week)}명. 인스타그램은 어제까지의 값을 확정해서 주므로 오늘 늘어난 팔로워는 내일 반영됩니다.</p>`
       : `<p class="empty">신규 팔로워 기록이 아직 없습니다.</p>`;
 
