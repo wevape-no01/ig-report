@@ -11,6 +11,8 @@ import json
 import os
 from datetime import datetime, timedelta, timezone
 
+import layout
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 REPORT_PATH = os.path.join(BASE_DIR, "report_data.json")
 HISTORY_PATH = os.path.join(BASE_DIR, "history.json")
@@ -76,15 +78,7 @@ def load_data():
     return report, history, True
 
 
-TEMPLATE = """<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="color-scheme" content="light" />
-<title>일일 리포트</title>
-<style>
-  /* 항상 밝은 배경으로 고정 (기기가 다크 모드여도 흰 배경 유지). */
+PAGE_CSS = """
   :root {
     color-scheme: light only;
     --surface-1:#ffffff;
@@ -96,15 +90,6 @@ TEMPLATE = """<!doctype html>
   * { box-sizing:border-box; }
   html, body { background:#ffffff; }
   body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
-  .wrap { max-width:920px; margin:0 auto; padding:24px 16px 72px; }
-  .nav { display:flex; gap:10px; align-items:center; font-size:13px; margin-bottom:20px; }
-  .nav a { color:var(--series-1); text-decoration:none; padding:6px 12px;
-           border:1px solid var(--border); border-radius:999px; }
-  .nav a.on { background:var(--series-1); border-color:var(--series-1); color:#fff; font-weight:600; }
-  header.top { display:flex; justify-content:space-between; align-items:baseline;
-               flex-wrap:wrap; gap:8px; margin-bottom:12px; }
-  header.top h1 { font-size:21px; margin:0; }
-  .updated { font-size:12px; color:var(--text-muted); }
   .sample-banner { background:#fff8e1; color:#6b5300; border:1px solid #f0dca0;
                    border-radius:8px; padding:10px 14px; font-size:13px; margin:12px 0 20px; }
   .tabs { display:flex; gap:6px; margin:16px 0 20px; flex-wrap:wrap; }
@@ -180,15 +165,9 @@ TEMPLATE = """<!doctype html>
   .empty { color:var(--text-muted); font-size:12.5px; padding:10px 0; }
   .foot { font-size:11.5px; color:var(--text-muted); line-height:1.8; }
   .foot b { color:var(--text-secondary); }
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="nav"><a class="on" href="./">일일 리포트</a><a href="./analysis.html">콘텐츠 분석</a><a href="./threads.html">스레드</a></div>
-  <header class="top">
-    <h1>일일 리포트</h1>
-    <span class="updated" id="updated"></span>
-  </header>
+"""
+
+BODY = """
   __SAMPLE_BANNER__
 
   <div class="tabs" id="tabs" role="tablist"></div>
@@ -256,7 +235,6 @@ TEMPLATE = """<!doctype html>
       <b>팔로워 / 비팔로워</b> — 이미 팔로우 중인 사람이 봤는지, 아직 아닌 사람이 봤는지의 구분. 비팔로워 비중이 오르면 새 사람에게 퍼지고 있다는 뜻입니다.
     </div>
   </section>
-</div>
 
 <script id="report-data" type="application/json">__REPORT_JSON__</script>
 <script id="history-data" type="application/json">__HISTORY_JSON__</script>
@@ -268,10 +246,6 @@ TEMPLATE = """<!doctype html>
   let current = 0;
   let granViews = 'day', granFol = 'day';
   let postsOpen = false;
-
-  const d = new Date(report.generated_at);
-  document.getElementById('updated').textContent =
-    '업데이트: ' + (isNaN(d) ? report.generated_at : d.toLocaleString('ko-KR'));
 
   const n  = v => (v === null || v === undefined) ? '-' : Number(v).toLocaleString();
   const esc = t => (t||'').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
@@ -584,13 +558,11 @@ TEMPLATE = """<!doctype html>
   render();
 })();
 </script>
-</body>
-</html>
 """
 
 
 def render(report, history, is_sample):
-    html = TEMPLATE
+    body = BODY
     banner = ('<div class="sample-banner">⚠️ 아직 실제 데이터가 없어 샘플로 만든 미리보기입니다. '
               'instagram_api.py 를 실행하면 실제 데이터로 바뀝니다.</div>') if is_sample else ""
     for k, v in {
@@ -598,8 +570,10 @@ def render(report, history, is_sample):
         "__REPORT_JSON__": json.dumps(report, ensure_ascii=False),
         "__HISTORY_JSON__": json.dumps(history, ensure_ascii=False),
     }.items():
-        html = html.replace(k, v)
-    return html
+        body = body.replace(k, v)
+    gen = report.get("generated_at", "")
+    return layout.document("ig", "daily", "일일 리포트", body, PAGE_CSS,
+                           updated=layout.fmt_updated(gen), generated_iso=gen)
 
 
 if __name__ == "__main__":

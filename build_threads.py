@@ -10,6 +10,8 @@ threads_report.json + threads_history.json 을 읽어 스레드 리포트(thread
 import json
 import os
 
+import layout
+
 DIR = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(DIR, "threads.html")
 
@@ -37,15 +39,6 @@ CSS = """
 * { box-sizing:border-box; }
 html, body { background:#ffffff; }
 body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
-.wrap { max-width:920px; margin:0 auto; padding:24px 16px 72px; }
-.nav { display:flex; gap:10px; align-items:center; font-size:13px; margin-bottom:20px; flex-wrap:wrap; }
-.nav a { color:var(--series-1); text-decoration:none; padding:6px 12px;
-         border:1px solid var(--border); border-radius:999px; }
-.nav a.on { background:var(--series-1); border-color:var(--series-1); color:#fff; font-weight:600; }
-header.top { display:flex; justify-content:space-between; align-items:baseline;
-             flex-wrap:wrap; gap:8px; margin-bottom:12px; }
-header.top h1 { font-size:21px; margin:0; }
-.updated { font-size:12px; color:var(--text-muted); }
 .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
            gap:12px; margin:20px 0 24px; }
 .stat-tile { border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
@@ -109,26 +102,13 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
 .setup li { margin-bottom:7px; }
 """
 
-NAV = ('<div class="nav"><a href="./">일일 리포트</a>'
-       '<a href="./analysis.html">콘텐츠 분석</a>'
-       '<a class="on" href="./threads.html">스레드</a></div>')
-
-
 def esc(s):
     return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def page(inner, updated=""):
-    return f"""<!doctype html>
-<html lang="ko"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light">
-<title>스레드</title>
-<style>{CSS}</style></head><body><div class="wrap">
-{NAV}
-<header class="top"><h1>스레드</h1><span class="updated">{esc(updated)}</span></header>
-{inner}
-</div></body></html>"""
+def page(inner, updated="", gen=""):
+    return layout.document("th", "daily", "일일 리포트", inner, CSS,
+                           updated=updated, generated_iso=gen)
 
 
 SETUP = """
@@ -153,9 +133,19 @@ def build():
         return
 
     prof = report["profile"]
-    ins = report.get("account_insights", {})
+    ins = dict(report.get("account_insights", {}))
     posts = report.get("posts", [])
     demo = report.get("demographics", {})
+
+    # 스레드 API 는 계정 단위 좋아요/답글/리포스트/인용을 0 으로 주는 경우가 있다.
+    # 그럴 때는 캐시에 있는 전체 글의 인사이트를 더해서 채운다.
+    cache = load("threads_cache.json", {})
+    all_posts = list(cache.values()) if isinstance(cache, dict) else []
+    from_posts = False
+    for k in ("likes", "replies", "reposts", "quotes"):
+        if not ins.get(k) and all_posts:
+            ins[k] = sum((p.get("insights") or {}).get(k) or 0 for p in all_posts)
+            from_posts = True
 
     # ---- 팔로워 구성
     def demo_block(title, d, top=6):
@@ -208,8 +198,7 @@ def build():
 
 <section>
   <div class="sec-h"><h2>누적 반응</h2></div>
-  <p class="sub">계정 전체 기준 누적입니다. 스레드는 이 값을 일별로 쪼개서 주지 않아,
-     매일 실행될 때마다 그날의 누적치를 기록해 둡니다.</p>
+  <p class="sub" id="subTotals"></p>
   <div class="kpi-row" id="totals" style="margin:0"></div>
 </section>
 
@@ -345,6 +334,9 @@ __DEMO_SEC__
         <div class="note">최근 한 달 · 글 ${rv.length}개 평균</div></div>`;
 
     const T = [['좋아요','likes'],['답글','replies'],['리포스트','reposts'],['인용','quotes']];
+    document.getElementById('subTotals').textContent = report.totals_from_posts
+      ? '스레드가 계정 단위 합계를 주지 않아, 인사이트가 있는 글 전체(' + n(report.posts_analyzable) + '개)의 값을 더해서 보여줍니다. 전체 기간 누적입니다.'
+      : '계정 전체 기준 누적입니다.';
     document.getElementById('totals').innerHTML = T.map(([ko,k]) =>
       `<div class="stat-tile"><div class="label">${ko}</div>
          <div class="value">${n(ins[k])}</div></div>`).join('');
@@ -422,12 +414,13 @@ __DEMO_SEC__
 })();
 </script>"""
 
+    report = dict(report, account_insights=ins, totals_from_posts=from_posts)
     inner = (inner.replace("__CLICK_SEC__", click_sec)
                   .replace("__DEMO_SEC__", demo_sec)
                   .replace("__REPORT__", json.dumps(report, ensure_ascii=False))
                   .replace("__HIST__", json.dumps(hist, ensure_ascii=False)))
     gen = report.get("generated_at", "")
-    html = page(inner, f"업데이트: {gen}" if gen else "")
+    html = page(inner, layout.fmt_updated(gen), gen)
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"저장됨: {OUT} (@{prof.get('username','?')} · 글 {report.get('posts_total', 0)}개)")

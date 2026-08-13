@@ -17,6 +17,8 @@ import os
 import re
 from datetime import datetime, timedelta, timezone
 
+import layout
+
 DIR = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(DIR, "analysis.html")
 
@@ -600,12 +602,6 @@ CSS = """
 * { box-sizing:border-box; }
 html, body { background:#fff; }
 body { margin:0; color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
-.wrap { max-width:960px; margin:0 auto; padding:26px 18px 80px; }
-.nav { display:flex; gap:10px; align-items:center; font-size:13px; margin-bottom:22px; flex-wrap:wrap; }
-.nav a { color:var(--accent); text-decoration:none; padding:6px 12px; border:1px solid var(--border); border-radius:999px; }
-.nav a.on { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
-h1 { font-size:22px; margin:0 0 4px; }
-.updated { font-size:12px; color:var(--muted); margin-bottom:26px; }
 section.acct { border:1px solid var(--border); border-radius:12px; padding:20px 22px; margin-bottom:26px; }
 .acct-h { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px;
   padding-bottom:12px; border-bottom:1px solid var(--grid); }
@@ -674,6 +670,7 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .dm-bar { background:var(--grid); border-radius:3px; height:8px; overflow:hidden; }
 .dm-bar i { display:block; height:100%; background:var(--accent); border-radius:3px; }
 .dm-v { text-align:right; font-variant-numeric:tabular-nums; color:var(--text); }
+.scope { font-size:12px; color:var(--muted); margin:-8px 0 20px; }
 .limits { font-size:12.5px; color:var(--text2); line-height:1.75; }
 .tabs { display:flex; gap:6px; flex-wrap:wrap; margin:-10px 0 20px; }
 .tabs .tab { padding:7px 14px; border-radius:999px; border:1px solid var(--border);
@@ -729,15 +726,7 @@ def build():
     total = sum(a["acc"].get("posts_total", 0) for a in accounts)
     anal = sum(len(a["posts"]) for a in accounts)
 
-    html = f"""<!doctype html>
-<html lang="ko"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light">
-<title>콘텐츠 분석</title>
-<style>{CSS}</style></head><body><div class="wrap">
-<div class="nav"><a href="./">일일 리포트</a><a class="on" href="./analysis.html">콘텐츠 분석</a><a href="./threads.html">스레드</a></div>
-<h1>콘텐츠 분석</h1>
-<div class="updated">업데이트: {esc(gen)} · 전체 게시물 {total}개 중 인사이트 있는 {anal}개 분석</div>
+    inner = f"""<p class="scope">전체 게시물 {total}개 중 인사이트 있는 {anal}개 분석</p>
 {tabbar}
 {body}
 <section class="acct">
@@ -750,23 +739,27 @@ def build():
     "왜 좋았는지"의 진짜 원인(이미지의 매력, 소재의 시의성)은 숫자로 나오지 않습니다.
   </div>
 </section>
-</div>
-<script>
+"""
+
+    script = """<script>
 // 계정 탭 전환
-document.querySelectorAll('.tabs .tab').forEach(function (b) {{
-  b.addEventListener('click', function () {{
+document.querySelectorAll('.tabs .tab').forEach(function (b) {
+  b.addEventListener('click', function () {
     var i = b.dataset.i;
-    document.querySelectorAll('.tabs .tab').forEach(function (x) {{
+    document.querySelectorAll('.tabs .tab').forEach(function (x) {
       x.setAttribute('aria-selected', x === b ? 'true' : 'false');
-    }});
-    document.querySelectorAll('.pane').forEach(function (p) {{
+    });
+    document.querySelectorAll('.pane').forEach(function (p) {
       p.hidden = (p.dataset.i !== i);
-    }});
-    window.scrollTo({{ top: 0 }});
-  }});
-}});
-</script>
-</body></html>"""
+    });
+    window.scrollTo({ top: 0 });
+  });
+});
+</script>"""
+
+    html = layout.document("ig", "analysis", "콘텐츠 분석", inner, CSS,
+                           updated=layout.fmt_updated(gen), body_end=script,
+                           generated_iso=gen)
 
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(html)
