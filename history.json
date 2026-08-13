@@ -1,22 +1,427 @@
 {
  "wevape.no01": [
   {
+   "date": "2026-07-16",
+   "reach": 5,
+   "new_followers": 0,
+   "followers_count": 706,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-17",
+   "reach": 8,
+   "new_followers": 0,
+   "views": 120,
+   "followers_count": 706,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-18",
+   "reach": 4,
+   "new_followers": 0,
+   "views": 217,
+   "followers_count": 706,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-19",
+   "reach": 4,
+   "new_followers": 0,
+   "views": 129,
+   "followers_count": 706,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-20",
+   "reach": 7,
+   "new_followers": 0,
+   "views": 284,
+   "followers_count": 706,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-21",
+   "reach": 9,
+   "new_followers": 0,
+   "views": 496,
+   "followers_count": 706,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-22",
+   "reach": 8,
+   "new_followers": 1,
+   "views": 415,
+   "followers_count": 707,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-23",
+   "reach": 5,
+   "new_followers": 1,
+   "views": 255,
+   "followers_count": 708,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-24",
+   "reach": 8,
+   "new_followers": 0,
+   "views": 279,
+   "followers_count": 708,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-25",
+   "reach": 13,
+   "new_followers": 0,
+   "views": 418,
+   "followers_count": 708,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-26",
+   "reach": 4,
+   "new_followers": 0,
+   "views": 250,
+   "followers_count": 708,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-27",
+   "reach": 7,
+   "new_followers": 0,
+   "views": 198,
+   "followers_count": 708,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-28",
+   "reach": 5,
+   "new_followers": 2,
+   "views": 215,
+   "followers_count": 710,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-29",
+   "reach": 5,
+   "new_followers": 0,
+   "views": 143,
+   "followers_count": 710,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-30",
+   "reach": 5,
+   "new_followers": 1,
+   "views": 152,
+   "followers_count": 711,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-31",
+   "reach": 9,
+   "new_followers": 1,
+   "views": 221,
+   "followers_count": 712,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-01",
+   "reach": 6,
+   "new_followers": 0,
+   "views": 214,
+   "followers_count": 712,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-02",
+   "reach": 57,
+   "new_followers": 0,
+   "views": 360,
+   "followers_count": 712,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-03",
+   "reach": 22,
+   "new_followers": 1,
+   "views": 390,
+   "followers_count": 713,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-04",
+   "reach": 15,
+   "new_followers": 0,
+   "views": 156,
+   "followers_count": 713,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-05",
+   "reach": 12,
+   "new_followers": 1,
+   "views": 137,
+   "followers_count": 714,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-06",
+   "reach": 10,
+   "new_followers": 0,
+   "views": 119,
+   "followers_count": 714,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-07",
+   "reach": 24,
+   "new_followers": 0,
+   "views": 119,
+   "followers_count": 714,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-08",
+   "reach": 21,
+   "new_followers": 1,
+   "views": 444,
+   "followers_count": 715,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-09",
+   "reach": 10,
+   "new_followers": 0,
+   "views": 521,
+   "followers_count": 715,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-10",
+   "reach": 18,
+   "new_followers": 1,
+   "views": 649,
+   "followers_count": 716,
+   "followers_estimated": true
+  },
+  {
    "date": "2026-08-11",
-   "followers_count": 717
+   "followers_count": 717,
+   "reach": 12,
+   "new_followers": 0,
+   "views": 575
   },
   {
    "date": "2026-08-12",
    "followers_count": 717,
-   "reach": 13,
+   "reach": 10,
    "reach_non_follower": 4,
    "views": 75,
-   "views_non_follower": 51
+   "views_non_follower": 51,
+   "new_followers": 0
+  },
+  {
+   "date": "2026-08-13",
+   "reach": 10,
+   "new_followers": 0,
+   "views": 124,
+   "followers_count": 716,
+   "reach_follower": 4,
+   "reach_non_follower": 6,
+   "views_follower": 12,
+   "views_non_follower": 112
   }
  ],
  "wevape_japan": [
   {
+   "date": "2026-07-16",
+   "reach": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-17",
+   "reach": 0,
+   "views": 1,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-18",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-19",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-20",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-21",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-22",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-23",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-24",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-25",
+   "reach": 1,
+   "views": 2,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-26",
+   "reach": 0,
+   "views": 2,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-27",
+   "reach": 1,
+   "views": 13,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-28",
+   "reach": 0,
+   "views": 13,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-29",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-30",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-07-31",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-01",
+   "reach": 1,
+   "views": 6,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-02",
+   "reach": 0,
+   "views": 6,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-03",
+   "reach": 0,
+   "views": 11,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-04",
+   "reach": 0,
+   "views": 11,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-05",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-06",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-07",
+   "reach": 1,
+   "views": 4,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-08",
+   "reach": 1,
+   "views": 14,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-09",
+   "reach": 0,
+   "views": 10,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
+   "date": "2026-08-10",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "followers_estimated": true
+  },
+  {
    "date": "2026-08-11",
-   "followers_count": 4
+   "followers_count": 4,
+   "reach": 0,
+   "views": 1
   },
   {
    "date": "2026-08-12",
@@ -24,6 +429,16 @@
    "reach": 0,
    "reach_non_follower": null,
    "views": 1,
+   "views_non_follower": null
+  },
+  {
+   "date": "2026-08-13",
+   "reach": 0,
+   "views": 0,
+   "followers_count": 4,
+   "reach_follower": null,
+   "reach_non_follower": null,
+   "views_follower": null,
    "views_non_follower": null
   }
  ]

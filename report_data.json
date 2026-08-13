@@ -1,26 +1,26 @@
 {
- "generated_at": "2026-08-12T10:16:18+00:00",
+ "generated_at": "2026-08-13T08:01:40+00:00",
  "accounts": [
   {
    "label": "위베이프",
    "profile": {
     "username": "wevape.no01",
     "name": "위베이프 전자담배 인천/경기 대표지점",
-    "followers_count": 717,
+    "followers_count": 716,
     "follows_count": 1247,
     "media_count": 240,
     "id": "17841409002160818"
    },
    "account_insights": {
-    "reach": 13,
-    "views": 75,
-    "profile_views": 11,
-    "accounts_engaged": 1,
-    "total_interactions": 1,
-    "reach_non_follower": 4,
-    "reach_follower": 9,
-    "views_follower": 24,
-    "views_non_follower": 51
+    "reach": 10,
+    "views": 124,
+    "profile_views": 16,
+    "accounts_engaged": 0,
+    "total_interactions": 0,
+    "reach_follower": 4,
+    "reach_non_follower": 6,
+    "views_non_follower": 112,
+    "views_follower": 12
    },
    "demographics": {
     "age": {
@@ -28,28 +28,28 @@
      "18-24": 36,
      "25-34": 240,
      "35-44": 213,
-     "45-54": 114,
+     "45-54": 113,
      "55-64": 38,
      "65+": 5
     },
     "gender": {
      "F": 98,
      "M": 276,
-     "U": 273
+     "U": 272
     },
     "city": {
      "Jeju, Jeju-do": 4,
      "Jinju, Gyeongsangnam-do": 3,
      "Gwangju, Gwangju": 10,
      "Yongin, Gyeonggi-do": 4,
-     "Daegu, Daegu": 9,
+     "Daegu, Daegu": 10,
      "Osan, Gyeonggi-do": 3,
      "Busan, Busan": 40,
-     "Seoul, Seoul": 129,
+     "Seoul, Seoul": 128,
      "Yangju, Gyeonggi-do": 5,
      "Goyang, Gyeonggi-do": 11,
      "Dongducheon, Gyeonggi-do": 3,
-     "Guangzhou, Guangdong": 8,
+     "Guangzhou, Guangdong": 9,
      "Ho Chi Minh City, Ho Chi Minh City": 2,
      "Namyangju, Gyeonggi-do": 4,
      "Gimpo, Gyeonggi-do": 6,
@@ -58,30 +58,30 @@
      "Beijing, Beijing": 6,
      "Hanam, Gyeonggi-do": 8,
      "Incheon, Incheon": 83,
+     "Guri, Gyeonggi-do": 2,
      "Hwaseong, Gyeonggi-do": 3,
      "Asan, Chungcheongnam-do": 3,
      "Daejeon, Daejeon": 21,
      "Hefei, Anhui": 4,
-     "Ansan, Gyeonggi-do": 5,
+     "Ansan, Gyeonggi-do": 4,
      "Changwon, Gyeongsangnam-do": 3,
      "Anyang, Gyeonggi-do": 4,
      "Cheonan, Chungcheongnam-do": 3,
      "Cheongju, Chungcheongbuk-do": 9,
      "Suwon, Gyeonggi-do": 10,
      "Bucheon, Gyeonggi-do": 11,
-     "Xuzhou, Jiangsu": 2,
-     "Nanning, Guangxi": 2,
      "Dongguan, Guangdong": 3,
      "Ulsan, Ulsan": 5,
      "Pyeongtaek, Gyeonggi-do": 7,
-     "Shenzhen, Guangdong": 29,
+     "Shenzhen, Guangdong": 28,
      "Uijeongbu, Gyeonggi-do": 5,
      "Seongnam, Gyeonggi-do": 9,
-     "Chongqing, Chongqing": 2,
-     "Shenyang, Liaoning": 2,
+     "Torrance, California": 2,
      "Siheung, Gyeonggi-do": 5,
      "Gwangmyeong, Gyeonggi-do": 3,
-     "zhengzhou, Henan": 4,
+     "Foshan, Guangdong": 2,
+     "zhengzhou, Henan": 5,
+     "Paju, Gyeonggi-do": 2,
      "Changsha, Hunan": 2
     },
     "country": {
@@ -89,8 +89,8 @@
      "HK": 1,
      "TW": 2,
      "RU": 3,
-     "RW": 1,
      "JO": 1,
+     "RW": 1,
      "JP": 12,
      "FR": 4,
      "BR": 1,
@@ -101,7 +101,7 @@
      "MO": 1,
      "UZ": 1,
      "IN": 2,
-     "KR": 471,
+     "KR": 470,
      "IR": 1,
      "GR": 1,
      "IT": 2,
@@ -110,12 +110,14 @@
      "ES": 3,
      "AT": 1,
      "AU": 1,
-     "PH": 2,
-     "VN": 2
+     "VN": 2,
+     "PH": 2
     }
    },
    "posts_total": 240,
    "posts_analyzable": 142,
+   "posts_recent_days": 31,
+   "posts_recent_count": 2,
    "posts": [
     {
      "id": "17982361764061295",
@@ -127,8 +129,8 @@
      "like_count": 5,
      "comments_count": 1,
      "insights": {
-      "reach": 58,
-      "views": 142,
+      "reach": 62,
+      "views": 153,
       "saved": 0,
       "shares": 0,
       "total_interactions": 6,
@@ -146,8 +148,8 @@
      "like_count": 8,
      "comments_count": 2,
      "insights": {
-      "reach": 119,
-      "views": 313,
+      "reach": 124,
+      "views": 324,
       "saved": 0,
       "shares": 0,
       "total_interactions": 10,
@@ -359,15 +361,16 @@
    },
    "account_insights": {
     "reach": 0,
-    "views": 1,
+    "views": 0,
     "profile_views": 0,
     "accounts_engaged": 0,
-    "total_interactions": 0,
-    "views_follower": 1
+    "total_interactions": 0
    },
    "demographics": {},
    "posts_total": 12,
    "posts_analyzable": 7,
+   "posts_recent_days": 31,
+   "posts_recent_count": 12,
    "posts": [
     {
      "id": "18577352980071570",
