@@ -184,7 +184,7 @@ TEMPLATE = """<!doctype html>
 </head>
 <body>
 <div class="wrap">
-  <div class="nav"><a class="on" href="./">일일 리포트</a><a href="./analysis.html">콘텐츠 분석</a></div>
+  <div class="nav"><a class="on" href="./">일일 리포트</a><a href="./analysis.html">콘텐츠 분석</a><a href="./threads.html">스레드</a></div>
   <header class="top">
     <h1>일일 리포트</h1>
     <span class="updated" id="updated"></span>

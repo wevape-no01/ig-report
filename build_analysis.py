@@ -601,7 +601,7 @@ CSS = """
 html, body { background:#fff; }
 body { margin:0; color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
 .wrap { max-width:960px; margin:0 auto; padding:26px 18px 80px; }
-.nav { display:flex; gap:10px; align-items:center; font-size:13px; margin-bottom:22px; }
+.nav { display:flex; gap:10px; align-items:center; font-size:13px; margin-bottom:22px; flex-wrap:wrap; }
 .nav a { color:var(--accent); text-decoration:none; padding:6px 12px; border:1px solid var(--border); border-radius:999px; }
 .nav a.on { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
 h1 { font-size:22px; margin:0 0 4px; }
@@ -735,7 +735,7 @@ def build():
 <meta name="color-scheme" content="light">
 <title>콘텐츠 분석</title>
 <style>{CSS}</style></head><body><div class="wrap">
-<div class="nav"><a href="./">일일 리포트</a><a class="on" href="./analysis.html">콘텐츠 분석</a></div>
+<div class="nav"><a href="./">일일 리포트</a><a class="on" href="./analysis.html">콘텐츠 분석</a><a href="./threads.html">스레드</a></div>
 <h1>콘텐츠 분석</h1>
 <div class="updated">업데이트: {esc(gen)} · 전체 게시물 {total}개 중 인사이트 있는 {anal}개 분석</div>
 {tabbar}
