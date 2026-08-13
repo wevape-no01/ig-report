@@ -186,8 +186,12 @@ def fetch_daily_series(acc, metric, days=29):
     except ApiError as e:
         P(f"          [{metric}] 시계열 수집 실패: {e}")
         return []
+    rows = d.get("data") or []
+    if not rows:                                # 팔로워가 적으면 빈 배열이 온다
+        P(f"          [{metric}] 시계열 데이터 없음")
+        return []
     out = []
-    for v in (d.get("data", [{}])[0].get("values") or []):
+    for v in (rows[0].get("values") or []):
         et = v.get("end_time", "")
         try:
             ts = int(datetime.strptime(et, "%Y-%m-%dT%H:%M:%S%z").timestamp())
@@ -211,8 +215,10 @@ def fetch_views_for_days(acc, boundaries, have_dates):
             d = get(f"{acc['ig_id']}/insights", {
                 "metric": "views", "period": "day", "metric_type": "total_value",
                 "since": since_ts, "until": until_ts, "access_token": acc["token"]})
-            out[date] = d.get("data", [{}])[0].get("total_value", {}).get("value")
-        except ApiError:
+            rows = d.get("data") or []
+            if rows:
+                out[date] = (rows[0].get("total_value") or {}).get("value")
+        except (ApiError, KeyError, IndexError):
             continue
     return out
 
