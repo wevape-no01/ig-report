@@ -1,6 +1,8 @@
 """
-report_data.json + history.json 을 읽어 단일 HTML 대시보드(index.html)를 만든다.
+report_data.json + history.json 을 읽어 일일 리포트(index.html)를 만든다.
 데이터가 없으면 샘플로 대체하고 화면에 "샘플 데이터" 배너를 띄운다.
+
+구성: KPI → 조회수(일/주/월) → 신규 팔로워 유입 → 팔로워 수 추이(일/주/월) → 최근 게시물
 
 실행: python3 build_dashboard.py
 """
@@ -33,7 +35,7 @@ def _sample():
                 "insights": {
                     "reach": max(0, base_reach - i * 9),
                     "views": max(0, base_reach * 2 - i * 15),
-                    "saved": 0, "shares": 0,
+                    "saved": 0, "shares": 0, "follows": max(0, 3 - i),
                     "total_interactions": max(0, 9 - i),
                 },
             })
@@ -42,15 +44,23 @@ def _sample():
             "profile": {"username": uname, "name": "샘플 계정",
                         "followers_count": base_f, "follows_count": 100,
                         "media_count": 40 + ai},
-            "account_insights": {"reach": base_reach // 6, "profile_views": 20,
-                                 "accounts_engaged": 2, "total_interactions": 2},
+            "account_insights": {"reach": base_reach // 6, "views": base_reach // 3,
+                                 "profile_views": 20, "accounts_engaged": 2,
+                                 "total_interactions": 2,
+                                 "reach_follower": 12, "reach_non_follower": 6,
+                                 "views_follower": 30, "views_non_follower": 18},
+            "demographics": {},
+            "posts_total": 40 + ai, "posts_analyzable": 8,
+            "posts_recent_days": 31, "posts_recent_count": 8,
             "posts": posts,
         })
-        rows, f = [], base_f - 14
-        for i in range(14, -1, -1):
-            f += 1 if i % 2 == 0 else 0
+        rows, f = [], base_f - 28
+        for i in range(28, -1, -1):
+            gained = 1 if i % 2 == 0 else 0
+            f += gained
             rows.append({"date": (now.date() - timedelta(days=i)).isoformat(),
-                         "followers_count": f})
+                         "followers_count": f, "new_followers": gained,
+                         "reach": base_reach // 6 + (i % 5), "views": base_reach // 3 + (i % 9)})
         history[uname] = rows
     return {"generated_at": now.isoformat(timespec="seconds"), "accounts": accounts}, history
 
@@ -72,30 +82,28 @@ TEMPLATE = """<!doctype html>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="color-scheme" content="light" />
-<title>인스타그램 리포트</title>
+<title>일일 리포트</title>
 <style>
-  /* 항상 밝은 배경으로 고정 (기기가 다크 모드여도 흰 배경 유지).
-     변수를 :root 에 두어야 body 배경에도 적용된다. */
-  :root, .viz-root {
+  /* 항상 밝은 배경으로 고정 (기기가 다크 모드여도 흰 배경 유지). */
+  :root {
     color-scheme: light only;
-    --surface-1:#ffffff; --page-plane:#ffffff;
+    --surface-1:#ffffff;
     --text-primary:#111111; --text-secondary:#444444; --text-muted:#6b6b6b;
-    --gridline:#e6e6e6; --baseline:#cccccc; --border:rgba(17,17,17,0.14);
-    --series-1:#1f6fc7; --seq-400:#2a78d6; --seq-100:#cde2fb;
-    --good:#006300; --critical:#c02a2a;
+    --gridline:#e6e6e6; --border:rgba(17,17,17,0.14);
+    --series-1:#1f6fc7; --seq-100:#cde2fb; --gray:#c9c9c9;
+    --good:#046a04; --critical:#b32626;
   }
   * { box-sizing:border-box; }
   html, body { background:#ffffff; }
-  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
-         color:#111111; }
-  .wrap { max-width:920px; margin:0 auto; padding:24px 16px 64px; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
+  .wrap { max-width:920px; margin:0 auto; padding:24px 16px 72px; }
   .nav { display:flex; gap:10px; align-items:center; font-size:13px; margin-bottom:20px; }
   .nav a { color:var(--series-1); text-decoration:none; padding:6px 12px;
            border:1px solid var(--border); border-radius:999px; }
   .nav a.on { background:var(--series-1); border-color:var(--series-1); color:#fff; font-weight:600; }
   header.top { display:flex; justify-content:space-between; align-items:baseline;
                flex-wrap:wrap; gap:8px; margin-bottom:12px; }
-  header.top h1 { font-size:20px; margin:0; }
+  header.top h1 { font-size:21px; margin:0; }
   .updated { font-size:12px; color:var(--text-muted); }
   .sample-banner { background:#fff8e1; color:#6b5300; border:1px solid #f0dca0;
                    border-radius:8px; padding:10px 14px; font-size:13px; margin:12px 0 20px; }
@@ -105,49 +113,80 @@ TEMPLATE = """<!doctype html>
          font-size:13px; cursor:pointer; font-family:inherit; }
   .tab[aria-selected="true"] { background:var(--series-1); border-color:var(--series-1);
                                color:#fff; font-weight:600; }
-  .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
              gap:12px; margin-bottom:24px; }
   .stat-tile { background:var(--surface-1); border:1px solid var(--border);
                border-radius:10px; padding:14px 16px; }
-  .stat-tile .label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; }
-  .stat-tile .value { font-size:26px; font-weight:600; line-height:1.1; }
-  .stat-tile .delta { font-size:12px; margin-top:4px; color:var(--text-muted); }
+  .stat-tile .label { font-size:12px; color:var(--text-secondary); margin-bottom:6px;
+                      font-weight:600; }
+  .stat-tile .value { font-size:26px; font-weight:650; line-height:1.1; }
+  .stat-tile .note { font-size:11px; color:var(--text-muted); margin-top:5px; line-height:1.45; }
+  .stat-tile .delta { font-size:12px; margin-top:5px; color:var(--text-muted); }
   .delta.up { color:var(--good); } .delta.down { color:var(--critical); }
   section { background:var(--surface-1); border:1px solid var(--border);
-            border-radius:10px; padding:16px 18px; margin-bottom:20px; }
-  section h2 { font-size:14px; margin:0 0 4px; color:var(--text-secondary); font-weight:600; }
-  section .sub { font-size:11px; color:var(--text-muted); margin:0 0 12px; }
+            border-radius:10px; padding:18px 18px 16px; margin-bottom:20px; }
+  .sec-h { display:flex; justify-content:space-between; align-items:flex-start;
+           gap:12px; flex-wrap:wrap; margin-bottom:4px; }
+  section h2 { font-size:16px; margin:0; color:var(--text-primary); font-weight:700;
+               letter-spacing:-0.01em; }
+  section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.55; }
+  .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+  .seg button { border:0; background:var(--surface-1); color:var(--text-secondary);
+                font-family:inherit; font-size:12px; padding:6px 13px; cursor:pointer; }
+  .seg button + button { border-left:1px solid var(--border); }
+  .seg button[aria-pressed="true"] { background:var(--series-1); color:#fff; font-weight:600; }
   svg { display:block; width:100%; height:auto; overflow:visible; }
-  .axis-label { fill:var(--text-muted); font-size:10px; }
+  .axis-label { fill:var(--text-muted); font-size:10.5px; }
+  .val-label { fill:var(--text-primary); font-size:11px; font-weight:600; }
   .gridline { stroke:var(--gridline); stroke-width:1; }
   .line-path { fill:none; stroke:var(--series-1); stroke-width:2;
                stroke-linecap:round; stroke-linejoin:round; }
   .dot { fill:var(--series-1); }
-  .bar { fill:var(--seq-400); }
+  .bar { fill:var(--series-1); }
   .bar-label { fill:var(--text-secondary); font-size:11px; }
-  table { width:100%; border-collapse:collapse; font-size:13px; }
+  .split { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  @media (max-width:680px) { .split { grid-template-columns:1fr; } }
+  .mini-t { font-size:12.5px; font-weight:700; color:var(--text-primary); margin-bottom:4px; }
+  .mini-s { font-size:11px; color:var(--text-muted); margin:0 0 11px; line-height:1.5; }
+  .srow { display:grid; grid-template-columns:96px 1fr 74px; align-items:center;
+          gap:9px; margin-bottom:8px; font-size:12px; }
+  .srow-k { color:var(--text-secondary); }
+  .srow-b { background:var(--gridline); border-radius:3px; height:9px; overflow:hidden; }
+  .srow-b i { display:block; height:100%; background:var(--series-1); border-radius:3px; }
+  .srow-b i.g { background:var(--gray); }
+  .srow-v { text-align:right; font-variant-numeric:tabular-nums; }
+  .big { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:2px; }
+  .big .n { font-size:38px; font-weight:650; line-height:1; }
+  .big .u { font-size:14px; color:var(--text-muted); }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
   th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--gridline);
            vertical-align:top; }
-  th { color:var(--text-muted); font-weight:500; font-size:11px;
-       text-transform:uppercase; letter-spacing:.02em; }
+  th { color:var(--text-muted); font-weight:500; font-size:10.5px;
+       text-transform:uppercase; letter-spacing:.02em; white-space:nowrap; }
   td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
-  td.cap { max-width:340px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  td.cap { max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
            color:var(--text-secondary); }
+  tr.extra { display:none; }
+  tr.extra.on { display:table-row; }
   a { color:var(--series-1); text-decoration:none; }
   a:hover { text-decoration:underline; }
+  .more { margin-top:12px; border:1px solid var(--border); background:var(--surface-1);
+          color:var(--series-1); font-family:inherit; font-size:12.5px; font-weight:600;
+          padding:8px 15px; border-radius:8px; cursor:pointer; }
   .chart-wrap { position:relative; }
   .tooltip { position:absolute; pointer-events:none; background:var(--text-primary);
-             color:var(--page-plane); font-size:11px; padding:4px 8px; border-radius:6px;
+             color:#fff; font-size:11px; padding:4px 8px; border-radius:6px;
              opacity:0; transition:opacity .1s; white-space:nowrap; transform:translateX(-50%); }
-  .empty { color:var(--text-muted); font-size:13px; padding:8px 0; }
+  .empty { color:var(--text-muted); font-size:12.5px; padding:10px 0; }
+  .foot { font-size:11.5px; color:var(--text-muted); line-height:1.8; }
+  .foot b { color:var(--text-secondary); }
 </style>
 </head>
 <body>
-<div class="viz-root">
 <div class="wrap">
-  <div class="nav"><a class="on" href="./">일일 리포트</a><a href="./analysis.html">성과 분석</a></div>
+  <div class="nav"><a class="on" href="./">일일 리포트</a><a href="./analysis.html">콘텐츠 분석</a></div>
   <header class="top">
-    <h1>인스타그램 리포트</h1>
+    <h1>일일 리포트</h1>
     <span class="updated" id="updated"></span>
   </header>
   __SAMPLE_BANNER__
@@ -157,32 +196,66 @@ TEMPLATE = """<!doctype html>
   <div class="kpi-row" id="kpis"></div>
 
   <section>
-    <h2>팔로워 수 추이</h2>
-    <p class="sub">매일 실행될 때마다 기록이 쌓입니다. 첫날은 점 하나뿐입니다.</p>
+    <div class="sec-h">
+      <h2>조회수</h2>
+      <div class="seg" id="segViews">
+        <button data-g="day" aria-pressed="true">일</button>
+        <button data-g="week" aria-pressed="false">주</button>
+        <button data-g="month" aria-pressed="false">월</button>
+      </div>
+    </div>
+    <p class="sub" id="subViews">조회수 = 게시물이 화면에 표시된 총 횟수 (같은 사람이 여러 번 보면 그만큼 올라감)</p>
+    <svg id="viewsChart" viewBox="0 0 860 240"></svg>
+  </section>
+
+  <section>
+    <div class="sec-h"><h2>신규 팔로워 유입</h2></div>
+    <p class="sub">어제 하루 동안 늘어난 팔로워 수와, 그 사람들이 어디서 왔는지 짐작할 수 있는 단서입니다.</p>
+    <div id="newFollowers"></div>
+  </section>
+
+  <section>
+    <div class="sec-h">
+      <h2>팔로워 수 추이</h2>
+      <div class="seg" id="segFollowers">
+        <button data-g="day" aria-pressed="true">일</button>
+        <button data-g="week" aria-pressed="false">주</button>
+        <button data-g="month" aria-pressed="false">월</button>
+      </div>
+    </div>
+    <p class="sub" id="subFollowers">각 구간이 끝나는 시점의 총 팔로워 수입니다.</p>
     <div class="chart-wrap">
-      <svg id="followerChart" viewBox="0 0 860 220"></svg>
+      <svg id="followerChart" viewBox="0 0 860 240"></svg>
       <div class="tooltip" id="tip"></div>
     </div>
   </section>
 
   <section>
-    <h2>최근 게시물별 도달</h2>
-    <p class="sub">도달 = 이 게시물을 본 고유 계정 수</p>
-    <svg id="reachChart" viewBox="0 0 860 260"></svg>
-  </section>
-
-  <section>
-    <h2>최근 게시물</h2>
+    <div class="sec-h"><h2>최근 게시물</h2></div>
+    <p class="sub"><b>도달</b> = 이 게시물을 본 사람 수(같은 사람은 한 번만) · <b>조회</b> = 화면에 표시된 총 횟수 ·
+       <b>팔로워</b> = 이 게시물을 보고 팔로우한 수</p>
     <table>
       <thead><tr>
         <th>날짜</th><th>내용</th>
-        <th class="num">도달</th><th class="num">조회</th>
-        <th class="num">좋아요</th><th class="num">댓글</th><th class="num">저장</th>
+        <th class="num">도달<br>(본 사람 수)</th><th class="num">조회</th>
+        <th class="num">팔로워</th><th class="num">좋아요</th>
+        <th class="num">댓글</th><th class="num">저장</th>
       </tr></thead>
       <tbody id="postsBody"></tbody>
     </table>
+    <button class="more" id="morePosts" hidden></button>
   </section>
-</div>
+
+  <section>
+    <div class="sec-h"><h2>용어 설명</h2></div>
+    <div class="foot">
+      <b>도달(본 사람 수)</b> — 게시물이나 계정을 실제로 본 사람 수. 같은 사람이 여러 번 봐도 1로 셉니다(계정당 한 번만 집계).<br>
+      <b>조회수</b> — 화면에 표시된 총 횟수. 같은 사람이 3번 보면 3으로 셉니다. 그래서 도달보다 항상 큽니다.<br>
+      <b>팔로워(게시물별)</b> — 그 게시물을 본 뒤 팔로우를 누른 사람 수. 어느 게시물이 실제로 팔로워를 데려왔는지 보는 값입니다.<br>
+      <b>저장</b> — 게시물을 나중에 보려고 저장한 수. 좋아요보다 강한 관심 신호로 봅니다.<br>
+      <b>팔로워 / 비팔로워</b> — 이미 팔로우 중인 사람이 봤는지, 아직 아닌 사람이 봤는지의 구분. 비팔로워 비중이 오르면 새 사람에게 퍼지고 있다는 뜻입니다.
+    </div>
+  </section>
 </div>
 
 <script id="report-data" type="application/json">__REPORT_JSON__</script>
@@ -193,38 +266,118 @@ TEMPLATE = """<!doctype html>
   const history = JSON.parse(document.getElementById('history-data').textContent);
   const accounts = report.accounts || [];
   let current = 0;
+  let granViews = 'day', granFol = 'day';
+  let postsOpen = false;
 
   const d = new Date(report.generated_at);
   document.getElementById('updated').textContent =
     '업데이트: ' + (isNaN(d) ? report.generated_at : d.toLocaleString('ko-KR'));
 
-  const n = v => (v === null || v === undefined) ? '-' : Number(v).toLocaleString();
+  const n  = v => (v === null || v === undefined) ? '-' : Number(v).toLocaleString();
+  const esc = t => (t||'').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  const num = v => (typeof v === 'number' && isFinite(v));
 
-  // ---- 탭 ----
+  // ---- 계정 탭 ----
   const tabs = document.getElementById('tabs');
   accounts.forEach((a, i) => {
     const b = document.createElement('button');
     b.className = 'tab'; b.textContent = '@' + a.profile.username;
     b.setAttribute('role','tab');
-    b.onclick = () => { current = i; render(); };
+    b.onclick = () => { current = i; postsOpen = false; render(); };
     tabs.appendChild(b);
   });
   if (accounts.length < 2) tabs.style.display = 'none';
+
+  // ---- 기간 전환 ----
+  function wireSeg(id, set) {
+    document.getElementById(id).querySelectorAll('button').forEach(b => {
+      b.onclick = () => {
+        document.getElementById(id).querySelectorAll('button')
+          .forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+        set(b.dataset.g); render();
+      };
+    });
+  }
+  wireSeg('segViews',     g => granViews = g);
+  wireSeg('segFollowers', g => granFol   = g);
+
+  document.getElementById('morePosts').onclick = () => { postsOpen = !postsOpen; render(); };
+
+  // ---- 기간별 집계 ----
+  // agg='sum' 은 흐름 지표(조회수), agg='last' 는 수준 지표(총 팔로워 수)
+  function bucket(hist, key, gran, agg) {
+    const rows = hist.filter(r => num(r[key]));
+    if (!rows.length) return [];
+    if (gran === 'day') {
+      return rows.slice(-7).map(r => ({label: r.date.slice(5).replace('-','/'),
+                                       full: r.date, value: r[key]}));
+    }
+    const m = new Map();
+    if (gran === 'week') {
+      rows.forEach(r => {
+        const dt = new Date(r.date + 'T00:00:00Z');
+        const dow = (dt.getUTCDay() + 6) % 7;               // 월요일=0
+        dt.setUTCDate(dt.getUTCDate() - dow);
+        const k = dt.toISOString().slice(0,10);
+        if (!m.has(k)) m.set(k, []);
+        m.get(k).push(r[key]);
+      });
+      return [...m.keys()].sort().slice(-4).map(k => ({
+        label: k.slice(5).replace('-','/') + ' 주',
+        full: k + ' 주간',
+        value: agg === 'sum' ? m.get(k).reduce((a,b)=>a+b,0) : m.get(k)[m.get(k).length-1]}));
+    }
+    const yr = rows[rows.length-1].date.slice(0,4);
+    rows.filter(r => r.date.slice(0,4) === yr).forEach(r => {
+      const k = r.date.slice(0,7);
+      if (!m.has(k)) m.set(k, []);
+      m.get(k).push(r[key]);
+    });
+    return [...m.keys()].sort().map(k => ({
+      label: (+k.slice(5)) + '월', full: k,
+      value: agg === 'sum' ? m.get(k).reduce((a,b)=>a+b,0) : m.get(k)[m.get(k).length-1]}));
+  }
+
+  const GRAN_NOTE = {
+    day:   '최근 7일',
+    week:  '최근 4주 (월요일 시작)',
+    month: '올해 · 인스타그램이 과거 29일까지만 주므로 앞으로 실행될 때마다 달이 채워집니다'
+  };
 
   function render() {
     Array.from(tabs.children).forEach((b,i) =>
       b.setAttribute('aria-selected', i === current ? 'true' : 'false'));
 
-    const acc = accounts[current];
+    const acc  = accounts[current] || {};
     const prof = acc.profile || {};
     const ins  = acc.account_insights || {};
     const posts = acc.posts || [];
     const hist = history[prof.username] || [];
 
-    // ---- KPI ----
-    const prev = hist.length >= 2 ? hist[hist.length-2].followers_count : null;
-    const delta = prev === null ? null : (prof.followers_count - prev);
-    const reaches = posts.map(p => p.insights && p.insights.reach).filter(v => typeof v === 'number');
+    drawKpis(prof, ins, posts, hist);
+
+    document.getElementById('subViews').textContent =
+      '조회수 = 게시물이 화면에 표시된 총 횟수 (같은 사람이 여러 번 보면 그만큼 올라감) · ' + GRAN_NOTE[granViews];
+    document.getElementById('subFollowers').textContent =
+      '각 구간이 끝나는 시점의 총 팔로워 수입니다. · ' + GRAN_NOTE[granFol];
+
+    drawBars(document.getElementById('viewsChart'), bucket(hist, 'views', granViews, 'sum'));
+    drawNewFollowers(hist, posts, ins);
+    drawLine(document.getElementById('followerChart'), bucket(hist, 'followers_count', granFol, 'last'));
+    drawTable(acc, posts);
+  }
+
+  // ---- KPI ----
+  function drawKpis(prof, ins, posts, hist) {
+    const last = hist.length ? hist[hist.length-1] : null;
+    const prev = hist.length >= 2 ? hist[hist.length-2] : null;
+    const delta = (last && prev && num(last.followers_count) && num(prev.followers_count))
+      ? last.followers_count - prev.followers_count : null;
+
+    // 최근 한 달 게시물만으로 평균 도달을 낸다
+    const cut = new Date(Date.now() - 31*86400000).toISOString();
+    const recent = posts.filter(p => (p.timestamp || '') >= cut);
+    const reaches = recent.map(p => p.insights && p.insights.reach).filter(num);
     const avgReach = reaches.length ? Math.round(reaches.reduce((a,b)=>a+b,0)/reaches.length) : null;
 
     document.getElementById('kpis').innerHTML = `
@@ -233,49 +386,82 @@ TEMPLATE = """<!doctype html>
         <div class="delta ${delta>0?'up':delta<0?'down':''}">${
           delta === null ? '기록 쌓이는 중' : (delta>0?'+':'') + delta + '명 (전일 대비)'}</div></div>
       <div class="stat-tile"><div class="label">게시물</div>
-        <div class="value">${n(prof.media_count)}</div></div>
-      <div class="stat-tile"><div class="label">오늘 도달</div>
+        <div class="value">${n(prof.media_count)}</div>
+        <div class="note">계정에 올라가 있는 전체 수</div></div>
+      <div class="stat-tile"><div class="label">오늘 도달(본 사람 수)</div>
         <div class="value">${n(ins.reach)}</div>
-        <div class="delta">프로필 조회 ${n(ins.profile_views)}</div></div>
-      <div class="stat-tile"><div class="label">최근 게시물 평균 도달</div>
-        <div class="value">${n(avgReach)}</div></div>`;
-
-    drawFollowers(hist);
-    drawReach(posts);
-    drawTable(posts);
+        <div class="note">계정당 한 번만 집계</div></div>
+      <div class="stat-tile"><div class="label">최근 게시물 평균 도달(본 사람 수)</div>
+        <div class="value">${n(avgReach)}</div>
+        <div class="note">최근 한 달 · 게시물 ${reaches.length}개 평균</div></div>`;
   }
 
-  // ---- 팔로워 추이 ----
-  function drawFollowers(hist) {
-    const svg = document.getElementById('followerChart');
-    const tip = document.getElementById('tip');
-    const W = 860, H = 220, PAD = 34;
-    if (!hist.length) { svg.innerHTML =
-      `<text class="axis-label" x="${W/2}" y="${H/2}" text-anchor="middle">기록이 아직 없습니다</text>`; return; }
-    if (hist.length === 1) { svg.innerHTML =
-      `<circle class="dot" cx="${W/2}" cy="${H/2}" r="5"/>
-       <text class="axis-label" x="${W/2}" y="${H/2+24}" text-anchor="middle">${hist[0].date} · ${hist[0].followers_count}명 (내일부터 선이 그려집니다)</text>`; return; }
+  // ---- 세로 막대 그래프 ----
+  function drawBars(svg, rows) {
+    const W = 860, H = 240, T = 30, B = 34, L = 6, R = 6;
+    if (!rows.length) {
+      svg.setAttribute('viewBox', '0 0 860 70');
+      svg.innerHTML = `<text class="axis-label" x="430" y="40" text-anchor="middle">아직 기록이 없습니다</text>`;
+      return;
+    }
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const max = Math.max(...rows.map(r => r.value), 1);
+    const plot = H - T - B, slot = (W - L - R) / rows.length;
+    const bw = Math.min(64, slot * 0.6);
+    let s = '';
+    for (let g = 0; g <= 3; g++) {
+      const y = T + (g/3)*plot;
+      s += `<line class="gridline" x1="${L}" y1="${y.toFixed(1)}" x2="${W-R}" y2="${y.toFixed(1)}"/>`;
+    }
+    rows.forEach((r,i) => {
+      const cx = L + slot*i + slot/2;
+      const h = Math.max((r.value/max)*plot, r.value > 0 ? 2 : 0);
+      s += `<rect class="bar" x="${(cx-bw/2).toFixed(1)}" y="${(T+plot-h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3"/>`;
+      s += `<text class="val-label" x="${cx.toFixed(1)}" y="${(T+plot-h-7).toFixed(1)}" text-anchor="middle">${r.value.toLocaleString()}</text>`;
+      s += `<text class="axis-label" x="${cx.toFixed(1)}" y="${H-B+20}" text-anchor="middle">${r.label}</text>`;
+    });
+    svg.innerHTML = s;
+  }
 
-    const vals = hist.map(h => h.followers_count);
-    const min = Math.min(...vals), max = Math.max(...vals), range = (max-min)||1;
-    const stepX = (W-PAD*2)/(hist.length-1);
-    const pts = hist.map((h,i) => ({
-      x: PAD + i*stepX,
-      y: H-PAD - ((h.followers_count-min)/range)*(H-PAD*2), ...h }));
+  // ---- 꺾은선 그래프 ----
+  function drawLine(svg, rows) {
+    const tip = document.getElementById('tip');
+    const W = 860, H = 240, T = 30, B = 34, PAD = 44;
+    if (!rows.length) {
+      svg.setAttribute('viewBox', '0 0 860 70');
+      svg.innerHTML = `<text class="axis-label" x="430" y="40" text-anchor="middle">아직 기록이 없습니다</text>`;
+      return;
+    }
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    if (rows.length === 1) {
+      svg.innerHTML =
+        `<circle class="dot" cx="${W/2}" cy="${H/2-10}" r="5"/>
+         <text class="axis-label" x="${W/2}" y="${H/2+20}" text-anchor="middle">${rows[0].label} · ${rows[0].value.toLocaleString()}명 (구간이 하나뿐이라 선이 그려지지 않습니다)</text>`;
+      return;
+    }
+    const vals = rows.map(r => r.value);
+    const min = Math.min(...vals), max = Math.max(...vals), range = (max-min) || 1;
+    const plot = H - T - B;
+    const stepX = (W - PAD*2) / (rows.length - 1);
+    const pts = rows.map((r,i) => ({
+      x: PAD + i*stepX, y: T + plot - ((r.value-min)/range)*plot, ...r }));
 
     let s = '';
-    for (let g=0; g<=3; g++) {
-      const y = PAD + (g/3)*(H-PAD*2);
-      s += `<line class="gridline" x1="${PAD}" y1="${y}" x2="${W-PAD}" y2="${y}"/>`;
+    for (let g = 0; g <= 3; g++) {
+      const y = T + (g/3)*plot;
+      s += `<line class="gridline" x1="${PAD}" y1="${y.toFixed(1)}" x2="${W-PAD}" y2="${y.toFixed(1)}"/>`;
     }
-    s += `<text class="axis-label" x="${PAD-6}" y="${PAD+4}" text-anchor="end">${max}</text>`;
-    s += `<text class="axis-label" x="${PAD-6}" y="${H-PAD+4}" text-anchor="end">${min}</text>`;
+    s += `<text class="axis-label" x="${PAD-8}" y="${T+4}" text-anchor="end">${max.toLocaleString()}</text>`;
+    s += `<text class="axis-label" x="${PAD-8}" y="${T+plot+4}" text-anchor="end">${min.toLocaleString()}</text>`;
     s += `<path class="line-path" d="${pts.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ')}"/>`;
-    const every = Math.max(1, Math.ceil(pts.length/6));
+    const every = pts.length <= 8 ? 1 : Math.ceil(pts.length/7);
     pts.forEach((p,i) => {
-      if (i===0 || i===pts.length-1 || i%every===0) {
-        s += `<circle class="dot" cx="${p.x}" cy="${p.y}" r="3.5" data-i="${i}"/>`;
-        s += `<text class="axis-label" x="${p.x}" y="${H-10}" text-anchor="middle">${p.date.slice(5)}</text>`;
+      s += `<circle class="dot" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" data-i="${i}"/>`;
+      if (i === 0 || i === pts.length-1 || i % every === 0) {
+        s += `<text class="axis-label" x="${p.x.toFixed(1)}" y="${H-B+20}" text-anchor="middle">${p.label}</text>`;
+      }
+      if (pts.length <= 8) {
+        s += `<text class="val-label" x="${p.x.toFixed(1)}" y="${(p.y-10).toFixed(1)}" text-anchor="middle">${p.value.toLocaleString()}</text>`;
       }
     });
     svg.innerHTML = s;
@@ -284,7 +470,7 @@ TEMPLATE = """<!doctype html>
       c.addEventListener('mouseenter', () => {
         const p = pts[+c.dataset.i];
         const r = svg.getBoundingClientRect();
-        tip.textContent = `${p.date} · 팔로워 ${p.followers_count.toLocaleString()}명`;
+        tip.textContent = `${p.full || p.label} · 팔로워 ${p.value.toLocaleString()}명`;
         tip.style.left = (p.x/W*r.width)+'px';
         tip.style.top  = (p.y/H*r.height-30)+'px';
         tip.style.opacity = 1;
@@ -293,45 +479,104 @@ TEMPLATE = """<!doctype html>
     });
   }
 
-  // ---- 게시물별 도달 ----
-  function drawReach(posts) {
-    const svg = document.getElementById('reachChart');
-    const rows = posts.slice(0,10).filter(p => p.insights && typeof p.insights.reach === 'number');
-    if (!rows.length) { svg.setAttribute('viewBox','0 0 860 60');
-      svg.innerHTML = `<text class="axis-label" x="430" y="34" text-anchor="middle">도달 데이터가 없습니다</text>`; return; }
-    const BH=26, GAP=10, L=88, R=64, bw=860-L-R;
-    const max = Math.max(...rows.map(p => p.insights.reach), 1);
-    let s = '';
-    rows.forEach((p,i) => {
-      const y = i*(BH+GAP)+8, w = (p.insights.reach/max)*bw;
-      s += `<text class="bar-label" x="0" y="${y+BH/2+4}">${(p.timestamp||'').slice(5,10)}</text>`;
-      s += `<rect class="bar" x="${L}" y="${y}" width="${Math.max(w,2)}" height="${BH}" rx="4"/>`;
-      s += `<text class="bar-label" x="${L+Math.max(w,2)+8}" y="${y+BH/2+4}">${p.insights.reach.toLocaleString()}</text>`;
-    });
-    svg.setAttribute('viewBox', `0 0 860 ${rows.length*(BH+GAP)+16}`);
-    svg.innerHTML = s;
+  // ---- 신규 팔로워 유입 ----
+  function drawNewFollowers(hist, posts, ins) {
+    const box = document.getElementById('newFollowers');
+    const withNew = hist.filter(r => num(r.new_followers));
+    const last = withNew.length ? withNew[withNew.length-1] : null;
+    const prev = withNew.length >= 2 ? withNew[withNew.length-2] : null;
+    const dl = (last && prev) ? last.new_followers - prev.new_followers : null;
+    const week = withNew.slice(-7).reduce((a,r)=>a+r.new_followers, 0);
+
+    const head = last
+      ? `<div class="big"><span class="n">${last.new_followers > 0 ? '+' : ''}${n(last.new_followers)}</span>
+           <span class="u">명 · ${last.date}</span>
+           <span class="u ${dl>0?'delta up':dl<0?'delta down':''}">${
+             dl === null ? '' : (dl>0?'+':'') + dl + '명 (전일 대비)'}</span></div>
+         <p class="mini-s">최근 7일 합계 ${n(week)}명. 인스타그램은 어제까지의 값을 확정해서 주므로 오늘 늘어난 팔로워는 내일 반영됩니다.</p>`
+      : `<p class="empty">신규 팔로워 기록이 아직 없습니다.</p>`;
+
+    // ① 팔로워 / 비팔로워 (오늘 도달 기준)
+    const f = ins.reach_follower, nf = ins.reach_non_follower;
+    let left;
+    if (num(f) && num(nf) && (f + nf) > 0) {
+      const tot = f + nf;
+      const row = (k, v, gray) => `
+        <div class="srow"><div class="srow-k">${k}</div>
+          <div class="srow-b"><i class="${gray?'g':''}" style="width:${(v/tot*100).toFixed(1)}%"></i></div>
+          <div class="srow-v">${n(v)} · ${Math.round(v/tot*100)}%</div></div>`;
+      left = `<div class="mini-t">유입 경로 ① 새 사람에게 닿았는가</div>
+        <p class="mini-s">오늘 계정을 본 사람을 이미 팔로우 중인 사람과 아직 아닌 사람으로 나눈 것입니다.
+           비팔로워 비중이 높을수록 탐색 탭·해시태그·공유를 타고 새 사람에게 퍼진 것입니다.</p>
+        ${row('비팔로워', nf, false)}${row('기존 팔로워', f, true)}`;
+    } else {
+      left = `<div class="mini-t">유입 경로 ① 새 사람에게 닿았는가</div>
+        <p class="empty">오늘 팔로워/비팔로워 구분 데이터가 없습니다.</p>`;
+    }
+
+    // ③ 게시물별 팔로우 수
+    const fp = posts.filter(p => p.insights && num(p.insights.follows) && p.insights.follows > 0)
+                    .sort((a,b) => b.insights.follows - a.insights.follows).slice(0,5);
+    let right;
+    if (fp.length) {
+      right = `<div class="mini-t">유입 경로 ② 어느 게시물이 데려왔는가</div>
+        <p class="mini-s">그 게시물을 본 뒤 팔로우를 누른 사람 수입니다. 최근 게시물 중 많은 순.</p>
+        <table><thead><tr><th>날짜</th><th>내용</th><th class="num">팔로워</th></tr></thead><tbody>` +
+        fp.map(p => {
+          const cap = esc((p.caption||'').replace(/\\s+/g,' ').trim()).slice(0,60) || '(내용 없음)';
+          const link = p.permalink && p.permalink !== '#'
+            ? `<a href="${p.permalink}" target="_blank" rel="noopener">${cap}</a>` : cap;
+          return `<tr><td>${(p.timestamp||'').slice(5,10)}</td><td class="cap">${link}</td>
+                  <td class="num">${n(p.insights.follows)}</td></tr>`;
+        }).join('') + `</tbody></table>`;
+    } else {
+      right = `<div class="mini-t">유입 경로 ② 어느 게시물이 데려왔는가</div>
+        <p class="empty">최근 게시물 중 팔로우를 만든 게시물이 아직 없습니다.</p>`;
+    }
+
+    box.innerHTML = head + `<div class="split" style="margin-top:16px">
+      <div>${left}</div><div>${right}</div></div>`;
   }
 
-  // ---- 표 ----
-  function drawTable(posts) {
-    const esc = t => (t||'').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  // ---- 최근 게시물 표 ----
+  function drawTable(acc, posts) {
     const body = document.getElementById('postsBody');
-    if (!posts.length) { body.innerHTML = `<tr><td colspan="7" class="empty">게시물이 없습니다</td></tr>`; return; }
-    body.innerHTML = posts.map(p => {
-      const i = p.insights || {};
+    const btn  = document.getElementById('morePosts');
+    const days = acc.posts_recent_days || 31;
+    const cut  = new Date(Date.now() - days*86400000).toISOString();
+    const recent = posts.filter(p => (p.timestamp || '') >= cut);
+    const rows = recent.length >= 5 ? recent : posts.slice(0, 5);
+
+    if (!rows.length) {
+      body.innerHTML = `<tr><td colspan="8" class="empty">게시물이 없습니다</td></tr>`;
+      btn.hidden = true; return;
+    }
+    body.innerHTML = rows.map((p, i) => {
+      const ii = p.insights || {};
       const cap = esc((p.caption||'').replace(/\\s+/g,' ').trim()) || '(내용 없음)';
       const link = p.permalink && p.permalink !== '#'
         ? `<a href="${p.permalink}" target="_blank" rel="noopener">${cap}</a>` : cap;
-      return `<tr>
+      const cls = i < 5 ? '' : (postsOpen ? 'extra on' : 'extra');
+      return `<tr class="${cls}">
         <td>${(p.timestamp||'').slice(0,10)}</td>
         <td class="cap">${link}</td>
-        <td class="num">${n(i.reach)}</td>
-        <td class="num">${n(i.views)}</td>
+        <td class="num">${n(ii.reach)}</td>
+        <td class="num">${n(ii.views)}</td>
+        <td class="num">${n(ii.follows)}</td>
         <td class="num">${n(p.like_count)}</td>
         <td class="num">${n(p.comments_count)}</td>
-        <td class="num">${n(i.saved)}</td>
+        <td class="num">${n(ii.saved)}</td>
       </tr>`;
     }).join('');
+
+    if (rows.length > 5) {
+      btn.hidden = false;
+      btn.textContent = postsOpen
+        ? '접기'
+        : `최근 ${days}일 게시물 전체 보기 (${rows.length}개)`;
+    } else {
+      btn.hidden = true;
+    }
   }
 
   render();

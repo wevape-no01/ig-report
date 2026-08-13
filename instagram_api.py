@@ -20,6 +20,7 @@
 import json
 import os
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from urllib.request import urlopen, Request
 from urllib.parse import urlencode
@@ -30,7 +31,8 @@ BASE = f"https://graph.facebook.com/{V}"
 DIR = os.path.dirname(os.path.abspath(__file__))
 
 REFRESH_DAYS = 30      # 이 기간 내 게시물은 매 실행마다 인사이트 재조회
-REPORT_POSTS = 12      # 일일 리포트에 보여줄 최근 게시물 수
+REPORT_POSTS = 12      # 일일 리포트에 최소한 실어보낼 최근 게시물 수
+REPORT_DAYS = 31       # "최근 한 달" 토글이 보여줄 기간
 
 MEDIA_METRICS = ["reach", "views", "saved", "shares", "total_interactions",
                  "profile_visits", "follows"]
@@ -172,6 +174,49 @@ def fetch_account_insights(acc):
     return out
 
 
+def fetch_daily_series(acc, metric, days=29):
+    """일별 시계열. reach / follower_count 만 이 형태를 지원한다.
+    반환: [(날짜문자열, 값, end_time_epoch), ...] 오래된 것부터."""
+    until = int(time.time())
+    since = until - days * 86400
+    try:
+        d = get(f"{acc['ig_id']}/insights", {
+            "metric": metric, "period": "day", "since": since, "until": until,
+            "access_token": acc["token"]})
+    except ApiError as e:
+        P(f"          [{metric}] 시계열 수집 실패: {e}")
+        return []
+    out = []
+    for v in (d.get("data", [{}])[0].get("values") or []):
+        et = v.get("end_time", "")
+        try:
+            ts = int(datetime.strptime(et, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+        except ValueError:
+            continue
+        out.append((et[:10], v.get("value"), ts))
+    return out
+
+
+def fetch_views_for_days(acc, boundaries, have_dates):
+    """조회수는 시계열 형태를 지원하지 않아 하루 범위로 끊어 요청한다.
+    boundaries = fetch_daily_series 가 준 [(날짜, 값, end_ts)] — 그 경계를 그대로 쓴다.
+    have_dates 에 있는 날짜는 이미 있으니 건너뛴다(호출 절약)."""
+    out = {}
+    for i in range(1, len(boundaries)):
+        date, _, until_ts = boundaries[i]
+        if date in have_dates:
+            continue
+        since_ts = boundaries[i - 1][2]
+        try:
+            d = get(f"{acc['ig_id']}/insights", {
+                "metric": "views", "period": "day", "metric_type": "total_value",
+                "since": since_ts, "until": until_ts, "access_token": acc["token"]})
+            out[date] = d.get("data", [{}])[0].get("total_value", {}).get("value")
+        except ApiError:
+            continue
+    return out
+
+
 def fetch_demographics(acc):
     out = {}
     for bd in DEMO_BREAKDOWNS:
@@ -246,6 +291,10 @@ def collect(acc, cache):
     if with_ins:
         P(f"          인사이트 수집 범위: {with_ins[-1]['timestamp'][:10]} ~ {with_ins[0]['timestamp'][:10]}")
 
+    # 일일 리포트는 "최근 한 달 전체"를 토글로 보여주므로 그만큼 실어보낸다
+    cut = (datetime.now(timezone.utc) - timedelta(days=REPORT_DAYS)).isoformat()
+    recent = [p for p in posts if (p.get("timestamp") or "") >= cut]
+
     return {
         "label": acc.get("label") or uname,
         "profile": profile,
@@ -253,33 +302,73 @@ def collect(acc, cache):
         "demographics": fetch_demographics(acc),
         "posts_total": len(posts),
         "posts_analyzable": len(with_ins),
-        "posts": posts[:REPORT_POSTS],
+        "posts_recent_days": REPORT_DAYS,
+        "posts_recent_count": len(recent),
+        "posts": posts[:max(REPORT_POSTS, len(recent))],
     }
 
 
-def update_history(report):
-    """API가 과거 값을 주지 않으므로 매 실행마다 그날의 스냅샷을 누적한다."""
+def update_history(report, accounts):
+    """일별 기록을 누적한다.
+    도달·신규팔로워는 API가 29일치 시계열을 주므로 과거까지 채운다.
+    조회수는 시계열 미지원이라 없는 날짜만 하루씩 끊어 받아온다.
+    팔로워 총수는 오늘 값에서 신규 팔로워를 역산해 과거를 추정한다."""
     hist = load_json("history.json", {})
     if not isinstance(hist, dict):
         hist = {}
-    today = datetime.now(timezone.utc).date().isoformat()
 
-    for acc in report["accounts"]:
-        u = acc["profile"].get("username", acc["label"])
-        ins = acc["account_insights"]
-        row = {
-            "date": today,
-            "followers_count": acc["profile"].get("followers_count", 0),
-            "reach": ins.get("reach"),
+    by_ig = {a["ig_id"]: a for a in accounts}
+    for acc_rep in report["accounts"]:
+        prof = acc_rep["profile"]
+        u = prof.get("username", acc_rep["label"])
+        acc = by_ig.get(str(prof.get("id")))
+        if not acc:
+            continue
+
+        rows = {r["date"]: r for r in hist.get(u, []) if isinstance(r, dict) and r.get("date")}
+
+        reach_series = fetch_daily_series(acc, "reach")
+        new_fol_series = fetch_daily_series(acc, "follower_count")
+        new_fol = {d: v for d, v, _ in new_fol_series}
+
+        have_views = {d for d, r in rows.items() if r.get("views") is not None}
+        views_map = fetch_views_for_days(acc, reach_series, have_views) if reach_series else {}
+
+        for date, val, _ in reach_series:
+            r = rows.setdefault(date, {"date": date})
+            r["reach"] = val
+            if date in new_fol:
+                r["new_followers"] = new_fol[date]
+            if date in views_map:
+                r["views"] = views_map[date]
+
+        # 오늘치는 실측 스냅샷으로 덮어쓴다 (팔로워/비팔로워 분리 포함)
+        today = datetime.now(timezone.utc).date().isoformat()
+        ins = acc_rep["account_insights"]
+        t = rows.setdefault(today, {"date": today})
+        t.update({
+            "followers_count": prof.get("followers_count", 0),
+            "reach": ins.get("reach", t.get("reach")),
+            "views": ins.get("views", t.get("views")),
+            "reach_follower": ins.get("reach_follower"),
             "reach_non_follower": ins.get("reach_non_follower"),
-            "views": ins.get("views"),
+            "views_follower": ins.get("views_follower"),
             "views_non_follower": ins.get("views_non_follower"),
-        }
-        rows = hist.setdefault(u, [])
-        if rows and rows[-1]["date"] == today:
-            rows[-1] = row
-        else:
-            rows.append(row)
+        })
+
+        ordered = [rows[d] for d in sorted(rows)]
+        # 팔로워 총수 역산: total(d) = 오늘값 - (d 이후 신규 팔로워 합)
+        cur = prof.get("followers_count", 0)
+        running = 0
+        for i in range(len(ordered) - 2, -1, -1):
+            running += (ordered[i + 1].get("new_followers") or 0)
+            if ordered[i].get("followers_count") is None:
+                ordered[i]["followers_count"] = max(0, cur - running)
+                ordered[i]["followers_estimated"] = True
+
+        hist[u] = ordered
+        P(f"          기록 {len(ordered)}일 (도달 {len(reach_series)}일 · 조회수 신규 {len(views_map)}일)")
+
     save_json("history.json", hist)
     return hist
 
@@ -292,5 +381,5 @@ if __name__ == "__main__":
 
     save_json("posts_cache.json", cache)
     save_json("report_data.json", report)
-    hist = update_history(report)
+    hist = update_history(report, accounts)
     P("기록 일수: " + ", ".join(f"{k} {len(v)}일" for k, v in hist.items()))

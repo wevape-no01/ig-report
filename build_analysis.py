@@ -1,10 +1,13 @@
 """
-posts_cache.json 을 읽어 성과 분석 페이지(analysis.html)를 만든다.
+posts_cache.json 을 읽어 콘텐츠 분석 페이지(analysis.html)를 만든다.
 
 구성:
-  종합 판정 / 핵심 지표 / 포맷별 / 해시태그 성과 / 캡션 길이 / 신규 유입 /
-  팔로워 구성 / 게시물 랭킹(상위 3 노출, 하위는 토글, 전체 10위까지) /
-  언어별·시각별(토글로 숨김) / 자동 해석 / 한계
+  종합 판정 / 핵심 지표 / 분석(인사이트·확인 필요) /
+  게시물 랭킹(전체 1위 카드 + 전체 랭킹 + 도달·저장·공유 랭킹) /
+  포맷별 / 해시태그 성과 / 해시태그 개수·캡션 길이 / 팔로워 구성 /
+  참고 지표(언어별·시각별·요일별, 토글) / 한계
+
+용어: 참여율→반응률, 참여율(팔로워)→팔로워 반응률(참고용), 도달률→노출 범위
 
 실행: python3 build_analysis.py
 """
@@ -19,7 +22,8 @@ OUT = os.path.join(DIR, "analysis.html")
 
 BENCH_ER_FOLLOWERS = 0.48          # 2026 업계 평균 참여율(팔로워 기준), Socialinsider
 BENCH_FORMAT = {"CAROUSEL_ALBUM": 0.55, "IMAGE": 0.37, "VIDEO": 0.52, "REELS": 0.52}
-RANK_LIMIT = 10                    # 랭킹은 10위까지만
+RANK_LIMIT = 10                    # 전체 랭킹은 10위까지만
+MINI_RANK = 5                      # 도달·저장·공유 랭킹은 5위까지만
 TOP_VISIBLE = 3                    # 상위 3개만 펼쳐서 보여줌
 MIN_N = 5                          # 이 미만이면 "표본 부족" 경고
 
@@ -184,33 +188,112 @@ def toggle(title, inner, open_=False):
             f'<div class="tg-body">{inner}</div></details>')
 
 
-def line_chart(rows, key, label):
-    """history 기반 추이 선그래프. rows=[{date, value}]"""
-    rows = [r for r in rows if r.get(key) is not None]
-    if len(rows) < 2:
-        n = len(rows)
-        txt = (f"{rows[0]['date']} · {rows[0][key]} (내일부터 선이 그려집니다)"
-               if n == 1 else "기록이 아직 없습니다")
-        return f'<svg viewBox="0 0 860 120"><text class="cat" x="430" y="60" text-anchor="middle">{esc(txt)}</text></svg>'
-    W, H, PAD = 860, 200, 38
-    vals = [r[key] for r in rows]
-    lo, hi = min(vals), max(vals)
-    rng = (hi - lo) or 1
-    step = (W - PAD * 2) / (len(rows) - 1)
-    pts = [(PAD + i * step, H - PAD - (v - lo) / rng * (H - PAD * 2))
-           for i, v in enumerate(vals)]
-    s = [f'<line class="grid" x1="{PAD}" y1="{PAD+(g/3)*(H-PAD*2):.0f}" '
-         f'x2="{W-PAD}" y2="{PAD+(g/3)*(H-PAD*2):.0f}"/>' for g in range(4)]
-    s.append(f'<text class="ax" x="{PAD-6}" y="{PAD+4}" text-anchor="end">{hi}</text>')
-    s.append(f'<text class="ax" x="{PAD-6}" y="{H-PAD+4}" text-anchor="end">{lo}</text>')
-    s.append('<path class="ln" d="' +
-             " ".join(("M" if i == 0 else "L") + f"{x:.1f},{y:.1f}" for i, (x, y) in enumerate(pts)) + '"/>')
-    every = max(1, len(pts) // 6)
-    for i, (x, y) in enumerate(pts):
-        if i in (0, len(pts) - 1) or i % every == 0:
-            s.append(f'<circle class="dot" cx="{x:.1f}" cy="{y:.1f}" r="3.5"/>')
-            s.append(f'<text class="ax" x="{x:.1f}" y="{H-12}" text-anchor="middle">{rows[i]["date"][5:]}</text>')
-    return f'<svg viewBox="0 0 {W} {H}">' + "".join(s) + "</svg>"
+def short(p, w=34):
+    return p["body"][:w] or "(내용 없음)"
+
+
+def linked(p, w=34):
+    t = esc(short(p, w))
+    return (f'<a href="{esc(p["permalink"])}" target="_blank" rel="noopener">{t}</a>'
+            if p["permalink"] else t)
+
+
+def label_of(p):
+    return f'{p["md"]} {TYPE_KO.get(p["type"], p["type"])}'
+
+
+# ------------------------------------------------------------ 분석 문장
+
+def rank_of(ranked_all, p):
+    for i, q in enumerate(ranked_all):
+        if q is p:
+            return i + 1
+    return len(ranked_all)
+
+
+def build_insights(posts, ranked_all, fmt, tag_stats, er_reach, er_fol,
+                   save_rate, share_rate, F, n):
+    """마케팅 담당자가 읽고 바로 움직일 수 있는 문장으로 뽑는다.
+    반환: (인사이트 문장 리스트, 확인 필요 문장 리스트)"""
+    ins, chk = [], []
+
+    # --- 인사이트 ---
+    if len(fmt) >= 2 and fmt[1]["er"] and fmt[0]["n"] >= 3:
+        top, snd = fmt[0], fmt[1]
+        ins.append(
+            f'<b>{TYPE_KO.get(top["key"], top["key"])}가 가장 잘 먹힙니다.</b> '
+            f'{TYPE_KO.get(snd["key"], snd["key"])}보다 반응률이 {top["er"]/snd["er"]:.1f}배 높습니다'
+            f'(각각 {top["n"]}개 / {snd["n"]}개 기준). 다음에 올릴 소재부터 이 포맷으로 맞추는 게 안전합니다.')
+
+    fol_posts = [p for p in posts if p["follows"]]
+    tot_fol = sum(p["follows"] for p in posts)
+    if fol_posts and tot_fol >= 5:
+        tp = max(fol_posts, key=lambda p: p["follows"])
+        rk = rank_of(ranked_all, tp)
+        ins.append(
+            f'<b>팔로워를 실제로 데려온 건 {label_of(tp)}입니다.</b> '
+            f'이 게시물 하나가 전체 신규 팔로우 {tot_fol}건 중 {tp["follows"]}건'
+            f'({tp["follows"]/tot_fol*100:.0f}%)을 만들었는데, 반응률로는 {rk}위입니다. '
+            f'좋아요가 많은 게시물과 팔로워를 만드는 게시물은 다릅니다 — 이 게시물의 소재와 구성을 다시 쓰세요.')
+
+    mx_reach = max(posts, key=lambda p: p["reach"])
+    mx_rank = rank_of(ranked_all, mx_reach)
+    if mx_rank > 3:
+        tail = ('많이 노출됐지만 본 사람 대비 반응은 평균 이하였습니다. '
+                if mx_reach["er"] < er_reach else
+                '반응률 자체는 나쁘지 않았지만 1위는 아니었습니다. ')
+        ins.append(
+            f'<b>가장 널리 퍼진 게시물({label_of(mx_reach)}, 도달 {mx_reach["reach"]:,}명)은 '
+            f'반응률로는 {mx_rank}위입니다.</b> {tail}'
+            f'노출은 알고리즘이 밀어준 결과이고, 반응률은 소재의 힘입니다. 둘을 같이 봐야 합니다.')
+
+    tot_save, tot_share = sum(p["saved"] for p in posts), sum(p["shares"] for p in posts)
+    if tot_save or tot_share:
+        best_save = max(posts, key=lambda p: p["saved"])
+        if best_save["saved"]:
+            ins.append(
+                f'<b>저장이 가장 많았던 건 {label_of(best_save)}({best_save["saved"]}건)입니다.</b> '
+                f'저장은 알고리즘이 좋아요보다 크게 보는 신호이고, "나중에 다시 꺼내볼 이유"가 있을 때 생깁니다 — '
+                f'제품 비교, 액상 추천, 매장 위치·영업시간처럼 정보가 담긴 게시물을 늘리면 이 숫자가 올라갑니다.')
+
+    if tag_stats and len(tag_stats) >= 2:
+        bt = tag_stats[0]
+        ins.append(
+            f'<b>#{esc(bt["key"])} 를 붙인 게시물의 반응률이 가장 높습니다</b>'
+            f'({bt["er"]:.1f}% · {bt["n"]}개 기준, 전체 평균 {er_reach:.1f}%). '
+            f'이 태그와 같은 결의 소재를 더 밀어볼 여지가 있습니다.')
+
+    # --- 확인 필요 ---
+    if er_fol < BENCH_ER_FOLLOWERS:
+        chk.append(
+            f'팔로워 반응률이 {er_fol:.2f}%로 업계 평균 {BENCH_ER_FOLLOWERS}%의 '
+            f'{er_fol/BENCH_ER_FOLLOWERS:.1f}배 수준입니다. 팔로워 {F:,}명 중 실제로 반응하는 사람이 적다는 뜻이라, '
+            f'게시물 자체보다 팔로워 구성(오래 전 유입·비활성 계정)을 먼저 의심해야 합니다.')
+
+    if save_rate < 0.5:
+        chk.append(
+            f'저장률 {save_rate:.2f}%는 낮습니다. 지금 게시물이 "보고 지나가는" 콘텐츠에 가깝다는 신호입니다.')
+
+    if share_rate < 0.2:
+        chk.append(
+            f'공유율 {share_rate:.2f}%도 낮습니다. 공유는 새 사람에게 닿는 가장 싼 경로인데 거의 발생하지 않고 있습니다.')
+
+    recent, older = posts[:10], posts[10:]
+    if older:
+        rt, ot = avg(recent, lambda p: p["tag_n"]), avg(older, lambda p: p["tag_n"])
+        if ot >= 1 and rt < ot * 0.7:
+            chk.append(
+                f'최근 10개 게시물의 해시태그가 평균 {rt:.1f}개인데, 그 이전은 {ot:.1f}개였습니다. '
+                f'태그를 줄이면 팔로워에게는 도달하지만 새 사람에게 발견될 통로가 좁아집니다.')
+
+    if not fol_posts:
+        chk.append('분석 기간 게시물 중 팔로우를 만든 게시물이 하나도 없습니다. '
+                   '노출은 되는데 프로필까지 넘어오지 않는다는 뜻이라, 캡션 끝에 계정을 팔로우할 이유를 한 줄 넣어보세요.')
+
+    if n < MIN_N * 3:
+        chk.append(f'분석 게시물이 {n}개뿐입니다. 아래 비율들은 게시물 하나에 크게 흔들리니 방향만 참고하세요.')
+
+    return ins[:3], chk[:2]
 
 
 # ------------------------------------------------------------ 섹션 렌더
@@ -233,23 +316,21 @@ def render_thin(a):
     <h2>@{esc(uname)}</h2>
     <span class="dim">분석 가능 게시물 {len(posts)}개 · 팔로워 {prof.get("followers_count", 0):,}명</span>
   </div>
-  <div class="warn">게시물이 {MIN_POSTS}개 미만이라 참여율·저장률 같은 비율 지표를 계산하지 않았습니다.
+  <div class="warn">게시물이 {MIN_POSTS}개 미만이라 반응률·저장률 같은 비율 지표를 계산하지 않았습니다.
   도달이 한 자릿수라 비율로 바꾸면 수치가 크게 튀어 잘못된 판단을 유도합니다.
   게시물이 {MIN_POSTS}개 이상 쌓이면 자동으로 전체 분석이 표시됩니다.</div>
   <table><thead><tr><th>게시일</th><th>포맷</th><th>내용</th>
-    <th class="num">도달</th><th class="num">좋아요</th><th class="num">댓글</th></tr></thead>
+    <th class="num">도달<br>(본 사람 수)</th><th class="num">좋아요</th><th class="num">댓글</th></tr></thead>
     <tbody>{rows}</tbody></table>
 </section>"""
 
 
-def render_account(a, hist):
+def render_account(a):
     acc, posts = a["acc"], a["posts"]
     prof = acc["profile"]
     F = prof.get("followers_count") or 1
     uname = prof.get("username", "?")
-    ins = acc.get("account_insights", {})
     demo = acc.get("demographics", {})
-    rows_hist = hist.get(uname, [])
 
     n = len(posts)
     a_reach = avg(posts, lambda p: p["reach"])
@@ -257,65 +338,82 @@ def render_account(a, hist):
     er_reach = a_inter / a_reach * 100 if a_reach else 0
     er_fol = a_inter / F * 100
     tot_reach = sum(p["reach"] for p in posts) or 1
-    save_rate = sum(p["saved"] for p in posts) / tot_reach * 100
-    share_rate = sum(p["shares"] for p in posts) / tot_reach * 100
+    tot_save = sum(p["saved"] for p in posts)
+    tot_share = sum(p["shares"] for p in posts)
+    save_rate = tot_save / tot_reach * 100
+    share_rate = tot_share / tot_reach * 100
     bench_x = er_fol / BENCH_ER_FOLLOWERS if BENCH_ER_FOLLOWERS else 0
 
-    # ---- 포맷별
     fmt = group_stats(posts, lambda p: p["type"])
-    fmt_html = bars(fmt, lambda r: TYPE_KO.get(r["key"], r["key"]),
-                    lambda r: f'· {r["n"]}개 · 도달 {r["reach"]:.0f}', emphasize_first=True)
-    fmt_read = ""
-    if len(fmt) >= 2 and fmt[1]["er"]:
-        top, snd = fmt[0], fmt[1]
-        fmt_read = (f'<p><b>{TYPE_KO.get(top["key"],top["key"])}가 '
-                    f'{TYPE_KO.get(snd["key"],snd["key"])}보다 참여율 '
-                    f'{top["er"]/snd["er"]:.1f}배 높습니다.</b> '
-                    f'각각 게시물 {top["n"]}개 / {snd["n"]}개 기준입니다. '
-                    f'업계 벤치마크도 캐러셀 {BENCH_FORMAT["CAROUSEL_ALBUM"]}% / '
-                    f'이미지 {BENCH_FORMAT["IMAGE"]}%로 같은 방향입니다.</p>')
-
-    # ---- 해시태그 (5회 이상 사용된 것만)
     tag_stats = [t for t in group_stats(posts, lambda p: p["tags"] or ["(태그 없음)"])
-                 if t["n"] >= MIN_N]
-    tag_html = bars(tag_stats, lambda r: "#" + r["key"] if r["key"] != "(태그 없음)" else r["key"],
-                    lambda r: f'· {r["n"]}개', max_rows=15)
-    tagged = [p for p in posts if p["tag_n"]]
-    tag_read = (f'<p>해시태그가 있는 게시물은 {len(tagged)}개, 없는 게시물은 {n-len(tagged)}개입니다. '
-                f'게시물당 평균 {avg(posts, lambda p: p["tag_n"]):.1f}개를 사용했습니다 '
-                f'(인스타그램 허용 한도는 30개).</p>')
+                 if t["n"] >= MIN_N and t["key"] != "(태그 없음)"]
 
-    # ---- 해시태그 개수 구간별
-    def tag_bucket(p):
-        k = p["tag_n"]
-        return "0개" if k == 0 else ("1–3개" if k <= 3 else ("4–7개" if k <= 7 else "8개 이상"))
-    tagn = group_stats(posts, tag_bucket)
-    tagn_html = bars(tagn, lambda r: r["key"], lambda r: f'· {r["n"]}개', narrow=True)
+    ranked_all = sorted(posts, key=lambda p: -p["er"])
+    ranked = ranked_all[:RANK_LIMIT]
 
-    # ---- 캡션 길이 구간별
-    def cap_bucket(p):
-        k = p["cap_len"]
-        return "~50자" if k <= 50 else ("51–150자" if k <= 150 else ("151–400자" if k <= 400 else "400자 초과"))
-    capb = group_stats(posts, cap_bucket)
-    capb_html = bars(capb, lambda r: r["key"], lambda r: f'· {r["n"]}개', narrow=True)
+    # ---- 분석 (인사이트 / 확인 필요)
+    ins_list, chk_list = build_insights(posts, ranked_all, fmt, tag_stats,
+                                        er_reach, er_fol, save_rate, share_rate, F, n)
+    ins_html = ('<div class="ins-box"><div class="ins-t">💡 오늘의 인사이트</div>'
+                + "".join(f"<p>{t}</p>" for t in ins_list) + '</div>') if ins_list else ""
+    chk_html = ('<div class="chk-box"><div class="chk-t">⚠️ 확인 필요</div>'
+                + "".join(f"<p>{t}</p>" for t in chk_list) + '</div>') if chk_list else ""
 
-    # ---- 랭킹
-    ranked = sorted(posts, key=lambda p: -p["er"])[:RANK_LIMIT]
+    # ---- 전체 1위 카드 + 분석 코멘트
+    champ = ranked_all[0] if ranked_all else None
+    champ_html = ""
+    if champ:
+        parts = []
+        parts.append(f'전체 평균 반응률 {er_reach:.1f}%의 '
+                     f'{champ["er"]/er_reach:.1f}배입니다.' if er_reach else "")
+        same_fmt = next((f for f in fmt if f["key"] == champ["type"]), None)
+        if same_fmt and same_fmt["n"] >= 2:
+            parts.append(f'{TYPE_KO.get(champ["type"], champ["type"])} 평균'
+                         f'({same_fmt["er"]:.1f}%)보다도 높습니다.')
+        drivers = []
+        if champ["saved"]:
+            drivers.append(f'저장 {champ["saved"]}건')
+        if champ["shares"]:
+            drivers.append(f'공유 {champ["shares"]}건')
+        if champ["follows"]:
+            drivers.append(f'팔로우 {champ["follows"]}건')
+        if drivers:
+            parts.append('단순 좋아요가 아니라 ' + ' · '.join(drivers) +
+                         '이 함께 나왔습니다 — 알고리즘이 크게 보는 신호입니다.')
+        else:
+            parts.append('다만 저장·공유는 없었습니다. 좋아요 위주의 반응이라 '
+                         '노출이 더 퍼지는 힘까지는 만들지 못했습니다.')
+        if champ["tag_n"]:
+            parts.append(f'해시태그 {champ["tag_n"]}개, 캡션 {champ["cap_len"]}자 구성입니다.')
+        else:
+            parts.append(f'해시태그 없이 캡션 {champ["cap_len"]}자만으로 나온 결과입니다.')
 
+        champ_html = f'''
+  <div class="champ">
+    <div class="champ-h"><span class="badge good">전체 1위</span>
+      <b>{TYPE_KO.get(champ["type"], champ["type"])}</b>
+      <span class="champ-er">반응률 {champ["er"]:.1f}%</span>
+      <span class="dim">{champ["date"]} {champ["dow"]}요일 {champ["hour"]}시</span></div>
+    <p class="champ-cap">{linked(champ, 90)}</p>
+    <div class="champ-k">도달(본 사람 수) {champ["reach"]:,} · 반응 {champ["inter"]} ·
+      좋아요 {champ["likes"]} · 댓글 {champ["comments"]} · 저장 {champ["saved"]} ·
+      공유 {champ["shares"]} · 팔로워 +{champ["follows"]}</div>
+    <p class="champ-note">{" ".join(p for p in parts if p)}</p>
+  </div>'''
+
+    # ---- 전체 랭킹 (반응률 순)
     def rank_row(i, p):
-        link = (f'<a href="{esc(p["permalink"])}" target="_blank" rel="noopener">{esc(p["body"][:34] or "(내용 없음)")}</a>'
-                if p["permalink"] else esc(p["body"][:34] or "(내용 없음)"))
         return (f'<tr><td class="num">{i+1}</td>'
                 f'<td class="nw">{p["md"]}<span class="dim"> {p["dow"]} {p["hour"]}시</span></td>'
                 f'<td><span class="chip">{TYPE_KO.get(p["type"], p["type"])}</span></td>'
-                f'<td class="cap">{link}</td>'
+                f'<td class="cap">{linked(p)}</td>'
                 f'<td class="num strong">{p["er"]:.1f}%</td>'
-                f'<td class="num">{p["reach"]}</td>'
+                f'<td class="num">{p["reach"]:,}</td>'
                 f'<td class="num">{p["inter"]}</td>'
                 f'<td class="num">{(p["saved"]+p["shares"]) or "–"}</td></tr>')
 
     head = ('<thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th>'
-            '<th class="num">참여율</th><th class="num">도달</th>'
+            '<th class="num">반응률</th><th class="num">도달<br>(본 사람 수)</th>'
             '<th class="num">반응</th><th class="num">저장+공유</th></tr></thead>')
     top_rows = "".join(rank_row(i, p) for i, p in enumerate(ranked[:TOP_VISIBLE]))
     rest_rows = "".join(rank_row(i + TOP_VISIBLE, p) for i, p in enumerate(ranked[TOP_VISIBLE:]))
@@ -323,6 +421,64 @@ def render_account(a, hist):
     if rest_rows:
         rank_html += toggle(f"{TOP_VISIBLE+1}위 ~ {len(ranked)}위 보기",
                             f'<table>{head}<tbody>{rest_rows}</tbody></table>')
+
+    # ---- 도달 / 저장 / 공유 랭킹
+    def mini_rank(key, unit):
+        rows = [p for p in posts if p[key]]
+        rows.sort(key=lambda p: -p[key])
+        rows = rows[:MINI_RANK]
+        if not rows:
+            return '<p class="empty">아직 기록이 없습니다</p>'
+        h = ('<thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th>'
+             f'<th class="num">{esc(unit)}</th><th class="num">반응률</th></tr></thead>')
+        b = "".join(
+            f'<tr><td class="num">{i+1}</td><td class="nw">{p["md"]}</td>'
+            f'<td><span class="chip">{TYPE_KO.get(p["type"], p["type"])}</span></td>'
+            f'<td class="cap">{linked(p)}</td>'
+            f'<td class="num strong">{p[key]:,}</td>'
+            f'<td class="num">{p["er"]:.1f}%</td></tr>' for i, p in enumerate(rows))
+        return f'<table>{h}<tbody>{b}</tbody></table>'
+
+    other_ranks = (
+        toggle(f"도달(본 사람 수) TOP {MINI_RANK} — 가장 널리 퍼진 게시물",
+               mini_rank("reach", "도달"))
+        + toggle(f"저장 TOP {MINI_RANK} — 다시 보려고 담아둔 게시물",
+                 mini_rank("saved", "저장"))
+        + toggle(f"공유 TOP {MINI_RANK} — 남에게 보낸 게시물",
+                 mini_rank("shares", "공유")))
+
+    # ---- 포맷별
+    fmt_html = bars(fmt, lambda r: TYPE_KO.get(r["key"], r["key"]),
+                    lambda r: f'· {r["n"]}개 · 도달 {r["reach"]:.0f}', emphasize_first=True)
+    fmt_read = ""
+    if len(fmt) >= 2 and fmt[1]["er"]:
+        top, snd = fmt[0], fmt[1]
+        fmt_read = (f'<p><b>{TYPE_KO.get(top["key"],top["key"])}가 '
+                    f'{TYPE_KO.get(snd["key"],snd["key"])}보다 반응률 '
+                    f'{top["er"]/snd["er"]:.1f}배 높습니다.</b> '
+                    f'각각 게시물 {top["n"]}개 / {snd["n"]}개 기준입니다. '
+                    f'업계 벤치마크도 캐러셀 {BENCH_FORMAT["CAROUSEL_ALBUM"]}% / '
+                    f'이미지 {BENCH_FORMAT["IMAGE"]}%로 같은 방향입니다.</p>')
+
+    # ---- 해시태그
+    tag_html = bars(tag_stats, lambda r: "#" + r["key"],
+                    lambda r: f'· {r["n"]}개', max_rows=15)
+    tagged = [p for p in posts if p["tag_n"]]
+    tag_read = (f'<p>해시태그가 있는 게시물은 {len(tagged)}개, 없는 게시물은 {n-len(tagged)}개입니다. '
+                f'게시물당 평균 {avg(posts, lambda p: p["tag_n"]):.1f}개를 사용했습니다 '
+                f'(인스타그램 허용 한도는 30개).</p>')
+
+    def tag_bucket(p):
+        k = p["tag_n"]
+        return "0개" if k == 0 else ("1–3개" if k <= 3 else ("4–7개" if k <= 7 else "8개 이상"))
+    tagn_html = bars(group_stats(posts, tag_bucket), lambda r: r["key"],
+                     lambda r: f'· {r["n"]}개', narrow=True)
+
+    def cap_bucket(p):
+        k = p["cap_len"]
+        return "~50자" if k <= 50 else ("51–150자" if k <= 150 else ("151–400자" if k <= 400 else "400자 초과"))
+    capb_html = bars(group_stats(posts, cap_bucket), lambda r: r["key"],
+                     lambda r: f'· {r["n"]}개', narrow=True)
 
     # ---- 참고용 (토글)
     lang = group_stats(posts, lambda p: p["lang"])
@@ -334,22 +490,6 @@ def render_account(a, hist):
         + bars(sorted(hour, key=lambda r: -r["er"]), lambda r: f'{r["key"]}시',
                lambda r: f'· {r["n"]}개', max_rows=12)
     dow_inner = bars(dow, lambda r: f'{r["key"]}요일', lambda r: f'· {r["n"]}개')
-
-    # ---- 신규 유입
-    nf = ins.get("reach_non_follower")
-    nf_total = (ins.get("reach") or 0)
-    nf_pct = (nf / nf_total * 100) if (nf is not None and nf_total) else None
-    inflow = (f'<div class="kpis">'
-              f'<div class="kpi"><div class="lbl">오늘 도달</div><div class="v">{nf_total or "–"}</div></div>'
-              f'<div class="kpi"><div class="lbl">비팔로워 도달</div><div class="v">{nf if nf is not None else "–"}</div>'
-              f'<div class="cmp">{f"전체 도달의 {nf_pct:.0f}%" if nf_pct is not None else "수집 대기"}</div></div>'
-              f'<div class="kpi"><div class="lbl">누적 프로필 방문</div><div class="v">{sum(p["profile_visits"] for p in posts)}</div>'
-              f'<div class="cmp">게시물 {n}개 합계</div></div>'
-              f'<div class="kpi"><div class="lbl">게시물發 팔로우</div><div class="v">{sum(p["follows"] for p in posts)}</div>'
-              f'<div class="cmp">게시물 {n}개 합계</div></div></div>'
-              f'<p class="sub" style="margin-top:14px">비팔로워 도달은 해시태그·탐색탭·공유를 타고 새로 들어온 사람입니다. '
-              f'이 비율이 오르면 신규 유입이 늘고 있다는 뜻입니다.</p>'
-              + line_chart(rows_hist, "reach_non_follower", "비팔로워 도달"))
 
     # ---- 팔로워 구성
     def demo_block(title, d, top=6):
@@ -368,25 +508,6 @@ def render_account(a, hist):
                           demo_block("국가", demo.get("country"))])
                  or '<p class="empty">인구통계 데이터가 아직 없습니다</p>')
 
-    # ---- 자동 해석
-    best = ranked[0] if ranked else None
-    reads = []
-    if best:
-        reads.append(f'<p>1위는 <b>{best["md"]} {TYPE_KO.get(best["type"], best["type"])}</b>로 참여율 '
-                     f'{best["er"]:.1f}%입니다. 도달 {best["reach"]}명 중 {best["inter"]}명이 반응했고, '
-                     f'전체 평균({er_reach:.1f}%)의 {best["er"]/er_reach:.1f}배입니다.</p>')
-    if fmt:
-        cnt = sum(1 for p in ranked[:TOP_VISIBLE] if p["type"] == fmt[0]["key"])
-        reads.append(f'<p>상위 {TOP_VISIBLE}개 중 <b>{cnt}개가 '
-                     f'{TYPE_KO.get(fmt[0]["key"], fmt[0]["key"])}</b>입니다.</p>')
-    mx_reach = max(posts, key=lambda p: p["reach"])
-    mx_rank = sorted(posts, key=lambda p: -p["er"]).index(mx_reach) + 1
-    reads.append(f'<p>도달이 가장 높았던 게시물({mx_reach["md"]}, 도달 {mx_reach["reach"]})은 '
-                 f'참여율로는 {mx_rank}위입니다. <b>도달과 참여율은 별개</b>이므로 도달만 보면 판단을 틀리게 됩니다.</p>')
-    reads.append(f'<p>저장 {sum(p["saved"] for p in posts)}건, 공유 {sum(p["shares"] for p in posts)}건입니다 '
-                 f'(게시물 {n}개 합계). 알고리즘이 가중치를 크게 주는 신호입니다. '
-                 f'제품 비교, 사용법, 매장 정보처럼 <b>다시 꺼내볼 이유가 있는 콘텐츠</b>가 저장을 만듭니다.</p>')
-
     period = f'{posts[-1]["date"]} ~ {posts[0]["date"]}'
     ex_old, ex_bad = a.get("excluded_old", 0), a.get("excluded_bad", 0)
     ex_parts = []
@@ -395,7 +516,7 @@ def render_account(a, hist):
     if ex_bad:
         ex_parts.append(f"도달 집계 오류 {ex_bad}개")
     ex_note = (f'<div class="warn" style="margin-top:12px">제외된 게시물: {" · ".join(ex_parts)}. '
-               f'오래된 게시물은 인스타그램이 도달을 과소 집계해 참여율이 비정상으로 나오므로 '
+               f'오래된 게시물은 인스타그램이 도달을 과소 집계해 반응률이 비정상으로 나오므로 '
                f'최근 {ANALYSIS_MONTHS}개월만 분석합니다.</div>') if ex_parts else ""
 
     return f"""
@@ -411,54 +532,57 @@ def render_account(a, hist):
     <span class="badge {'good' if bench_x >= 1 else 'warn'}">업계 평균의 {bench_x:.1f}배</span>
     <span class="badge {'warn' if save_rate < 0.5 else 'good'}">저장률 {save_rate:.2f}%</span>
   </div>
-  <p class="sub">참여율(팔로워 기준). 2026년 인스타그램 유기적 참여율 평균은 {BENCH_ER_FOLLOWERS}%입니다.</p>
+  <p class="sub">팔로워 반응률(참고용). 팔로워 수 대비 반응 비율로, 업계 평균과 비교할 수 있는 유일한 지표입니다.
+     2026년 인스타그램 평균은 {BENCH_ER_FOLLOWERS}%입니다.</p>
 
+  <h3>핵심 지표</h3>
+  <p class="sub">기간 내 게시물 {n}개 기준</p>
   <div class="kpis">
-    <div class="kpi"><div class="lbl">참여율 (도달 기준)</div><div class="v">{er_reach:.1f}%</div>
-      <div class="cmp">본 사람 100명 중 {er_reach:.0f}명이 반응</div></div>
-    <div class="kpi"><div class="lbl">참여율 (팔로워 기준)</div><div class="v">{er_fol:.2f}%</div>
+    <div class="kpi"><div class="lbl">반응률</div><div class="v">{er_reach:.1f}%</div>
+      <div class="cmp">본 사람 100명 중 {er_reach:.0f}명이 좋아요·댓글·저장·공유를 남김</div></div>
+    <div class="kpi"><div class="lbl">팔로워 반응률(참고용)</div><div class="v">{er_fol:.2f}%</div>
       <div class="cmp {'good' if er_fol >= BENCH_ER_FOLLOWERS else 'bad'}">업계 평균 대비 {(er_fol-BENCH_ER_FOLLOWERS)/BENCH_ER_FOLLOWERS*100:+.0f}%</div></div>
-    <div class="kpi"><div class="lbl">도달률</div><div class="v">{a_reach/F*100:.1f}%</div>
-      <div class="cmp">평균 {a_reach:.0f}명에게 노출</div></div>
+    <div class="kpi"><div class="lbl">노출 범위</div><div class="v">{a_reach/F*100:.1f}%</div>
+      <div class="cmp">게시물 하나가 평균 {a_reach:.0f}명에게 도달 · 팔로워 수 대비 비율</div></div>
     <div class="kpi"><div class="lbl">저장률</div><div class="v">{save_rate:.2f}%</div>
-      <div class="cmp">합계 {sum(p['saved'] for p in posts)}건</div></div>
+      <div class="cmp">합계 {tot_save}건 · 다시 보려고 담아둔 비율</div></div>
     <div class="kpi"><div class="lbl">공유율</div><div class="v">{share_rate:.2f}%</div>
-      <div class="cmp">합계 {sum(p['shares'] for p in posts)}건</div></div>
+      <div class="cmp">합계 {tot_share}건 · 남에게 보낸 비율</div></div>
   </div>
 
-  <h3>자동 해석</h3>
-  <p class="sub">갱신될 때마다 데이터에 맞춰 다시 쓰입니다</p>
-  <div class="reads reads-box">{''.join(reads)}</div>
+  <h3>분석</h3>
+  <p class="sub">데이터가 갱신될 때마다 다시 쓰입니다</p>
+  {ins_html}
+  {chk_html}
+
+  <h3>게시물 랭킹</h3>
+  <p class="sub">반응률(본 사람 대비 반응) 순 · 상위 {RANK_LIMIT}위까지</p>
+  {champ_html}
+  {rank_html}
+  <div style="margin-top:14px">{other_ranks}</div>
 
   <h3>포맷별 성과</h3>
-  <p class="sub">참여율(도달 기준) — 본 사람 대비 반응 비율</p>
+  <p class="sub">반응률 — 본 사람 대비 반응 비율</p>
   {fmt_html}
   <div class="legend"><span><i class="sw"></i>가장 성과가 좋은 포맷</span>
     <span><i class="sw g"></i>비교군</span></div>
   <div class="reads">{fmt_read}</div>
 
   <h3>해시태그별 성과</h3>
-  <p class="sub">{MIN_N}회 이상 사용한 해시태그만 · 참여율(도달 기준) 순</p>
+  <p class="sub">{MIN_N}회 이상 사용한 해시태그만 · 반응률 순</p>
   {tag_html}
   <div class="reads">{tag_read}</div>
 
   <h3>해시태그 개수 · 캡션 길이</h3>
-  <p class="sub">참여율(도달 기준)</p>
+  <p class="sub">반응률</p>
   <div class="two">
     <div><div class="mini-t">해시태그 개수</div>{tagn_html}</div>
     <div><div class="mini-t">캡션 길이(해시태그 제외)</div>{capb_html}</div>
   </div>
 
-  <h3>신규 유입</h3>
-  {inflow}
-
   <h3>팔로워 구성</h3>
   <p class="sub">인스타그램이 추정한 값입니다</p>
   <div class="demos">{demo_html}</div>
-
-  <h3>게시물 랭킹</h3>
-  <p class="sub">참여율(도달 기준) 순 · 상위 {RANK_LIMIT}위까지</p>
-  {rank_html}
 
   <h3>참고 지표</h3>
   <p class="sub">표본이 적어 참고용입니다. 필요할 때 펼쳐 보세요.</p>
@@ -551,17 +675,35 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .dm-bar i { display:block; height:100%; background:var(--accent); border-radius:3px; }
 .dm-v { text-align:right; font-variant-numeric:tabular-nums; color:var(--text); }
 .limits { font-size:12.5px; color:var(--text2); line-height:1.75; }
+.ins-box, .chk-box { border:1px solid var(--border); border-radius:10px;
+  padding:14px 16px; margin-bottom:11px; }
+.ins-box { border-left:3px solid var(--accent); background:#fbfcfe; }
+.chk-box { border-left:3px solid #d9a520; background:#fffdf6; }
+.ins-t, .chk-t { font-size:13px; font-weight:700; margin-bottom:9px; }
+.ins-t { color:var(--accent); } .chk-t { color:#8a5a00; }
+.ins-box p, .chk-box p { font-size:13.5px; line-height:1.7; margin:0 0 9px; }
+.ins-box p:last-child, .chk-box p:last-child { margin-bottom:0; }
+.ins-box b { color:var(--accent); } .chk-box b { color:#8a5a00; }
+.champ { border:1px solid var(--border); border-left:3px solid var(--accent);
+  border-radius:10px; padding:14px 16px; margin-bottom:14px; background:#fbfcfe; }
+.champ-h { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; font-size:14px; }
+.champ-er { color:var(--accent); font-weight:700; font-size:15px; }
+.champ-cap { font-size:13px; color:var(--text2); margin:10px 0 8px; line-height:1.6; }
+.champ-cap a { color:var(--text2); text-decoration:none; }
+.champ-cap a:hover { color:var(--accent); text-decoration:underline; }
+.champ-k { font-size:11.5px; color:var(--muted); font-variant-numeric:tabular-nums;
+  line-height:1.6; padding-bottom:10px; border-bottom:1px solid var(--grid); }
+.champ-note { font-size:13px; line-height:1.7; color:var(--text); margin:10px 0 0; }
 """
 
 
 def build():
     cache = load("posts_cache.json", {})
     report = load("report_data.json", {"accounts": []})
-    hist = load("history.json", {})
     accounts = prep(cache, report)
 
     gen = report.get("generated_at", "")
-    body = "".join(render_account(a, hist) if len(a["posts"]) >= MIN_POSTS
+    body = "".join(render_account(a) if len(a["posts"]) >= MIN_POSTS
                    else render_thin(a) for a in accounts) or \
         '<section class="acct"><p class="empty">분석할 데이터가 없습니다. instagram_api.py 를 먼저 실행하세요.</p></section>'
 
@@ -572,16 +714,17 @@ def build():
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>성과 분석</title>
+<title>콘텐츠 분석</title>
 <style>{CSS}</style></head><body><div class="wrap">
-<div class="nav"><a href="./">일일 리포트</a><a class="on" href="./analysis.html">성과 분석</a></div>
-<h1>성과 분석</h1>
+<div class="nav"><a href="./">일일 리포트</a><a class="on" href="./analysis.html">콘텐츠 분석</a></div>
+<h1>콘텐츠 분석</h1>
 <div class="updated">업데이트: {esc(gen)} · 전체 게시물 {total}개 중 인사이트 있는 {anal}개 분석</div>
 {body}
 <section class="acct">
   <h2 style="font-size:15px;margin:0 0 12px">이 분석의 한계</h2>
   <div class="limits">
     인사이트(도달·조회·저장)는 계정을 프로페셔널로 전환한 이후 게시물에만 존재합니다. 그 이전 게시물은 좋아요·댓글·해시태그만 남아 분석에서 제외됩니다.<br>
+    "반응률"은 게시물을 본 사람 대비 좋아요·댓글·저장·공유의 비율입니다. 업계에서는 참여율(engagement rate)이라 부릅니다.<br>
     표본이 {MIN_N}개 미만인 항목은 경고를 붙였습니다. 우연일 가능성이 높아 판단 근거로 쓰지 마세요.<br>
     게시물별로 "해시태그를 타고 들어왔는지"는 API가 제공하지 않습니다. 비팔로워 도달로 신규 유입 총량만 알 수 있고, 경로별 구분은 인스타그램 앱에서 직접 확인해야 합니다.<br>
     "왜 좋았는지"의 진짜 원인(이미지의 매력, 소재의 시의성)은 숫자로 나오지 않습니다.
