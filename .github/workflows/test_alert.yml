@@ -1,0 +1,54 @@
+name: 알림 테스트 (일부러 실패시키기)
+
+# 실제 수집이 실패했을 때 무슨 일이 벌어지는지 그대로 재현하는 테스트용이다.
+# 인스타그램·스레드 API 는 건드리지 않는다 (호출 0회).
+#
+#   1) 일부러 실패한다  → GitHub 이 "workflow run failed" 알림을 보낸다
+#                        (모바일 앱 푸시 · 메일)
+#   2) 실패 알림을 기록 → 사이트 오른쪽 위 종에 빨간 알림이 뜬다
+#
+# 확인이 끝나면 이 파일은 지워도 된다.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: 저장소 가져오기
+        uses: actions/checkout@v4
+
+      - name: 파이썬 준비
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 일부러 실패시키기
+        run: |
+          echo "테스트: 데이터 수집이 실패한 상황을 흉내냅니다."
+          exit 1
+
+      # 아래는 update.yml 의 "실패 알림 기록" 단계와 똑같다.
+      - name: 실패 알림 기록
+        if: failure()
+        continue-on-error: true
+        run: |
+          python notice.py error "test-collect-$(date -u +%Y%m%d%H%M)" \
+            "[테스트] 데이터 수집이 실패했습니다" \
+            "실제로 실패했을 때 이렇게 뜹니다. 자동 갱신이 실패하면 리포트 숫자가 어제 그대로 남습니다." \
+            "$RUN_URL"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add notices.json
+          if git diff --staged --quiet; then
+            echo "알림 변경 없음"
+          else
+            git commit -m "알림 테스트: 수집 실패"
+            git push
+          fi
