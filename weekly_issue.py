@@ -17,9 +17,11 @@ import os
 import urllib.error
 import urllib.request
 
+import notice
 import weekly
 
 LABEL = "주간 리포트"
+SITE = "https://wevape-no01.github.io/ig-report/"
 
 
 def post(token, repo, title, body):
@@ -38,13 +40,21 @@ def post(token, repo, title, body):
 
 
 def main():
+    title, body = weekly.issue_title(), weekly.issue_body()
+
+    # 사이트 오른쪽 위 종에도 띄운다. 한 주에 한 번만 뜨도록 key 에 기간을 넣는다.
+    a, b, _, _ = weekly.periods()
+    notice.add("info", f"weekly-{a}",
+               "주간 리포트가 나왔습니다",
+               f"{a} ~ {b} 7일치 요약입니다. 지난 7일과 비교한 숫자를 볼 수 있습니다.",
+               SITE + "weekly.html")
+
     token = os.environ.get("GITHUB_TOKEN", "").strip()
     repo = os.environ.get("GITHUB_REPOSITORY", "").strip()
     if not (token and repo):
         print("GITHUB_TOKEN / GITHUB_REPOSITORY 가 없어 이슈 발행을 건너뜁니다.")
         return
 
-    title, body = weekly.issue_title(), weekly.issue_body()
     try:
         d = post(token, repo, title, body)
         print(f"주간 리포트 이슈 발행 완료: #{d.get('number')} {d.get('html_url')}")
