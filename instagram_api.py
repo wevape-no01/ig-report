@@ -39,6 +39,7 @@ MIN_INTERVAL = 0.4     # 요청과 요청 사이 최소 간격(초)
 MAX_NEW_INSIGHTS = 80  # 한 번 실행에서 새로 받을 게시물 인사이트 최대 개수
 
 REFRESH_DAYS = 30      # 이 기간 내 게시물은 매 실행마다 인사이트 재조회
+FOLLOWS_LOG_DAYS = 40  # 게시물별 팔로우 수를 며칠치까지 적어 둘지
 REPORT_POSTS = 12      # 일일 리포트에 최소한 실어보낼 최근 게시물 수
 REPORT_DAYS = 31       # "최근 한 달" 토글이 보여줄 기간
 
@@ -277,6 +278,7 @@ def collect(acc, cache):
 
     media = fetch_all_media(acc)
     cutoff = datetime.now(timezone.utc) - timedelta(days=REFRESH_DAYS)
+    today_str = datetime.now(timezone.utc).date().isoformat()
     fresh = reused = skipped = no_ins = deferred = 0
 
     for item in media:
@@ -321,6 +323,17 @@ def collect(acc, cache):
             rec["insights"] = old.get("insights", {})
             reused += 1
             skipped += 1
+
+        # 게시물별 팔로우 수(follows)는 "평생 누적"으로만 온다. 인스타그램은 이걸
+        # 날짜별로 쪼개주지 않는다. 그래서 오늘 몇 명이 늘었는지 보려면 매일 값을
+        # 적어 두고 전날과 빼는 수밖에 없다. 매 실행마다 다시 받아오는 최근
+        # 게시물(REFRESH_DAYS 이내)만 기록한다 — 오래된 글은 값이 안 변한다.
+        log = dict(old.get("follows_log") or {})
+        f_now = (rec.get("insights") or {}).get("follows")
+        if dt >= cutoff and isinstance(f_now, int):
+            log[today_str] = f_now
+        if log:
+            rec["follows_log"] = {d: log[d] for d in sorted(log)[-FOLLOWS_LOG_DAYS:]}
 
         slot[mid] = rec
 

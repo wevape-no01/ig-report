@@ -143,7 +143,7 @@ body { margin:0; color:var(--sh-text);
   <nav class="plat"><a class="on" href="./">인스타그램</a><a class="" href="./threads.html">스레드</a></nav>
 </div></header>
 <div class="cols">
-  <aside class="side"><a class="on" href="./">일일 리포트</a><a class="" href="./analysis.html">콘텐츠 분석</a></aside>
+  <aside class="side"><a class="on" href="./">일일 리포트</a><a class="" href="./weekly.html">주간 리포트</a><a class="" href="./analysis.html">콘텐츠 분석</a></aside>
   <main class="main">
     <div class="page-h"><h1>일일 리포트</h1>
       <span class="updated">업데이트: 2026-08-15 11:53 (한국시간)</span></div>
@@ -197,7 +197,7 @@ body { margin:0; color:var(--sh-text);
     <table>
       <thead><tr>
         <th>날짜</th><th>내용</th>
-        <th class="num">도달<br>(본 사람 수)</th><th class="num">조회</th>
+        <th class="num">도달</th><th class="num">조회</th>
         <th class="num">팔로워</th><th class="num">좋아요</th>
         <th class="num">댓글</th><th class="num">저장</th>
       </tr></thead>
@@ -443,14 +443,13 @@ body { margin:0; color:var(--sh-text);
     const last = withNew.length ? withNew[withNew.length-1] : null;
     const prev = withNew.length >= 2 ? withNew[withNew.length-2] : null;
     const dl = (last && prev) ? last.new_followers - prev.new_followers : null;
-    const week = withNew.slice(-7).reduce((a,r)=>a+r.new_followers, 0);
 
     const head = last
       ? `<div class="big"><span class="n">${last.new_followers > 0 ? '+' : ''}${n(last.new_followers)}</span>
            <span class="u">명 · ${last.date}</span>
            <span class="u ${dl>0?'delta up':dl<0?'delta down':''}">${
              (dl === null || dl === 0) ? '' : (dl>0?'+':'') + dl + '명 (전일 대비)'}</span></div>
-         <p class="mini-s">최근 7일 합계 ${n(week)}명. 인스타그램은 어제까지의 값을 확정해서 주므로 오늘 늘어난 팔로워는 내일 반영됩니다.</p>`
+         <p class="mini-s">인스타그램은 어제까지의 값을 확정해서 주므로 오늘 늘어난 팔로워는 내일 반영됩니다.</p>`
       : `<p class="empty">신규 팔로워 기록이 아직 없습니다.</p>`;
 
     // ① 팔로워 / 비팔로워 (오늘 도달 기준)
@@ -471,24 +470,49 @@ body { margin:0; color:var(--sh-text);
         <p class="empty">오늘 팔로워/비팔로워 구분 데이터가 없습니다.</p>`;
     }
 
-    // ③ 게시물별 팔로우 수
-    const fp = posts.filter(p => p.insights && num(p.insights.follows) && p.insights.follows > 0)
-                    .sort((a,b) => b.insights.follows - a.insights.follows).slice(0,5);
+    // ② 오늘 팔로우를 만든 게시물
+    // 인스타그램은 게시물별 팔로우 수를 "평생 누적"으로만 준다. 그래서 매일 적어 둔
+    // 값(follows_log)의 전날 대비 증가분을 오늘치로 본다.
+    const TITLE2 = `<div class="mini-t">유입 경로 ② 오늘 어느 게시물이 데려왔는가</div>`;
+    const gain = [];
+    let logged = 0, from = '', to = '';
+    posts.forEach(p => {
+      const lg = p.follows_log;
+      if (!lg) return;
+      const ds = Object.keys(lg).sort();
+      if (!ds.length) return;
+      logged++;
+      if (ds.length < 2) return;
+      const a = ds[ds.length-2], b = ds[ds.length-1];
+      if (b > to) { from = a; to = b; }
+      const d = lg[b] - lg[a];
+      if (d > 0) gain.push({p, d});
+    });
+    gain.sort((x,y) => y.d - x.d);
+
     let right;
-    if (fp.length) {
-      right = `<div class="mini-t">유입 경로 ② 어느 게시물이 데려왔는가</div>
-        <p class="mini-s">그 게시물을 본 뒤 팔로우를 누른 사람 수입니다. 최근 게시물 중 많은 순.</p>
-        <table><thead><tr><th>날짜</th><th>내용</th><th class="num">팔로워</th></tr></thead><tbody>` +
-        fp.map(p => {
+    if (gain.length) {
+      const gap = Math.max(1, Math.round(
+        (new Date(to) - new Date(from)) / 86400000));
+      right = TITLE2 +
+        `<p class="mini-s">그 게시물을 본 뒤 팔로우를 누른 사람 수입니다.
+           ${from} → ${to}${gap > 1 ? ` (${gap}일치)` : ''} 사이에 늘어난 만큼만 셉니다.</p>
+         <table><thead><tr><th>날짜</th><th>내용</th><th class="num">팔로워</th></tr></thead><tbody>` +
+        gain.slice(0,5).map(({p, d}) => {
           const cap = esc((p.caption||'').replace(/\s+/g,' ').trim()).slice(0,60) || '(내용 없음)';
           const link = p.permalink && p.permalink !== '#'
             ? `<a href="${p.permalink}" target="_blank" rel="noopener">${cap}</a>` : cap;
           return `<tr><td>${(p.timestamp||'').slice(5,10)}</td><td class="cap">${link}</td>
-                  <td class="num">${n(p.insights.follows)}</td></tr>`;
+                  <td class="num">+${n(d)}</td></tr>`;
         }).join('') + `</tbody></table>`;
+    } else if (to) {
+      right = TITLE2 + `<p class="mini-s">${from} → ${to} 사이에 팔로우를 만든 게시물이 없습니다.</p>`;
     } else {
-      right = `<div class="mini-t">유입 경로 ② 어느 게시물이 데려왔는가</div>
-        <p class="empty">최근 게시물 중 팔로우를 만든 게시물이 아직 없습니다.</p>`;
+      right = TITLE2 + `<p class="mini-s">기록을 모으는 중입니다.
+        인스타그램은 게시물별 팔로우 수를 평생 누적으로만 주기 때문에, 매일 그 값을 적어 두고
+        전날과 비교하는 방식으로 오늘치를 계산합니다.
+        ${logged ? '오늘 첫 기록이 저장됐고, 내일 두 번째 기록이 쌓이면' : '자동 실행이 두 번 돌면'}
+        값이 나옵니다.</p>`;
     }
 
     box.innerHTML = head + `<div class="split" style="margin-top:16px">

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>주간 리포트 · 스레드 · WEVAPE SNS</title>
+<style>
+:root { color-scheme: light only;
+  --sh-text:#111; --sh-text2:#444; --sh-muted:#6b6b6b;
+  --sh-line:#e6e6e6; --sh-border:rgba(17,17,17,.14); --sh-accent:#1f6fc7; }
+* { box-sizing:border-box; }
+html, body { background:#fff; }
+body { margin:0; color:var(--sh-text);
+       font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+.site-h { border-bottom:1px solid var(--sh-line); background:#fff;
+          position:sticky; top:0; z-index:20; }
+.site-h .inner { max-width:1180px; margin:0 auto; padding:16px 20px 0;
+                 display:flex; flex-direction:column; gap:12px; }
+.brand { font-size:15px; font-weight:750; letter-spacing:-0.01em; }
+.brand span { color:var(--sh-muted); font-weight:400; font-size:12px; margin-left:8px; }
+.plat { display:flex; gap:24px; }
+.plat a { font-size:15px; font-weight:600; color:var(--sh-muted); text-decoration:none;
+          padding:6px 2px 11px; border-bottom:2px solid transparent; }
+.plat a:hover { color:var(--sh-text2); }
+.plat a.on { color:var(--sh-accent); border-bottom-color:var(--sh-accent); }
+.cols { max-width:1180px; margin:0 auto; padding:24px 20px 72px;
+        display:grid; grid-template-columns:172px 1fr; gap:32px; align-items:start; }
+.side { position:sticky; top:96px; display:flex; flex-direction:column; gap:3px; }
+.side a { font-size:13.5px; color:var(--sh-text2); text-decoration:none;
+          padding:9px 12px; border-radius:8px; }
+.side a:hover { background:#f4f6f9; }
+.side a.on { background:var(--sh-accent); color:#fff; font-weight:650; }
+.main { min-width:0; }
+.page-h { display:flex; justify-content:space-between; align-items:baseline;
+          flex-wrap:wrap; gap:10px; margin-bottom:18px; }
+.page-h h1 { font-size:22px; margin:0; letter-spacing:-0.01em; }
+.page-h .updated { font-size:12px; color:var(--sh-muted); }
+.stale { display:none; background:#fdecec; border:1px solid #f3b9b9; color:#8a1f1f;
+  border-radius:10px; padding:12px 16px; font-size:13px; line-height:1.65; margin-bottom:18px; }
+.stale.on { display:block; }
+.stale b { color:#6b1414; }
+.stale a { color:#8a1f1f; text-decoration:underline; }
+@media (max-width:820px) {
+  .cols { grid-template-columns:1fr; gap:18px; padding:18px 14px 64px; }
+  .side { position:static; flex-direction:row; gap:6px; flex-wrap:wrap;
+          border-bottom:1px solid var(--sh-line); padding-bottom:14px; }
+  .side a { border:1px solid var(--sh-border); border-radius:999px; padding:7px 14px; }
+  .side a.on { border-color:var(--sh-accent); }
+  .site-h .inner { padding:14px 14px 0; }
+  .plat { gap:18px; }
+}
+
+:root {
+  color-scheme: light only;
+  --text-primary:#111111; --text-secondary:#444444; --text-muted:#6b6b6b;
+  --gridline:#e6e6e6; --border:rgba(17,17,17,0.14);
+  --series-1:#1f6fc7; --good:#046a04; --critical:#b32626;
+}
+* { box-sizing:border-box; }
+html, body { background:#ffffff; }
+body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
+.period { font-size:13px; color:var(--text-secondary); margin:2px 0 20px; }
+.period b { color:var(--text-primary); }
+section { border:1px solid var(--border); border-radius:10px;
+          padding:18px 18px 16px; margin-bottom:20px; }
+section h2 { font-size:16px; margin:0 0 3px; font-weight:700; letter-spacing:-0.01em; }
+section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.6; }
+.kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); gap:12px; }
+.stat-tile { border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+.stat-tile .label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; font-weight:600; }
+.stat-tile .value { font-size:26px; font-weight:650; line-height:1.1; }
+.stat-tile .note { font-size:11px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
+.up { color:var(--good); } .down { color:var(--critical); }
+table { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:14px; }
+th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--gridline); vertical-align:top; }
+th { color:var(--text-muted); font-weight:500; font-size:10.5px;
+     text-transform:uppercase; letter-spacing:.02em; white-space:nowrap; }
+td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+td.cap { max-width:340px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+         color:var(--text-secondary); }
+td.strong { font-weight:650; color:var(--series-1); }
+a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:underline; }
+.empty { color:var(--text-muted); font-size:12.5px; padding:8px 0; margin:0; }
+.foot { font-size:11.5px; color:var(--text-muted); line-height:1.8; }
+.foot b { color:var(--text-secondary); }
+</style>
+</head><body>
+<header class="site-h"><div class="inner">
+  <div class="brand">WEVAPE SNS 운영 현황</div>
+  <nav class="plat"><a class="" href="./">인스타그램</a><a class="on" href="./threads.html">스레드</a></nav>
+</div></header>
+<div class="cols">
+  <aside class="side"><a class="" href="./threads.html">일일 리포트</a><a class="on" href="./threads-weekly.html">주간 리포트</a><a class="" href="./threads-analysis.html">콘텐츠 분석</a></aside>
+  <main class="main">
+    <div class="page-h"><h1>주간 리포트</h1>
+      <span class="updated"></span></div>
+    <div class="stale" id="stale" data-generated=""></div>
+<p class="period"><b>2026-08-08 ~ 2026-08-14</b> · 지난 7일을 그 앞 7일과 비교합니다.</p>
+<section>
+  <h2>스레드</h2>
+  <p class="sub">@wevape.no01 · 이번 주 올린 글 0개 ·
+     스레드는 "도달"이 없어 조회수만 볼 수 있습니다.</p>
+  <div class="kpi-row">
+    <div class="stat-tile"><div class="label">조회수</div><div class="value">136</div><div class="note"><span class="up">+105 · +339%</span> (지난주 대비)</div></div>
+    <div class="stat-tile"><div class="label">현재 팔로워</div><div class="value">1,067명</div><div class="note">증감 기록을 모으는 중입니다</div></div>
+  </div>
+  <p class="empty">이 기간에 올린 글이 없습니다.</p>
+</section>
+<section>
+  <div class="foot">
+    이 페이지는 <b>어제까지의 7일</b>을 지난 7일과 견줍니다. 인스타그램은 어제까지의 값만
+    확정해서 주기 때문에 오늘은 넣지 않습니다.<br>
+    같은 내용이 <b>매주 월요일 아침 GitHub 이슈</b>로도 올라옵니다. GitHub 모바일 앱을
+    깔고 이 저장소를 Watch 해두면 휴대폰으로 알림을 받습니다.
+  </div>
+</section>
+  </main>
+</div>
+
+<script>
+(function () {
+  // 수집이 실패하면 페이지가 다시 만들어지지 않는다.
+  // 그래서 "마지막 갱신이 언제였는지"만 보면 실패를 알아챌 수 있다.
+  var el = document.getElementById('stale');
+  if (!el) return;
+  var iso = el.dataset.generated;
+  if (!iso) return;
+  var t = new Date(iso);
+  if (isNaN(t)) return;
+  var hours = (Date.now() - t.getTime()) / 3600000;
+  if (hours < 36) return;
+  var days = Math.floor(hours / 24);
+  var when = days >= 1 ? (days + '일') : (Math.floor(hours) + '시간');
+  el.innerHTML = '⚠️ <b>' + when + '째 데이터가 갱신되지 않았습니다.</b> ' +
+    '매일 아침 7시에 자동 수집되어야 하는데 실패한 것으로 보입니다. ' +
+    '<a href="https://github.com/wevape-no01/ig-report/actions" target="_blank" rel="noopener">' +
+    '실행 기록 확인</a> · 아래 숫자는 마지막으로 성공한 시점의 값입니다.';
+  el.className = 'stale on';
+})();
+</script>
+</body></html>

@@ -4,8 +4,10 @@
 구조:
   WEVAPE SNS 운영 현황
   ├ 인스타그램 ─┬ 일일 리포트   (index.html)
+  │             ├ 주간 리포트   (weekly.html)
   │             └ 콘텐츠 분석   (analysis.html)
   └ 스레드     ─┬ 일일 리포트   (threads.html)
+                ├ 주간 리포트   (threads-weekly.html)
                 └ 콘텐츠 분석   (threads-analysis.html)
 
 각 페이지 생성기는 본문 HTML 과 자기 CSS 만 만들고 document() 로 감싼다.
@@ -20,8 +22,10 @@ PLATFORMS = [
 
 SUBPAGES = {
     "ig": [("daily", "일일 리포트", "./"),
+           ("weekly", "주간 리포트", "./weekly.html"),
            ("analysis", "콘텐츠 분석", "./analysis.html")],
     "th": [("daily", "일일 리포트", "./threads.html"),
+           ("weekly", "주간 리포트", "./threads-weekly.html"),
            ("analysis", "콘텐츠 분석", "./threads-analysis.html")],
 }
 
