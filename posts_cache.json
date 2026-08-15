@@ -10,13 +10,16 @@
    "like_count": 5,
    "comments_count": 1,
    "insights": {
-    "reach": 72,
-    "views": 170,
+    "reach": 80,
+    "views": 180,
     "saved": 0,
     "shares": 0,
     "total_interactions": 6,
     "profile_visits": 0,
     "follows": 0
+   },
+   "follows_log": {
+    "2026-08-15": 0
    }
   },
   "17926904211388654": {
@@ -29,13 +32,16 @@
    "like_count": 8,
    "comments_count": 2,
    "insights": {
-    "reach": 129,
-    "views": 336,
+    "reach": 133,
+    "views": 343,
     "saved": 0,
     "shares": 0,
     "total_interactions": 10,
     "profile_visits": 4,
     "follows": 0
+   },
+   "follows_log": {
+    "2026-08-15": 0
    }
   },
   "18049624496554963": {
@@ -3867,12 +3873,15 @@
    "comments_count": 1,
    "insights": {
     "reach": 0,
-    "views": 1,
+    "views": 2,
     "saved": 0,
     "shares": 0,
     "total_interactions": 1,
     "profile_visits": 0,
     "follows": 0
+   },
+   "follows_log": {
+    "2026-08-15": 0
    }
   },
   "18119285428680809": {
@@ -3892,6 +3901,9 @@
     "total_interactions": 2,
     "profile_visits": 0,
     "follows": 0
+   },
+   "follows_log": {
+    "2026-08-15": 0
    }
   },
   "18111668675001463": {
@@ -3911,6 +3923,9 @@
     "total_interactions": 2,
     "profile_visits": 0,
     "follows": 0
+   },
+   "follows_log": {
+    "2026-08-15": 0
    }
   },
   "18127183957679606": {
@@ -3930,6 +3945,9 @@
     "total_interactions": 3,
     "profile_visits": 0,
     "follows": 0
+   },
+   "follows_log": {
+    "2026-08-15": 0
    }
   },
   "17985177456043477": {
@@ -3949,6 +3967,9 @@
     "total_interactions": 4,
     "profile_visits": 0,
     "follows": 0
+   },
+   "follows_log": {
+    "2026-08-15": 0
    }
   },
   "17937051984334478": {
@@ -3968,6 +3989,9 @@
     "total_interactions": 3,
     "profile_visits": 0,
     "follows": 0
+   },
+   "follows_log": {
+    "2026-08-15": 0
    }
   },
   "18164297029457835": {
@@ -3987,6 +4011,9 @@
     "total_interactions": 3,
     "profile_visits": 0,
     "follows": 0
+   },
+   "follows_log": {
+    "2026-08-15": 0
    }
   },
   "18164580154454766": {
