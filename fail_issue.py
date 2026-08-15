@@ -78,8 +78,10 @@ def do_open(repo):
     )
     existing = open_failure_issues(repo)
     if existing:
+        # 댓글에는 담당자를 지정할 수 없다. 그래서 댓글에만 @멘션을 넣는다.
+        # (이슈는 담당자 지정으로 푸시가 오므로 멘션을 넣지 않는다 — 넣으면 두 번 온다)
         n = existing[0]["number"]
-        api("POST", f"/repos/{repo}/issues/{n}/comments", {"body": body})   # 댓글도 @멘션이 들어간다
+        api("POST", f"/repos/{repo}/issues/{n}/comments", {"body": f"@{owner}\n\n{body}"})
         print(f"이미 열린 실패 이슈 #{n} 에 댓글을 달았습니다.")
         return
     payload = {"title": f"{PREFIX} — {now:%m/%d %H:%M}", "body": body,
@@ -101,10 +103,12 @@ def do_close(repo):
         print("열려 있는 실패 이슈가 없습니다.")
         return
     now = kst()
+    owner = repo.split("/")[0]
     for i in rows:
         n = i["number"]
         api("POST", f"/repos/{repo}/issues/{n}/comments",
-            {"body": f"✅ **{now:%m월 %d일 %H:%M}** (한국시간) 수집이 정상으로 돌아왔습니다. "
+            {"body": f"@{owner}\n\n"                      # 댓글은 멘션이 있어야 푸시가 온다
+                     f"✅ **{now:%m월 %d일 %H:%M}** (한국시간) 수집이 정상으로 돌아왔습니다. "
                      f"리포트가 다시 갱신됐습니다.\n\n리포트 열기: {SITE}"})
         api("PATCH", f"/repos/{repo}/issues/{n}", {"state": "closed"})
         print(f"실패 이슈 #{n} 를 닫았습니다.")

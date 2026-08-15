@@ -24,12 +24,10 @@ LABEL = "주간 리포트"
 SITE = "https://wevape-no01.github.io/ig-report/"
 
 
-def post(token, repo, title, body):
+def post(token, repo, payload):
     req = urllib.request.Request(
         f"https://api.github.com/repos/{repo}/issues",
-        data=json.dumps({"title": title, "body": body,
-                         "labels": [LABEL]}).encode(),
-        method="POST",
+        data=json.dumps(payload).encode(), method="POST",
         headers={"Authorization": f"Bearer {token}",
                  "Accept": "application/vnd.github+json",
                  "X-GitHub-Api-Version": "2022-11-28",
@@ -55,32 +53,32 @@ def main():
         print("GITHUB_TOKEN / GITHUB_REPOSITORY 가 없어 이슈 발행을 건너뜁니다.")
         return
 
-    try:
-        d = post(token, repo, title, body)
-        print(f"주간 리포트 이슈 발행 완료: #{d.get('number')} {d.get('html_url')}")
-    except urllib.error.HTTPError as e:
-        detail = e.read().decode()[:300]
-        if e.code == 422 and "label" in detail.lower():
-            # 라벨이 아직 없는 저장소 — 라벨 없이 다시 시도한다
-            try:
-                req_body = {"title": title, "body": body}
-                req = urllib.request.Request(
-                    f"https://api.github.com/repos/{repo}/issues",
-                    data=json.dumps(req_body).encode(), method="POST",
-                    headers={"Authorization": f"Bearer {token}",
-                             "Accept": "application/vnd.github+json",
-                             "Content-Type": "application/json",
-                             "User-Agent": "ig-report/2.0"})
-                with urllib.request.urlopen(req, timeout=40) as r:
-                    d = json.loads(r.read().decode())
-                print(f"주간 리포트 이슈 발행 완료(라벨 없이): #{d.get('number')}")
+    # 담당자로 지정해야 휴대폰 푸시가 온다. 지정이 없으면 앱 알림함에만 들어간다.
+    # (@멘션도 푸시가 오지만 담당자 지정과 겹쳐 두 번 오므로 쓰지 않는다.)
+    owner = repo.split("/")[0]
+    payload = {"title": title, "body": body,
+               "labels": [LABEL], "assignees": [owner]}
+
+    # 라벨이 없는 저장소거나 담당자 지정이 막히면 422 가 온다.
+    # 그때는 문제되는 항목을 하나씩 빼면서 다시 시도한다 — 알림은 나가야 한다.
+    for drop in (None, "labels", "assignees"):
+        if drop:
+            payload.pop(drop, None)
+        try:
+            d = post(token, repo, payload)
+            note = f" ({drop} 없이)" if drop else ""
+            print(f"주간 리포트 이슈 발행 완료{note}: #{d.get('number')} {d.get('html_url')}")
+            return
+        except urllib.error.HTTPError as e:
+            detail = e.read().decode()[:300]
+            if e.code != 422:
+                print(f"이슈 발행 실패 (HTTP {e.code}): {detail}")
                 return
-            except Exception as e2:                       # noqa: BLE001
-                print(f"재시도 실패: {type(e2).__name__} {e2}")
-                return
-        print(f"이슈 발행 실패 (HTTP {e.code}): {detail}")
-    except Exception as e:                                # noqa: BLE001
-        print(f"이슈 발행 실패: {type(e).__name__} {e}")
+            print(f"422 — 다음 항목을 빼고 다시 시도합니다. 응답: {detail[:150]}")
+        except Exception as e:                            # noqa: BLE001
+            print(f"이슈 발행 실패: {type(e).__name__} {e}")
+            return
+    print("주간 리포트 이슈 발행에 실패했습니다.")
 
 
 if __name__ == "__main__":
