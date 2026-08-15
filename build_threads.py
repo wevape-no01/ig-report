@@ -135,7 +135,6 @@ def build():
     prof = report["profile"]
     ins = dict(report.get("account_insights", {}))
     posts = report.get("posts", [])
-    demo = report.get("demographics", {})
 
     # 스레드 API 는 계정 단위 좋아요/답글/리포스트/인용을 0 으로 주는 경우가 있다.
     # 그럴 때는 캐시에 있는 전체 글의 인사이트를 더해서 채운다.
@@ -146,26 +145,6 @@ def build():
         if not ins.get(k) and all_posts:
             ins[k] = sum((p.get("insights") or {}).get(k) or 0 for p in all_posts)
             from_posts = True
-
-    # ---- 팔로워 구성
-    def demo_block(title, d, top=6):
-        if not d:
-            return ""
-        items = sorted(d.items(), key=lambda kv: -(kv[1] or 0))[:top]
-        mx = max((v or 0) for _, v in items) or 1
-        rows = "".join(
-            f'<div class="dm"><span class="dm-k">{esc(k)}</span>'
-            f'<span class="dm-bar"><i style="width:{(v or 0)/mx*100:.0f}%"></i></span>'
-            f'<span class="dm-v">{v}</span></div>' for k, v in items)
-        return f'<div class="dm-box"><div class="dm-t">{esc(title)}</div>{rows}</div>'
-
-    demo_html = "".join([demo_block("연령", demo.get("age")),
-                         demo_block("성별", demo.get("gender")),
-                         demo_block("도시", demo.get("city")),
-                         demo_block("국가", demo.get("country"))])
-    demo_sec = (f'<section><div class="sec-h"><h2>팔로워 구성</h2></div>'
-                f'<p class="sub">스레드가 추정한 값입니다. 팔로워 100명 이상일 때만 제공됩니다.</p>'
-                f'<div class="demos">{demo_html}</div></section>') if demo_html else ""
 
     # ---- 링크 클릭수
     clicks = ins.get("clicks") or []
@@ -217,14 +196,7 @@ def build():
   <button class="more" id="morePosts" hidden></button>
 </section>
 
-<section>
-  <div class="sec-h"><h2>글 랭킹</h2></div>
-  <p class="sub">기간 전체 기준 · 상위 5개</p>
-  <div id="ranks"></div>
-</section>
-
 __CLICK_SEC__
-__DEMO_SEC__
 
 <section>
   <div class="sec-h"><h2>용어 설명</h2></div>
@@ -346,7 +318,6 @@ __DEMO_SEC__
     drawBars(document.getElementById('viewsChart'), bucket('views', gran));
 
     drawTable();
-    drawRanks();
   }
 
   function row(p, cls) {
@@ -378,29 +349,6 @@ __DEMO_SEC__
     } else btn.hidden = true;
   }
 
-  function drawRanks() {
-    const specs = [['조회', 'views'], ['좋아요', 'likes'], ['리포스트', 'reposts']];
-    document.getElementById('ranks').innerHTML = specs.map(([ko, k]) => {
-      const rows = posts.filter(p => num(iv(p)[k]) && iv(p)[k] > 0)
-                        .sort((a,b) => iv(b)[k] - iv(a)[k]).slice(0,5);
-      const sideCol = k !== 'views';        // 조회 랭킹에서는 조회 열을 두 번 쓰지 않는다
-      const inner = rows.length
-        ? `<table><thead><tr><th>#</th><th>날짜</th><th>내용</th>
-             <th class="num">${ko}</th>${sideCol ? '<th class="num">조회</th>' : ''}</tr></thead><tbody>` +
-          rows.map((p,i) => {
-            const txt = esc((p.text||'').replace(/\\s+/g,' ').trim()).slice(0,60) || '(내용 없음)';
-            const link = p.permalink ? `<a href="${p.permalink}" target="_blank" rel="noopener">${txt}</a>` : txt;
-            return `<tr><td class="num">${i+1}</td><td>${(p.timestamp||'').slice(5,10)}</td>
-              <td class="cap">${link}</td><td class="num strong">${n(iv(p)[k])}</td>
-              ${sideCol ? `<td class="num">${n(iv(p).views)}</td>` : ''}</tr>`;
-          }).join('') + `</tbody></table>`
-        : `<p class="empty">아직 기록이 없습니다</p>`;
-      const o = k === 'views' ? ' open' : '';
-      return `<details class="tg"${o}><summary>${ko} TOP 5</summary>
-              <div class="tg-body">${inner}</div></details>`;
-    }).join('');
-  }
-
   document.getElementById('segViews').querySelectorAll('button').forEach(b => {
     b.onclick = () => {
       document.getElementById('segViews').querySelectorAll('button')
@@ -416,7 +364,6 @@ __DEMO_SEC__
 
     report = dict(report, account_insights=ins, totals_from_posts=from_posts)
     inner = (inner.replace("__CLICK_SEC__", click_sec)
-                  .replace("__DEMO_SEC__", demo_sec)
                   .replace("__REPORT__", json.dumps(report, ensure_ascii=False))
                   .replace("__HIST__", json.dumps(hist, ensure_ascii=False)))
     gen = report.get("generated_at", "")
