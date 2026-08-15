@@ -19,8 +19,7 @@ jobs:
     # 시크릿은 step 의 if 에서 직접 못 읽는다. 그래서 env 로 한 번 옮겨둔다.
     env:
       HAS_THREADS: ${{ secrets.THREADS_TOKEN != '' }}
-      HAS_WEBHOOK: ${{ secrets.ALERT_WEBHOOK != '' }}
-      ALERT_WEBHOOK: ${{ secrets.ALERT_WEBHOOK }}
+      HAS_ALERT: ${{ secrets.ALERT_WEBHOOK != '' || secrets.KAKAO_REFRESH_TOKEN != '' }}
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       - name: 저장소 가져오기
@@ -31,17 +30,16 @@ jobs:
         with:
           python-version: "3.12"
 
+      # 만료되는 토큰(스레드·카카오)을 시크릿에 되돌려 쓸 때 필요하다.
+      - name: 준비물 설치
+        run: pip install pynacl
+
       - name: 인스타 데이터 수집
         env:
           IG_ACCOUNTS: ${{ secrets.IG_ACCOUNTS }}
         run: python instagram_api.py
 
       # 스레드는 THREADS_TOKEN 이 설정된 뒤에만 동작한다.
-      # 토큰 갱신 후 시크릿에 다시 저장할 때 pynacl 과 GH_PAT 가 필요하다.
-      - name: 스레드 준비물 설치
-        if: env.HAS_THREADS == 'true'
-        run: pip install pynacl
-
       - name: 스레드 데이터 수집
         id: threads
         if: env.HAS_THREADS == 'true'
@@ -79,14 +77,24 @@ jobs:
           fi
 
       # ---------------- 실패 알림 ----------------
-      # ALERT_WEBHOOK 시크릿에 슬랙/디스코드 웹훅 주소를 넣으면 켜진다.
+      # 카카오톡(KAKAO_REFRESH_TOKEN) 또는 웹훅(ALERT_WEBHOOK)이 설정되면 켜진다.
       - name: 실패 알림
-        if: failure() && env.HAS_WEBHOOK == 'true'
+        if: failure() && env.HAS_ALERT == 'true'
         continue-on-error: true
+        env:
+          ALERT_WEBHOOK: ${{ secrets.ALERT_WEBHOOK }}
+          KAKAO_REST_KEY: ${{ secrets.KAKAO_REST_KEY }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: python alert.py "🔴 WEVAPE SNS — 데이터 수집이 실패했습니다. 리포트가 갱신되지 않았습니다."
 
       # 스레드만 실패한 경우(전체 job 은 성공) 따로 알린다.
       - name: 스레드만 실패 알림
-        if: steps.threads.outcome == 'failure' && env.HAS_WEBHOOK == 'true'
+        if: steps.threads.outcome == 'failure' && env.HAS_ALERT == 'true'
         continue-on-error: true
+        env:
+          ALERT_WEBHOOK: ${{ secrets.ALERT_WEBHOOK }}
+          KAKAO_REST_KEY: ${{ secrets.KAKAO_REST_KEY }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: python alert.py "🟠 WEVAPE SNS — 스레드 수집만 실패했습니다. 인스타그램 리포트는 정상 갱신됐습니다."
