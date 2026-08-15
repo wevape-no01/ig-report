@@ -31,7 +31,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      # 만료되는 토큰(스레드·카카오)을 시크릿에 되돌려 쓸 때 필요하다.
+      # 만료되는 토큰(스레드)을 시크릿에 되돌려 쓸 때 필요하다.
       - name: 준비물 설치
         run: pip install pynacl
 
@@ -50,6 +50,16 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: python threads_api.py
 
+      # 스레드만 실패한 경우. 아래 커밋 단계가 notices.json 을 같이 올린다.
+      - name: 스레드 실패 알림 기록
+        if: steps.threads.outcome == 'failure'
+        continue-on-error: true
+        run: |
+          python notice.py warn "threads-$(date -u +%Y-%m-%d)" \
+            "스레드 수집만 실패했습니다" \
+            "인스타그램 리포트는 정상 갱신됐습니다. 스레드 숫자는 마지막으로 성공한 시점의 값입니다." \
+            "$RUN_URL"
+
       - name: 인스타그램 페이지 생성
         run: |
           python build_dashboard.py
@@ -64,6 +74,21 @@ jobs:
       - name: 주간 리포트 페이지 생성
         run: python build_weekly.py
 
+      # 매주 월요일(UTC 일요일 22시 실행분)에만 이슈를 하나 만들고 사이트 알림도 남긴다.
+      # GitHub 모바일 앱에서 이 저장소를 Watch 하면 휴대폰 알림이 온다.
+      - name: 주간 리포트 발행
+        if: github.event_name == 'schedule'
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 실행 시각은 UTC 일요일 22시 = 한국시간 월요일 오전 7시
+          if [ "$(date -u +%u)" = "7" ]; then
+            python weekly_issue.py
+          else
+            echo "월요일(한국시간)이 아니라 주간 리포트는 건너뜁니다."
+          fi
+
       - name: 변경사항 커밋
         run: |
           git config user.name "github-actions[bot]"
@@ -71,7 +96,7 @@ jobs:
           git add index.html analysis.html threads.html threads-analysis.html \
                   weekly.html threads-weekly.html \
                   history.json report_data.json posts_cache.json
-          for f in threads_history.json threads_report.json \
+          for f in notices.json threads_history.json threads_report.json \
                    threads_cache.json threads_token_meta.json; do
             [ -f "$f" ] && git add "$f"
           done
@@ -82,34 +107,36 @@ jobs:
             git push
           fi
 
-      # ---------------- 주간 리포트 ----------------
-      # 매주 월요일(UTC 일요일 22시 실행분)에만 이슈를 하나 만든다.
-      # GitHub 모바일 앱에서 이 저장소를 Watch 하면 휴대폰 알림이 온다.
-      - name: 주간 리포트 이슈 발행
-        if: github.event_name == 'schedule'
+      # ---------------- 실패했을 때 ----------------
+      # 수집이 실패하면 위 커밋 단계까지 못 온다. 그래서 알림만 따로 올린다.
+      - name: 실패 알림 기록
+        if: failure()
         continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 실행 시각은 UTC 일요일 22시 = 한국시간 월요일 오전 7시
-          if [ "$(date -u +%u)" = "7" ]; then
-            python weekly_issue.py
+          python notice.py error "collect-$(date -u +%Y-%m-%d)" \
+            "데이터 수집이 실패했습니다" \
+            "자동 갱신이 실패해 리포트 숫자가 어제 그대로입니다. 원인은 실행 기록에서 볼 수 있습니다." \
+            "$RUN_URL"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add notices.json
+          if git diff --staged --quiet; then
+            echo "알림 변경 없음"
           else
-            echo "월요일(한국시간)이 아니라 주간 리포트 이슈는 건너뜁니다."
+            git commit -m "알림: 데이터 수집 실패 $(date -u +'%Y-%m-%d')"
+            git push
           fi
 
-      # ---------------- 실패 알림 ----------------
       # 휴대폰 푸시는 GitHub 모바일 앱이 담당한다.
       # 아래는 슬랙/디스코드를 추가로 쓸 때만 켜진다 (ALERT_WEBHOOK 시크릿).
-      - name: 실패 알림
+      - name: 실패 웹훅 알림
         if: failure() && env.HAS_ALERT == 'true'
         continue-on-error: true
         env:
           ALERT_WEBHOOK: ${{ secrets.ALERT_WEBHOOK }}
         run: python alert.py "🔴 WEVAPE SNS — 데이터 수집이 실패했습니다. 리포트가 갱신되지 않았습니다."
 
-      # 스레드만 실패한 경우(전체 job 은 성공) 따로 알린다.
-      - name: 스레드만 실패 알림
+      - name: 스레드만 실패 웹훅 알림
         if: steps.threads.outcome == 'failure' && env.HAS_ALERT == 'true'
         continue-on-error: true
         env:
