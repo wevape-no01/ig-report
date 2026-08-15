@@ -52,6 +52,7 @@ P = lambda *a: print(*a, flush=True)
 
 
 _last_call = [0.0]
+CALLS = [0]            # 이번 실행에서 보낸 API 요청 수 (차단 재발 감시용)
 
 
 def _throttle():
@@ -60,6 +61,7 @@ def _throttle():
     if wait > 0:
         time.sleep(wait)
     _last_call[0] = time.monotonic()
+    CALLS[0] += 1
 
 
 def get(path, params, tries=3):
@@ -436,3 +438,5 @@ if __name__ == "__main__":
     save_json("report_data.json", report)
     hist = update_history(report, accounts)
     P("기록 일수: " + ", ".join(f"{k} {len(v)}일" for k, v in hist.items()))
+    P(f"[인스타] 이번 실행 API 호출 {CALLS[0]}회 "
+      f"(요청 간격 {MIN_INTERVAL}초 · 실행당 신규 인사이트 최대 {MAX_NEW_INSIGHTS}개)")

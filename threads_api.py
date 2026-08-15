@@ -62,6 +62,7 @@ class ApiError(RuntimeError):
 
 
 _last_call = [0.0]
+CALLS = [0]                # 이번 실행에서 보낸 API 요청 수
 
 
 def _throttle():
@@ -69,6 +70,7 @@ def _throttle():
     if wait > 0:
         time.sleep(wait)
     _last_call[0] = time.monotonic()
+    CALLS[0] += 1
 
 
 def request(url, tries=3):
@@ -428,3 +430,5 @@ if __name__ == "__main__":
     save_json("threads_cache.json", cache)
     save_json("threads_report.json", report)
     update_history(tok, report)
+    P(f"[스레드] 이번 실행 API 호출 {CALLS[0]}회 "
+      f"(요청 간격 {MIN_INTERVAL}초 · 실행당 신규 인사이트 최대 {MAX_NEW_INSIGHTS}개)")
