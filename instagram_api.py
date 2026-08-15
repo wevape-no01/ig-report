@@ -30,6 +30,14 @@ V = "v21.0"
 BASE = f"https://graph.facebook.com/{V}"
 DIR = os.path.dirname(os.path.abspath(__file__))
 
+# --- 호출 속도 제한 ---------------------------------------------------------
+# 2026-08 에 개발자 계정이 두 번 차단됐다. 원인은 짧은 시간에 몰린 API 호출이었다.
+# (첫 백필 수백 건 + 수동 재실행 반복)
+# 그래서 요청 사이에 최소 간격을 두고, 한 번에 새로 받는 인사이트 개수를 제한한다.
+# 못 받은 건 다음 실행에서 이어받으므로 며칠에 걸쳐 천천히 채워진다.
+MIN_INTERVAL = 0.4     # 요청과 요청 사이 최소 간격(초)
+MAX_NEW_INSIGHTS = 80  # 한 번 실행에서 새로 받을 게시물 인사이트 최대 개수
+
 REFRESH_DAYS = 30      # 이 기간 내 게시물은 매 실행마다 인사이트 재조회
 REPORT_POSTS = 12      # 일일 리포트에 최소한 실어보낼 최근 게시물 수
 REPORT_DAYS = 31       # "최근 한 달" 토글이 보여줄 기간
@@ -43,7 +51,19 @@ DEMO_BREAKDOWNS = ["age", "gender", "city", "country"]
 P = lambda *a: print(*a, flush=True)
 
 
+_last_call = [0.0]
+
+
+def _throttle():
+    """요청 사이 간격을 벌린다. 메타의 이상행위 탐지에 걸리지 않기 위한 안전장치."""
+    wait = MIN_INTERVAL - (time.monotonic() - _last_call[0])
+    if wait > 0:
+        time.sleep(wait)
+    _last_call[0] = time.monotonic()
+
+
 def get(path, params, tries=3):
+    _throttle()
     url = f"{BASE}/{path}?{urlencode(params)}"
     last = None
     for _ in range(tries):
@@ -65,6 +85,11 @@ class ApiError(RuntimeError):
     def __init__(self, code, body):
         super().__init__(f"({code}) {body}")
         self.code, self.body = code, body
+
+    @property
+    def is_auth(self):
+        """토큰/권한 문제(code 190)인지. 대개 개발자 계정 차단이 원인이다."""
+        return "OAuthException" in self.body or '"code":190' in self.body.replace(" ", "")
 
 
 def load_accounts():
@@ -250,7 +275,7 @@ def collect(acc, cache):
 
     media = fetch_all_media(acc)
     cutoff = datetime.now(timezone.utc) - timedelta(days=REFRESH_DAYS)
-    fresh = reused = skipped = no_ins = 0
+    fresh = reused = skipped = no_ins = deferred = 0
 
     for item in media:
         mid = item["id"]
@@ -275,6 +300,13 @@ def collect(acc, cache):
         if old.get("no_insights"):                          # 프로 전환 이전 → 재시도 안 함
             rec.update(insights={}, no_insights=True)
             no_ins += 1
+        elif fresh >= MAX_NEW_INSIGHTS and "insights" in old:
+            rec["insights"] = old.get("insights", {})       # 이번 실행 몫을 다 썼다
+            deferred += 1
+        elif fresh >= MAX_NEW_INSIGHTS:
+            slot[mid] = rec                                 # 다음 실행에서 받는다
+            deferred += 1
+            continue
         elif dt >= cutoff or "insights" not in old:         # 최신이거나 아직 안 받은 것
             ins, ok = fetch_media_insights(acc, mid)
             rec["insights"] = ins
@@ -294,6 +326,9 @@ def collect(acc, cache):
     with_ins = [p for p in posts if p.get("insights", {}).get("reach") is not None]
     P(f"@{uname}: 게시물 {len(posts)}개 (신규조회 {fresh} · 캐시재사용 {reused} · "
       f"인사이트없음 {no_ins}) → 분석가능 {len(with_ins)}개")
+    if deferred:
+        P(f"          호출 절약을 위해 {deferred}개는 다음 실행으로 미룸 "
+          f"(한 번에 최대 {MAX_NEW_INSIGHTS}개)")
     if with_ins:
         P(f"          인사이트 수집 범위: {with_ins[-1]['timestamp'][:10]} ~ {with_ins[0]['timestamp'][:10]}")
 
@@ -382,8 +417,20 @@ def update_history(report, accounts):
 if __name__ == "__main__":
     accounts = load_accounts()
     cache = load_json("posts_cache.json", {})
+    try:
+        collected = [collect(a, cache) for a in accounts]
+    except ApiError as e:
+        if e.is_auth:
+            P("=" * 70)
+            P("인스타그램 토큰이 거부됐습니다 (code 190).")
+            P("거의 대부분 '메타 개발자 계정 차단'이 원인입니다.")
+            P("  → https://developers.facebook.com/ 접속 후 '계정 확인'을 완료하세요.")
+            P("  → 확인이 끝나면 Actions 탭에서 이 워크플로를 다시 실행하면 됩니다.")
+            P("=" * 70)
+        save_json("posts_cache.json", cache)      # 여기까지 받은 건 버리지 않는다
+        raise
     report = {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-              "accounts": [collect(a, cache) for a in accounts]}
+              "accounts": collected}
 
     save_json("posts_cache.json", cache)
     save_json("report_data.json", report)

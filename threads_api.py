@@ -38,6 +38,10 @@ BASE = "https://graph.threads.net/v1.0"
 AUTH = "https://graph.threads.net"          # 토큰 갱신은 버전 경로가 없다
 DIR = os.path.dirname(os.path.abspath(__file__))
 
+# --- 호출 속도 제한 (인스타 수집기와 같은 이유) ---
+MIN_INTERVAL = 0.4         # 요청 사이 최소 간격(초)
+MAX_NEW_INSIGHTS = 80      # 한 번 실행에서 새로 받을 글 인사이트 최대 개수
+
 REFRESH_DAYS = 30          # 이 기간 내 게시물은 매번 인사이트 재조회
 REPORT_POSTS = 12          # 리포트에 최소로 실어보낼 게시물 수
 REPORT_DAYS = 31           # "최근 한 달" 토글 기간
@@ -57,7 +61,18 @@ class ApiError(RuntimeError):
         self.code, self.body = code, body
 
 
+_last_call = [0.0]
+
+
+def _throttle():
+    wait = MIN_INTERVAL - (time.monotonic() - _last_call[0])
+    if wait > 0:
+        time.sleep(wait)
+    _last_call[0] = time.monotonic()
+
+
 def request(url, tries=3):
+    _throttle()
     last = None
     for _ in range(tries):
         try:
@@ -309,7 +324,7 @@ def collect(token, cache):
 
     media = fetch_all_media(token)
     cutoff = datetime.now(timezone.utc) - timedelta(days=REFRESH_DAYS)
-    fresh = reused = no_ins = 0
+    fresh = reused = no_ins = deferred = 0
 
     for item in media:
         mid = item["id"]
@@ -332,6 +347,13 @@ def collect(token, cache):
         if old.get("no_insights"):
             rec.update(insights={}, no_insights=True)
             no_ins += 1
+        elif fresh >= MAX_NEW_INSIGHTS and "insights" in old:
+            rec["insights"] = old.get("insights", {})   # 이번 실행 몫을 다 썼다
+            deferred += 1
+        elif fresh >= MAX_NEW_INSIGHTS:
+            cache[mid] = rec                            # 다음 실행에서 받는다
+            deferred += 1
+            continue
         elif dt >= cutoff or "insights" not in old:
             ins, ok = fetch_media_insights(token, mid)
             rec["insights"] = ins
@@ -349,6 +371,9 @@ def collect(token, cache):
     with_ins = [p for p in posts if (p.get("insights") or {}).get("views") is not None]
     P(f"@{uname}: 스레드 {len(posts)}개 (신규조회 {fresh} · 캐시재사용 {reused} · "
       f"인사이트없음 {no_ins}) → 분석가능 {len(with_ins)}개")
+    if deferred:
+        P(f"          호출 절약을 위해 {deferred}개는 다음 실행으로 미룸 "
+          f"(한 번에 최대 {MAX_NEW_INSIGHTS}개)")
 
     cut = (datetime.now(timezone.utc) - timedelta(days=REPORT_DAYS)).isoformat()
     recent = [p for p in posts if (p.get("timestamp") or "") >= cut]
