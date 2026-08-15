@@ -26,6 +26,7 @@ html, body { background:#ffffff; }
 body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
 .period { font-size:13px; color:var(--text-secondary); margin:2px 0 20px; }
 .period b { color:var(--text-primary); }
+.period-s { font-size:11.5px; color:var(--text-muted); }
 .hero-box { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin:0 0 4px; }
 .hero-box .hn { font-size:42px; font-weight:650; line-height:1; letter-spacing:-0.02em; }
 .hero-box .hu { font-size:17px; color:var(--text-muted); font-weight:600; }
@@ -123,7 +124,9 @@ def build_ig():
         inner = '<p class="empty">아직 주간 요약을 만들 기록이 없습니다.</p>'
     else:
         a, b = accs[0]["start"], accs[0]["end"]
-        inner = f'<p class="period"><b>{a} ~ {b}</b> · 지난 7일을 그 앞 7일과 비교합니다.</p>'
+        inner = (f'<p class="period"><b>{a} ~ {b}</b> · 지난 7일을 그 앞 7일과 비교합니다.<br>'
+                 f'<span class="period-s">숫자는 매일 아침 갱신되고, 매주 월요일 아침에 '
+                 f'한 주 요약이 알림으로 옵니다.</span></p>')
         for m in accs:
             nf = delta_note(m["followers_delta"], m["followers_pct"], "명")
             inner += f"""
@@ -154,7 +157,8 @@ def build_th():
     else:
         fd = ("증감 기록을 모으는 중입니다" if m["followers_delta"] is None
               else delta_note(m["followers_delta"], None, "명"))
-        inner = f"""<p class="period"><b>{m['start']} ~ {m['end']}</b> · 지난 7일을 그 앞 7일과 비교합니다.</p>
+        inner = f"""<p class="period"><b>{m['start']} ~ {m['end']}</b> · 지난 7일을 그 앞 7일과 비교합니다.<br>
+<span class="period-s">숫자는 매일 아침 갱신되고, 매주 월요일 아침에 한 주 요약이 알림으로 옵니다.</span></p>
 <section>
   <h2>스레드</h2>
   <p class="sub">@{esc(m.get('username') or '?')} · 이번 주 올린 글 {m['posted']}개</p>
