@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write           # 갱신된 html / json 을 저장소에 다시 커밋
+  issues: write             # 매주 월요일 주간 리포트를 이슈로 발행
 
 concurrency:
   group: ig-report
@@ -30,7 +31,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      # 스레드 토큰을 갱신해 시크릿에 되돌려 쓸 때 필요하다.
+      # 만료되는 토큰(스레드·카카오)을 시크릿에 되돌려 쓸 때 필요하다.
       - name: 준비물 설치
         run: pip install pynacl
 
@@ -59,11 +60,16 @@ jobs:
           python build_threads.py
           python build_threads_analysis.py
 
+      # 저장된 json 만 읽어 만든다. API 호출 없음.
+      - name: 주간 리포트 페이지 생성
+        run: python build_weekly.py
+
       - name: 변경사항 커밋
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html analysis.html threads.html threads-analysis.html \
+                  weekly.html threads-weekly.html \
                   history.json report_data.json posts_cache.json
           for f in threads_history.json threads_report.json \
                    threads_cache.json threads_token_meta.json; do
@@ -76,8 +82,24 @@ jobs:
             git push
           fi
 
+      # ---------------- 주간 리포트 ----------------
+      # 매주 월요일(UTC 일요일 22시 실행분)에만 이슈를 하나 만든다.
+      # GitHub 모바일 앱에서 이 저장소를 Watch 하면 휴대폰 알림이 온다.
+      - name: 주간 리포트 이슈 발행
+        if: github.event_name == 'schedule'
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 실행 시각은 UTC 일요일 22시 = 한국시간 월요일 오전 7시
+          if [ "$(date -u +%u)" = "7" ]; then
+            python weekly_issue.py
+          else
+            echo "월요일(한국시간)이 아니라 주간 리포트 이슈는 건너뜁니다."
+          fi
+
       # ---------------- 실패 알림 ----------------
-      # 휴대폰 푸시는 GitHub 모바일 앱이 담당한다 (설정 불필요).
+      # 휴대폰 푸시는 GitHub 모바일 앱이 담당한다.
       # 아래는 슬랙/디스코드를 추가로 쓸 때만 켜진다 (ALERT_WEBHOOK 시크릿).
       - name: 실패 알림
         if: failure() && env.HAS_ALERT == 'true'
