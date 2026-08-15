@@ -62,6 +62,19 @@ svg { display:block; width:100%; height:auto; overflow:visible; }
 .val-label { fill:var(--text-primary); font-size:11px; font-weight:600; }
 .gridline { stroke:var(--gridline); stroke-width:1; }
 .bar { fill:var(--series-1); }
+.line-path { fill:none; stroke:var(--series-1); stroke-width:2;
+             stroke-linecap:round; stroke-linejoin:round; }
+.dot { fill:var(--series-1); }
+.big { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:2px; }
+.big .n { font-size:38px; font-weight:650; line-height:1; }
+.big .u { font-size:14px; color:var(--text-muted); }
+.up { color:var(--good); } .down { color:var(--critical); }
+.mini-s { font-size:11.5px; color:var(--text-muted); margin:2px 0 14px; line-height:1.7; }
+.dim { color:var(--text-muted); font-size:11px; }
+.note-box { border:1px solid var(--border); border-left:3px solid var(--gray);
+            border-radius:8px; padding:12px 14px; margin-top:15px; background:#fafafa;
+            font-size:11.5px; line-height:1.75; color:var(--text-secondary); }
+.note-box b { color:var(--text-primary); }
 table { width:100%; border-collapse:collapse; font-size:12.5px; }
 th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--gridline); vertical-align:top; }
 th { color:var(--text-muted); font-weight:500; font-size:10.5px;
@@ -176,6 +189,25 @@ def build():
 </section>
 
 <section>
+  <div class="sec-h"><h2>신규 팔로워 유입</h2></div>
+  <p class="sub">매일 저장해 둔 총 팔로워 수의 차이로 계산한 값입니다.</p>
+  <div id="newFollowers"></div>
+</section>
+
+<section>
+  <div class="sec-h">
+    <h2>팔로워 수 추이</h2>
+    <div class="seg" id="segFollowers">
+      <button data-g="day" aria-pressed="true">일</button>
+      <button data-g="week" aria-pressed="false">주</button>
+      <button data-g="month" aria-pressed="false">월</button>
+    </div>
+  </div>
+  <p class="sub" id="subFollowers"></p>
+  <svg id="followerChart" viewBox="0 0 860 240"></svg>
+</section>
+
+<section>
   <div class="sec-h"><h2>누적 반응</h2></div>
   <p class="sub" id="subTotals"></p>
   <div class="kpi-row" id="totals" style="margin:0"></div>
@@ -219,7 +251,8 @@ __CLICK_SEC__
   const prof = report.profile || {};
   const ins  = report.account_insights || {};
   const posts = report.posts || [];
-  let gran = 'day', open_ = false;
+  let gran = 'day', granFol = 'day', open_ = false;
+  hist.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
 
   const n = v => (v === null || v === undefined) ? '-' : Number(v).toLocaleString();
   const num = v => (typeof v === 'number' && isFinite(v));
@@ -280,6 +313,127 @@ __CLICK_SEC__
     svg.innerHTML = s;
   }
 
+  // ---- 팔로워 -------------------------------------------------------------
+  // 스레드 API 는 팔로워 수를 "지금 이 순간의 총합" 하나로만 준다 (since/until 미지원).
+  // 그래서 매일 실행할 때 저장해 둔 스냅샷을 이어 붙여 추이를 만든다.
+  const FOL_NOTE = { day:'최근 14일 기록', week:'최근 8주 (월요일 시작)', month:'최근 12개월' };
+
+  function folRows() {
+    return hist.filter(r => num(r.followers_count));
+  }
+
+  function folSeries(g) {
+    const rows = folRows();
+    if (!rows.length) return [];
+    if (g === 'day') return rows.slice(-14).map(r =>
+      ({label: r.date.slice(5).replace('-','/'), value: r.followers_count}));
+    const m = new Map();                       // 같은 구간이면 나중 날짜가 덮어쓴다 = 구간 마지막 값
+    if (g === 'week') {
+      rows.forEach(r => {
+        const d = new Date(r.date + 'T00:00:00Z');
+        d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+        m.set(d.toISOString().slice(0,10), r.followers_count);
+      });
+      return [...m.keys()].sort().slice(-8).map(k =>
+        ({label: k.slice(5).replace('-','/') + ' 주', value: m.get(k)}));
+    }
+    rows.forEach(r => m.set(r.date.slice(0,7), r.followers_count));
+    return [...m.keys()].sort().slice(-12).map(k =>
+      ({label: (+k.slice(5)) + '월', value: m.get(k)}));
+  }
+
+  function drawLine(svg, rows) {
+    const W = 860, H = 240, T = 30, B = 34, PAD = 48;
+    if (!rows.length) {
+      svg.setAttribute('viewBox','0 0 860 70');
+      svg.innerHTML = `<text class="axis-label" x="430" y="40" text-anchor="middle">아직 기록이 없습니다</text>`;
+      return;
+    }
+    if (rows.length === 1) {
+      svg.setAttribute('viewBox','0 0 860 110');
+      svg.innerHTML =
+        `<circle class="dot" cx="430" cy="45" r="5"/>
+         <text class="val-label" x="430" y="30" text-anchor="middle">${rows[0].value.toLocaleString()}</text>
+         <text class="axis-label" x="430" y="75" text-anchor="middle">${rows[0].label} · 기록이 하나뿐이라 선이 그려지지 않습니다</text>`;
+      return;
+    }
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const vals = rows.map(r => r.value);
+    const min = Math.min(...vals), max = Math.max(...vals), range = (max - min) || 1;
+    const plot = H - T - B, stepX = (W - PAD*2) / (rows.length - 1);
+    const pts = rows.map((r,i) =>
+      ({x: PAD + i*stepX, y: T + plot - ((r.value - min)/range)*plot, ...r}));
+    let s = '';
+    for (let g = 0; g <= 3; g++) {
+      const y = T + (g/3)*plot;
+      s += `<line class="gridline" x1="${PAD}" y1="${y.toFixed(1)}" x2="${W-PAD}" y2="${y.toFixed(1)}"/>`;
+    }
+    if (pts.length > 8) {          // 점마다 값을 적을 때는 축 숫자가 겹쳐서 생략한다
+      s += `<text class="axis-label" x="${PAD-8}" y="${T+4}" text-anchor="end">${max.toLocaleString()}</text>`;
+      s += `<text class="axis-label" x="${PAD-8}" y="${T+plot+4}" text-anchor="end">${min.toLocaleString()}</text>`;
+    }
+    s += `<path class="line-path" d="${pts.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ')}"/>`;
+    const every = pts.length <= 8 ? 1 : Math.ceil(pts.length/7);
+    pts.forEach((p,i) => {
+      s += `<circle class="dot" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5"/>`;
+      if (i === 0 || i === pts.length-1 || i % every === 0)
+        s += `<text class="axis-label" x="${p.x.toFixed(1)}" y="${H-B+20}" text-anchor="middle">${p.label}</text>`;
+      if (pts.length <= 8)
+        s += `<text class="val-label" x="${p.x.toFixed(1)}" y="${(p.y-10).toFixed(1)}" text-anchor="middle">${p.value.toLocaleString()}</text>`;
+    });
+    svg.innerHTML = s;
+  }
+
+  const FOL_LIMIT = `<div class="note-box">
+    <b>스레드에서는 확인할 수 없는 것</b> — 스레드 API 는 글 단위로 "이 글을 보고 몇 명이 팔로우했다"를
+    주지 않습니다. 글 단위로 받을 수 있는 값은 조회·좋아요·답글·리포스트·인용·공유 여섯 가지뿐입니다.
+    새로 들어온 사람과 기존 팔로워를 나누는 값도 없습니다. 그래서 늘어난 사람 수까지만 알 수 있고,
+    어느 글에서 왔는지는 알 수 없습니다. 팔로워가 어떤 사람들인지는
+    <a href="./threads-analysis.html">콘텐츠 분석</a>의 팔로워 구성(지역·연령·성별)에서 볼 수 있습니다.
+  </div>`;
+
+  function drawNewFollowers() {
+    const box = document.getElementById('newFollowers');
+    const rows = folRows();
+    if (rows.length < 2) {
+      box.innerHTML =
+        `<p class="empty">기록이 ${rows.length}일치뿐이라 아직 증감을 계산할 수 없습니다.` +
+        ` 매일 자동 실행될 때마다 하나씩 쌓이며, 두 번째 기록이 생기면 값이 나옵니다.</p>` + FOL_LIMIT;
+      return;
+    }
+    const d = [];
+    for (let i = 1; i < rows.length; i++) {
+      const days = Math.max(1, Math.round(
+        (new Date(rows[i].date) - new Date(rows[i-1].date)) / 86400000));
+      d.push({date: rows[i].date, from: rows[i-1].date, days,
+              delta: rows[i].followers_count - rows[i-1].followers_count,
+              total: rows[i].followers_count});
+    }
+    const last = d[d.length-1];
+    const recent = d.slice(-7);
+    const sum = recent.reduce((a,r) => a + r.delta, 0);
+    const span = recent.reduce((a,r) => a + r.days, 0);
+    const sign = v => (v > 0 ? '+' : '') + n(v);
+    const cls = v => (v > 0 ? 'up' : v < 0 ? 'down' : '');
+
+    const head = `<div class="big">
+        <span class="n ${cls(last.delta)}">${sign(last.delta)}</span>
+        <span class="u">명 · ${last.from} → ${last.date}${last.days > 1 ? ` (${last.days}일치 합산)` : ''}</span>
+      </div>
+      <p class="mini-s">최근 ${span}일 <b>${sign(sum)}명</b> · 현재 총 ${n(last.total)}명.
+        스레드는 일별 신규 팔로워를 주지 않아, 매일 저장한 총 팔로워 수의 차이로 계산합니다.
+        기록은 ${rows[0].date}부터 시작합니다. 수집이 실패한 날은 건너뛰고 다음 기록과 묶여 계산됩니다.</p>`;
+
+    const trs = d.slice(-14).reverse().map(r => `<tr>
+        <td>${r.date}${r.days > 1 ? ` <span class="dim">(${r.days}일치)</span>` : ''}</td>
+        <td class="num strong ${cls(r.delta)}">${sign(r.delta)}</td>
+        <td class="num">${n(r.total)}</td></tr>`).join('');
+
+    box.innerHTML = head +
+      `<table><thead><tr><th>날짜</th><th class="num">증감</th>
+        <th class="num">총 팔로워</th></tr></thead><tbody>${trs}</tbody></table>` + FOL_LIMIT;
+  }
+
   const iv = p => p.insights || {};
 
   function render() {
@@ -316,6 +470,11 @@ __CLICK_SEC__
     document.getElementById('subViews').textContent =
       '조회수 = 글이 화면에 표시된 총 횟수 · ' + GRAN_NOTE[gran];
     drawBars(document.getElementById('viewsChart'), bucket('views', gran));
+
+    drawNewFollowers();
+    document.getElementById('subFollowers').textContent =
+      '각 구간이 끝나는 시점의 총 팔로워 수입니다 · ' + FOL_NOTE[granFol];
+    drawLine(document.getElementById('followerChart'), folSeries(granFol));
 
     drawTable();
   }
@@ -354,6 +513,13 @@ __CLICK_SEC__
       document.getElementById('segViews').querySelectorAll('button')
         .forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
       gran = b.dataset.g; render();
+    };
+  });
+  document.getElementById('segFollowers').querySelectorAll('button').forEach(b => {
+    b.onclick = () => {
+      document.getElementById('segFollowers').querySelectorAll('button')
+        .forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+      granFol = b.dataset.g; render();
     };
   });
   document.getElementById('morePosts').onclick = () => { open_ = !open_; render(); };
