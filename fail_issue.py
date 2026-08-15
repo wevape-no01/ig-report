@@ -62,7 +62,12 @@ def open_failure_issues(repo):
 def do_open(repo):
     now = kst()
     run = os.environ.get("RUN_URL", "").strip()
+    owner = repo.split("/")[0]
+    # 휴대폰 푸시를 확실히 받으려면 "나를 직접 겨냥한" 알림이어야 한다.
+    # Watch 중인 저장소에 이슈가 새로 생긴 것만으로는 알림함에만 들어가고
+    # 푸시는 안 오는 경우가 있다. @멘션과 담당자 지정은 푸시가 보장된다.
     body = (
+        f"@{owner}\n\n"
         f"매일 아침 7시 자동 수집이 **{now:%m월 %d일 %H:%M}** (한국시간)에 실패했습니다.\n\n"
         f"리포트 숫자는 마지막으로 성공한 시점 그대로 남아 있습니다. "
         f"내일 아침 자동 실행에서 다시 시도하며, 그때 성공하면 이 이슈는 자동으로 닫힙니다.\n\n"
@@ -74,11 +79,19 @@ def do_open(repo):
     existing = open_failure_issues(repo)
     if existing:
         n = existing[0]["number"]
-        api("POST", f"/repos/{repo}/issues/{n}/comments", {"body": body})
+        api("POST", f"/repos/{repo}/issues/{n}/comments", {"body": body})   # 댓글도 @멘션이 들어간다
         print(f"이미 열린 실패 이슈 #{n} 에 댓글을 달았습니다.")
         return
-    d = api("POST", f"/repos/{repo}/issues",
-            {"title": f"{PREFIX} — {now:%m/%d %H:%M}", "body": body})
+    payload = {"title": f"{PREFIX} — {now:%m/%d %H:%M}", "body": body,
+               "assignees": [owner]}
+    try:
+        d = api("POST", f"/repos/{repo}/issues", payload)
+    except urllib.error.HTTPError as e:
+        if e.code != 422:                                 # 담당자 지정이 막힌 경우
+            raise
+        print("담당자 지정에 실패해 담당자 없이 다시 만듭니다.")
+        payload.pop("assignees")
+        d = api("POST", f"/repos/{repo}/issues", payload)
     print(f"실패 이슈 생성: #{d.get('number')} {d.get('html_url')}")
 
 
