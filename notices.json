@@ -1,5 +1,13 @@
 [
  {
+  "id": "test-collect-202608150654",
+  "level": "error",
+  "title": "[테스트] 데이터 수집이 실패했습니다",
+  "body": "실제로 실패했을 때 이렇게 뜹니다. 자동 갱신이 실패하면 리포트 숫자가 어제 그대로 남습니다.",
+  "link": "https://github.com/wevape-no01/ig-report/actions/runs/31870583927",
+  "at": "2026-08-15 15:54"
+ },
+ {
   "id": "test-collect-202608150536",
   "level": "error",
   "title": "[테스트] 데이터 수집이 실패했습니다",
