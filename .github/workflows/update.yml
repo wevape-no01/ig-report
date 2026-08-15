@@ -8,7 +8,7 @@ on:
 
 permissions:
   contents: write           # 갱신된 html / json 을 저장소에 다시 커밋
-  issues: write             # 매주 월요일 주간 리포트를 이슈로 발행
+  issues: write             # 주간 리포트 · 수집 실패를 이슈로 발행
 
 concurrency:
   group: ig-report
@@ -107,12 +107,24 @@ jobs:
             git push
           fi
 
+      # 실패했다가 정상으로 돌아오면 열려 있던 실패 이슈를 닫는다 (복구 알림도 간다).
+      - name: 복구 확인
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python fail_issue.py close
+
       # ---------------- 실패했을 때 ----------------
       # 수집이 실패하면 위 커밋 단계까지 못 온다. 그래서 알림만 따로 올린다.
+      # GitHub 이 자동으로 보내는 실패 푸시는 저장소·워크플로 이름만 실어 보내서
+      # 무엇이 실패했는지 안 보인다. 그래서 이슈로도 남긴다 (이슈 푸시는 내용이 실린다).
       - name: 실패 알림 기록
         if: failure()
         continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          python fail_issue.py open
           python notice.py error "collect-$(date -u +%Y-%m-%d)" \
             "데이터 수집이 실패했습니다" \
             "자동 갱신이 실패해 리포트 숫자가 어제 그대로입니다. 원인은 실행 기록에서 볼 수 있습니다." \
