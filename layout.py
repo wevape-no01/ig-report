@@ -60,12 +60,8 @@ body { margin:0; color:var(--sh-text);
           padding:9px 12px; border-radius:8px; }
 .side a:hover { background:#f4f6f9; }
 .side a.on { background:var(--sh-accent); color:#fff; font-weight:650; }
-.side a.sub { margin-left:12px; font-size:12.5px; color:var(--sh-muted);
-              padding:7px 12px; position:relative; }
-.side a.sub::before { content:""; position:absolute; left:-6px; top:50%; width:6px;
-  height:1px; background:var(--sh-line); }
+.side a.sub { margin-left:14px; font-size:12px; color:var(--sh-muted); padding:6px 12px; }
 .side a.sub.on { background:#eaf2fd; color:var(--sh-accent); font-weight:650; }
-.side a.sub.on::before { background:var(--sh-accent); }
 .main { min-width:0; }
 .page-h { display:flex; justify-content:space-between; align-items:baseline;
           flex-wrap:wrap; gap:10px; margin-bottom:18px; }
@@ -337,7 +333,7 @@ def document(platform, page, page_title, inner, page_css="",
         if kids and (k == page or any(c[0] == page for c in kids)):
             for ck, cname, chref in kids:
                 parts.append(f'<a class="sub {"on" if ck == page else ""}" '
-                             f'href="{chref}">{cname}</a>')
+                             f'href="{chref}">- {cname}</a>')
     side_links = "".join(parts)
     plat_name = next(n for k, n, _ in PLATFORMS if k == platform)
 

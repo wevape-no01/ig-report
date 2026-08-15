@@ -337,12 +337,18 @@ BODY = """
   }
 
   // ---- KPI ----
-  function drawKpis(prof, ins, posts, hist) {
-    const last = hist.length ? hist[hist.length-1] : null;
-    const prev = hist.length >= 2 ? hist[hist.length-2] : null;
-    const delta = (last && prev && num(last.followers_count) && num(prev.followers_count))
-      ? last.followers_count - prev.followers_count : null;
+  // 전일 대비 증감 한 줄. 오르면 초록, 내리면 빨강.
+  function deltaLine(hist, key, unit, fallback) {
+    const rows = hist.filter(r => num(r[key]));
+    if (rows.length < 2)
+      return `<div class="delta">${fallback || '기록 쌓이는 중'}</div>`;
+    const d = rows[rows.length-1][key] - rows[rows.length-2][key];
+    if (d === 0) return `<div class="delta">변동 없음 (전일 대비)</div>`;
+    return `<div class="delta ${d > 0 ? 'up' : 'down'}">${
+      (d > 0 ? '+' : '') + d.toLocaleString() + unit} (전일 대비)</div>`;
+  }
 
+  function drawKpis(prof, ins, posts, hist) {
     // 최근 한 달 게시물만으로 평균 도달을 낸다
     const cut = new Date(Date.now() - 31*86400000).toISOString();
     const recent = posts.filter(p => (p.timestamp || '') >= cut);
@@ -352,15 +358,13 @@ BODY = """
     document.getElementById('kpis').innerHTML = `
       <div class="stat-tile"><div class="label">팔로워</div>
         <div class="value">${n(prof.followers_count)}</div>
-        <div class="delta ${delta>0?'up':delta<0?'down':''}">${
-          delta === null ? '기록 쌓이는 중'
-          : delta === 0 ? '변동 없음 (전일 대비)'
-          : (delta>0?'+':'') + delta + '명 (전일 대비)'}</div></div>
+        ${deltaLine(hist, 'followers_count', '명')}</div>
       <div class="stat-tile"><div class="label">게시물</div>
-        <div class="value">${n(prof.media_count)}</div></div>
+        <div class="value">${n(prof.media_count)}</div>
+        ${deltaLine(hist, 'media_count', '개', '기록 쌓이는 중')}</div>
       <div class="stat-tile"><div class="label">오늘 도달</div>
         <div class="value">${n(ins.reach)}</div>
-        <div class="note">계정당 한 번만 집계</div></div>
+        ${deltaLine(hist, 'reach', '')}</div>
       <div class="stat-tile"><div class="label">최근 게시물 평균 도달</div>
         <div class="value">${n(avgReach)}</div>
         <div class="note">최근 한 달 · 게시물 ${reaches.length}개 평균</div></div>`;

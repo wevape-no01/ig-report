@@ -125,9 +125,7 @@ def build_ig():
         a, b = accs[0]["start"], accs[0]["end"]
         inner = f'<p class="period"><b>{a} ~ {b}</b> · 지난 7일을 그 앞 7일과 비교합니다.</p>'
         for m in accs:
-            nf = ("" if m["non_follower_pct"] is None
-                  else f'비팔로워 비중 {m["non_follower_pct"]}% '
-                       f'(분리 기록이 있는 {m["non_follower_days"]}일 기준)')
+            nf = delta_note(m["followers_delta"], m["followers_pct"], "명")
             inner += f"""
 <section>
   <h2>{esc(m['label'])}</h2>

@@ -438,10 +438,20 @@ __CLICK_SEC__
     const last = hist.length ? hist[hist.length-1] : {};
     const monthViews = hist.slice(-31).reduce((a,r)=> a + (num(r.views) ? r.views : 0), 0);
 
+    // 전일 대비 증감. 오르면 초록, 내리면 빨강.
+    const dLine = (key, unit) => {
+      const rs = hist.filter(r => num(r[key]));
+      if (rs.length < 2) return `<div class="note">기록 쌓이는 중</div>`;
+      const d = rs[rs.length-1][key] - rs[rs.length-2][key];
+      if (d === 0) return `<div class="note">변동 없음 (전일 대비)</div>`;
+      return `<div class="note ${d > 0 ? 'up' : 'down'}">${
+        (d > 0 ? '+' : '') + d.toLocaleString() + unit} (전일 대비)</div>`;
+    };
+
     document.getElementById('kpis').innerHTML = `
       <div class="stat-tile"><div class="label">팔로워</div>
         <div class="value">${n(ins.followers_count)}</div>
-        <div class="note">@${esc(prof.username || '')}</div></div>
+        ${dLine('followers_count', '명')}</div>
       <div class="stat-tile"><div class="label">글</div>
         <div class="value">${n(report.posts_total)}</div>
         <div class="note">인사이트 있는 글 ${n(report.posts_analyzable)}개</div></div>

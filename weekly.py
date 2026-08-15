@@ -142,6 +142,9 @@ def instagram(today=None):
         # 반응률은 콘텐츠 분석과 같은 기준(인사이트 있는 글 전체)으로 낸다.
         # 주 단위로 쪼개면 그 주에 올린 글이 없을 때 값이 사라진다.
         m["react_rate"] = _rate_ig(posts)
+        # 현재 팔로워도 지난주 끝 시점과 비교해 증감을 보여준다
+        f_prev = _last(rows, "followers_count", pb)
+        m["followers_delta"], m["followers_pct"] = _chg(m["followers"], f_prev)
         m["top"] = _top(posts, "reach", a, b)
         out.append(m)
     out.sort(key=lambda m: -(m.get("followers") or 0))

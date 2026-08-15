@@ -404,6 +404,7 @@ def update_history(report, accounts):
         t = rows.setdefault(today, {"date": today})
         t.update({
             "followers_count": prof.get("followers_count", 0),
+            "media_count": prof.get("media_count"),
             "reach": ins.get("reach", t.get("reach")),
             "views": ins.get("views", t.get("views")),
             "reach_follower": ins.get("reach_follower"),
