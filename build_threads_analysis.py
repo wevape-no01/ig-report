@@ -22,8 +22,17 @@ OUT = os.path.join(DIR, "threads-analysis.html")
 ANALYSIS_MONTHS = 24
 MIN_POSTS = 10          # 이보다 적으면 비율 분석을 하지 않는다
 MIN_N = 5               # 표본이 이보다 적으면 경고
-RANK_LIMIT = 10
-TOP_VISIBLE = 3
+RANK_LIMIT = 5
+TOP_VISIBLE = 5
+
+LIMITS_HTML = """
+<details class="tg"><summary>이 분석의 한계</summary>
+  <div class="tg-body limits">
+    스레드에는 "도달"이 없습니다. 조회수는 화면에 표시된 <b>횟수</b>라 같은 사람이 여러 번 보면 그만큼 올라갑니다.<br>
+    답글의 답글은 집계되지 않습니다. 리포스트로 올라간 글은 인사이트가 비어 있어 분석에서 빠집니다.<br>
+    어떤 경로로 들어왔는지는 API가 주지 않습니다.
+  </div>
+</details>"""
 MINI_RANK = 5
 
 TYPE_KO = {"TEXT_POST": "텍스트만", "IMAGE": "이미지", "VIDEO": "동영상",
@@ -492,11 +501,11 @@ def build():
   {ex_note}
 
   <div class="verdict">
-    <div class="hero">{a_views:.0f}<span class="hu">회</span></div>
-    <span class="badge {'good' if exposure >= 10 else 'warn'}">팔로워의 {exposure:.1f}%에 노출</span>
+    <div class="hero">{rr:.2f}<span class="hu">%</span></div>
     <span class="badge {'good' if has_react else 'warn'}">반응 {tot_react}건</span>
+    <span class="badge {'good' if exposure >= 10 else 'warn'}">팔로워의 {exposure:.1f}%에 노출</span>
   </div>
-  <p class="sub">글당 평균 조회수. 스레드에는 "도달(본 사람 수)"이 없어 조회수가 유일한 노출 지표입니다.</p>
+  <p class="sub">반응률 · 조회 100회당 반응 {rr:.1f}건. 스레드는 조회수보다 반응이 노출을 만듭니다.</p>
 
   <h3>핵심 지표</h3>
   <p class="sub">기간 내 글 {n}개 기준</p>
@@ -504,9 +513,7 @@ def build():
     <div class="kpi"><div class="lbl">글당 평균 조회수</div><div class="v">{a_views:.0f}</div>
       <div class="cmp">합계 {tot_views:,}회</div></div>
     <div class="kpi"><div class="lbl">노출 범위</div><div class="v">{exposure:.1f}%</div>
-      <div class="cmp">팔로워 {followers:,}명 대비 평균 노출</div></div>
-    <div class="kpi"><div class="lbl">반응률</div><div class="v">{rr:.2f}%</div>
-      <div class="cmp">조회 100회당 반응 {rr:.1f}건</div></div>
+      <div class="cmp">팔로워 {followers:,}명 대비</div></div>
     <div class="kpi"><div class="lbl">반응 합계</div><div class="v">{tot_react}</div>
       <div class="cmp">좋아요+답글+리포스트+인용+공유</div></div>
     <div class="kpi"><div class="lbl">분석 글</div><div class="v">{n}</div>
@@ -514,15 +521,24 @@ def build():
   </div>
 
   <h3>분석</h3>
-  <p class="sub">데이터가 갱신될 때마다 다시 쓰입니다</p>
   {ins_html}
   {chk_html}
 
-  <h3>글 랭킹</h3>
+  <h3>종합 랭킹</h3>
   <p class="sub">조회수 순 · 상위 {RANK_LIMIT}위까지</p>
   {champ_html}
   {rank_html}
   {react_html}
+</section>
+
+{LIMITS_HTML}"""
+
+    detail = f"""<p class="scope">자주 볼 지표는 아니지만, 방향을 정할 때 참고합니다.</p>
+<section class="acct">
+  <div class="acct-h">
+    <h2>@{esc(uname)}</h2>
+    <span class="dim">{esc(period)} · 분석 글 {n}개</span>
+  </div>
 
   <h3>유형별 노출</h3>
   <p class="sub">글당 평균 조회수</p>
@@ -544,27 +560,21 @@ def build():
   <div class="demos">{demo_html}</div>
 
   <h3>참고 지표</h3>
-  <p class="sub">표본이 적어 참고용입니다. 필요할 때 펼쳐 보세요.</p>
+  <p class="sub">표본이 적어 참고용입니다.</p>
   {toggle("언어별 노출", lang_inner)}
   {toggle("게시 시각별 노출", hour_inner)}
   {toggle("요일별 노출", dow_inner)}
-</section>
-
-<section class="acct">
-  <h2 style="font-size:15px;margin:0 0 12px">이 분석의 한계</h2>
-  <div class="limits">
-    스레드에는 "도달(본 사람 수)"이 없습니다. 조회수는 화면에 표시된 <b>횟수</b>라 같은 사람이 여러 번 보면 그만큼 올라갑니다.<br>
-    답글의 답글은 집계되지 않습니다. 리포스트로 올라간 글은 인사이트가 비어 있어 분석에서 빠집니다.<br>
-    "어떤 경로로 들어왔는지"는 API가 주지 않습니다. 조회수만 보고 역산해야 합니다.<br>
-    반응(좋아요·답글·리포스트·인용)이 생기면 <b>반응 랭킹</b> 섹션이 이 페이지에 자동으로 추가됩니다.
-  </div>
 </section>"""
 
-    with open(OUT, "w", encoding="utf-8") as f:
-        gen = report.get("generated_at", "")
-        f.write(layout.document("th", "analysis", "콘텐츠 분석", inner, CSS,
-                                updated=layout.fmt_updated(gen), generated_iso=gen))
-    print(f"저장됨: {OUT} (@{uname} · 분석 글 {n}개 · 반응 {tot_react}건)")
+    gen = report.get("generated_at", "")
+    for body, key, name, title in (
+            (inner, "analysis", "threads-analysis.html", "콘텐츠 분석"),
+            (detail, "detail", "threads-detail.html", "세부 분석")):
+        with open(os.path.join(DIR, name), "w", encoding="utf-8") as f:
+            f.write(layout.document("th", key, title, body, CSS,
+                                    updated=layout.fmt_updated(gen), generated_iso=gen))
+        print(f"저장됨: {name}")
+    print(f"(@{uname} · 분석 글 {n}개 · 반응 {tot_react}건)")
 
 
 if __name__ == "__main__":

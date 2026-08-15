@@ -59,6 +59,20 @@ def _chg(now, prev):
     return d, (round(d / prev * 100) if prev else None)
 
 
+def _rate(posts, react_keys, base_key):
+    """반응률(%) — 콘텐츠 분석과 같은 방식. 인사이트가 있는 글 전체 기준."""
+    r = v = 0
+    for p in posts:
+        ins = p.get("insights") or {}
+        b = ins.get(base_key)
+        if not isinstance(b, (int, float)) or b <= 0:
+            continue
+        v += b
+        r += sum((ins.get(k) or 0) for k in react_keys)
+    # 분모가 너무 작으면 비율이 크게 튄다. 판단을 오도하므로 아예 내지 않는다.
+    return (r / v * 100) if v >= 100 else None
+
+
 def _top(posts, key, a, b, limit=3):
     """a~b 사이에 올린 글을 key 기준 내림차순으로."""
     out = []
@@ -73,6 +87,20 @@ def _top(posts, key, a, b, limit=3):
                         "permalink": p.get("permalink")})
     out.sort(key=lambda r: -r["value"])
     return out[:limit]
+
+
+def _rate_ig(posts):
+    """인스타 반응률 — 본 사람 대비 좋아요·댓글·저장·공유."""
+    r = v = 0
+    for p in posts:
+        ins = p.get("insights") or {}
+        reach = ins.get("reach")
+        if not isinstance(reach, (int, float)) or reach <= 0:
+            continue
+        v += reach
+        r += (p.get("like_count") or 0) + (p.get("comments_count") or 0) \
+             + (ins.get("saved") or 0) + (ins.get("shares") or 0)
+    return (r / v * 100) if v >= 100 else None
 
 
 def instagram(today=None):
@@ -111,6 +139,9 @@ def instagram(today=None):
         nf = sum(r["reach_non_follower"] for r in both)
         m["non_follower_pct"] = round(nf / rc * 100) if rc else None
         m["non_follower_days"] = len(both)
+        # 반응률은 콘텐츠 분석과 같은 기준(인사이트 있는 글 전체)으로 낸다.
+        # 주 단위로 쪼개면 그 주에 올린 글이 없을 때 값이 사라진다.
+        m["react_rate"] = _rate_ig(posts)
         m["top"] = _top(posts, "reach", a, b)
         out.append(m)
     out.sort(key=lambda m: -(m.get("followers") or 0))
@@ -134,7 +165,14 @@ def threads(today=None):
     d, pct = _chg(now, prev)
     f_now, f_prev = _last(rows, "followers_count", b), _last(rows, "followers_count", pb)
     fd, _ = _chg(f_now, f_prev)
+    cache = load("threads_cache.json", {})
+    all_posts = list(cache.values()) if isinstance(cache, dict) else []
+    tot = {k: sum((p.get("insights") or {}).get(k) or 0 for p in all_posts)
+           for k in ("likes", "replies", "reposts", "quotes", "shares")}
     return {"username": prof.get("username"), "start": a, "end": b,
+            "react_rate": _rate(all_posts,
+                                ("likes", "replies", "reposts", "quotes", "shares"), "views"),
+            "likes": tot["likes"], "replies": tot["replies"], "reposts": tot["reposts"],
             "views": now, "views_prev": prev, "views_delta": d, "views_pct": pct,
             "followers": f_now if f_now is not None else prof.get("followers_count"),
             "followers_delta": fd,

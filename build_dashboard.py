@@ -183,13 +183,12 @@ BODY = """
         <button data-g="month" aria-pressed="false">월</button>
       </div>
     </div>
-    <p class="sub" id="subViews">조회수 = 게시물이 화면에 표시된 총 횟수 (같은 사람이 여러 번 보면 그만큼 올라감)</p>
+    <p class="sub" id="subViews"></p>
     <svg id="viewsChart" viewBox="0 0 860 240"></svg>
   </section>
 
   <section>
     <div class="sec-h"><h2>신규 팔로워 유입</h2></div>
-    <p class="sub">어제 하루 동안 늘어난 팔로워 수와, 그 사람들이 어디서 왔는지 짐작할 수 있는 단서입니다.</p>
     <div id="newFollowers"></div>
   </section>
 
@@ -202,7 +201,7 @@ BODY = """
         <button data-g="month" aria-pressed="false">월</button>
       </div>
     </div>
-    <p class="sub" id="subFollowers">각 구간이 끝나는 시점의 총 팔로워 수입니다.</p>
+    <p class="sub" id="subFollowers"></p>
     <div class="chart-wrap">
       <svg id="followerChart" viewBox="0 0 860 240"></svg>
       <div class="tooltip" id="tip"></div>
@@ -211,8 +210,7 @@ BODY = """
 
   <section>
     <div class="sec-h"><h2>최근 게시물</h2></div>
-    <p class="sub"><b>도달</b> = 이 게시물을 본 사람 수(같은 사람은 한 번만) · <b>조회</b> = 화면에 표시된 총 횟수 ·
-       <b>팔로워</b> = 이 게시물을 보고 팔로우한 수</p>
+
     <table>
       <thead><tr>
         <th>날짜</th><th>내용</th>
@@ -225,16 +223,15 @@ BODY = """
     <button class="more" id="morePosts" hidden></button>
   </section>
 
-  <section>
-    <div class="sec-h"><h2>용어 설명</h2></div>
-    <div class="foot">
-      <b>도달(본 사람 수)</b> — 게시물이나 계정을 실제로 본 사람 수. 같은 사람이 여러 번 봐도 1로 셉니다(계정당 한 번만 집계).<br>
-      <b>조회수</b> — 화면에 표시된 총 횟수. 같은 사람이 3번 보면 3으로 셉니다. 그래서 도달보다 항상 큽니다.<br>
-      <b>팔로워(게시물별)</b> — 그 게시물을 본 뒤 팔로우를 누른 사람 수. 어느 게시물이 실제로 팔로워를 데려왔는지 보는 값입니다.<br>
-      <b>저장</b> — 게시물을 나중에 보려고 저장한 수. 좋아요보다 강한 관심 신호로 봅니다.<br>
-      <b>팔로워 / 비팔로워</b> — 이미 팔로우 중인 사람이 봤는지, 아직 아닌 사람이 봤는지의 구분. 비팔로워 비중이 오르면 새 사람에게 퍼지고 있다는 뜻입니다.
+  <details class="tg"><summary>용어 설명</summary>
+    <div class="tg-body foot">
+      <b>도달</b> — 본 사람 수. 같은 사람이 여러 번 봐도 1로 셉니다.<br>
+      <b>조회</b> — 화면에 표시된 횟수. 같은 사람이 3번 보면 3입니다. 도달보다 항상 큽니다.<br>
+      <b>팔로워</b> — 그 게시물을 보고 팔로우한 수.<br>
+      <b>저장</b> — 나중에 보려고 저장한 수. 좋아요보다 강한 관심 신호입니다.<br>
+      <b>비팔로워</b> — 아직 팔로우하지 않은 사람. 이 비중이 오르면 새 사람에게 퍼지는 중입니다.
     </div>
-  </section>
+  </details>
 
 <script id="report-data" type="application/json">__REPORT_JSON__</script>
 <script id="history-data" type="application/json">__HISTORY_JSON__</script>
@@ -315,7 +312,7 @@ BODY = """
   const GRAN_NOTE = {
     day:   '최근 7일',
     week:  '최근 4주 (월요일 시작)',
-    month: '올해 · 인스타그램이 과거 29일까지만 주므로 앞으로 실행될 때마다 달이 채워집니다'
+    month: '최근 12개월'
   };
 
   function render() {
@@ -330,10 +327,8 @@ BODY = """
 
     drawKpis(prof, ins, posts, hist);
 
-    document.getElementById('subViews').textContent =
-      '조회수 = 게시물이 화면에 표시된 총 횟수 (같은 사람이 여러 번 보면 그만큼 올라감) · ' + GRAN_NOTE[granViews];
-    document.getElementById('subFollowers').textContent =
-      '각 구간이 끝나는 시점의 총 팔로워 수입니다. · ' + GRAN_NOTE[granFol];
+    document.getElementById('subViews').textContent = GRAN_NOTE[granViews];
+    document.getElementById('subFollowers').textContent = GRAN_NOTE[granFol];
 
     drawBars(document.getElementById('viewsChart'), bucket(hist, 'views', granViews, 'sum'));
     drawNewFollowers(hist, posts, ins);
@@ -362,12 +357,11 @@ BODY = """
           : delta === 0 ? '변동 없음 (전일 대비)'
           : (delta>0?'+':'') + delta + '명 (전일 대비)'}</div></div>
       <div class="stat-tile"><div class="label">게시물</div>
-        <div class="value">${n(prof.media_count)}</div>
-        <div class="note">계정에 올라가 있는 전체 수</div></div>
-      <div class="stat-tile"><div class="label">오늘 도달(본 사람 수)</div>
+        <div class="value">${n(prof.media_count)}</div></div>
+      <div class="stat-tile"><div class="label">오늘 도달</div>
         <div class="value">${n(ins.reach)}</div>
         <div class="note">계정당 한 번만 집계</div></div>
-      <div class="stat-tile"><div class="label">최근 게시물 평균 도달(본 사람 수)</div>
+      <div class="stat-tile"><div class="label">최근 게시물 평균 도달</div>
         <div class="value">${n(avgReach)}</div>
         <div class="note">최근 한 달 · 게시물 ${reaches.length}개 평균</div></div>`;
   }
@@ -468,31 +462,36 @@ BODY = """
            <span class="u">명 · ${last.date}</span>
            <span class="u ${dl>0?'delta up':dl<0?'delta down':''}">${
              (dl === null || dl === 0) ? '' : (dl>0?'+':'') + dl + '명 (전일 대비)'}</span></div>
-         <p class="mini-s">인스타그램은 어제까지의 값을 확정해서 주므로 오늘 늘어난 팔로워는 내일 반영됩니다.</p>`
+         <p class="mini-s">인스타그램이 확정해 주는 어제까지의 값입니다.</p>`
       : `<p class="empty">신규 팔로워 기록이 아직 없습니다.</p>`;
 
-    // ① 팔로워 / 비팔로워 (오늘 도달 기준)
-    const f = ins.reach_follower, nf = ins.reach_non_follower;
+    // ① 새 사람에게 닿았는가 — 신규 팔로워와 같은 "어제" 기준으로 맞춘다.
+    // 오늘 값은 아직 쌓이는 중이라 두 숫자의 기준일이 달라지면 헷갈린다.
+    const TITLE1 = `<div class="mini-t">어디까지 퍼졌나</div>`;
+    // 신규 팔로워와 같은 날(어제)을 쓴다. 없으면 그 이전 중 가장 최근 날.
+    const splitRows = hist.filter(r => num(r.reach_follower) && num(r.reach_non_follower)
+                                    && (r.reach_follower + r.reach_non_follower) > 0);
+    const target = last ? last.date : '';
+    const dayRow = splitRows.filter(r => !target || r.date <= target).pop()
+                || splitRows.pop();
     let left;
-    if (num(f) && num(nf) && (f + nf) > 0) {
-      const tot = f + nf;
+    if (dayRow) {
+      const f = dayRow.reach_follower, nf = dayRow.reach_non_follower, tot = f + nf;
       const row = (k, v, gray) => `
         <div class="srow"><div class="srow-k">${k}</div>
           <div class="srow-b"><i class="${gray?'g':''}" style="width:${(v/tot*100).toFixed(1)}%"></i></div>
           <div class="srow-v">${n(v)} · ${Math.round(v/tot*100)}%</div></div>`;
-      left = `<div class="mini-t">유입 경로 ① 새 사람에게 닿았는가</div>
-        <p class="mini-s">오늘 계정을 본 사람을 이미 팔로우 중인 사람과 아직 아닌 사람으로 나눈 것입니다.
-           비팔로워 비중이 높을수록 탐색 탭·해시태그·공유를 타고 새 사람에게 퍼진 것입니다.</p>
+      left = TITLE1 +
+        `<p class="mini-s">${dayRow.date} 계정을 본 사람. 비팔로워가 많을수록 새 사람에게 퍼진 것입니다.</p>
         ${row('비팔로워', nf, false)}${row('기존 팔로워', f, true)}`;
     } else {
-      left = `<div class="mini-t">유입 경로 ① 새 사람에게 닿았는가</div>
-        <p class="empty">오늘 팔로워/비팔로워 구분 데이터가 없습니다.</p>`;
+      left = TITLE1 + `<p class="empty">아직 기록이 없습니다.</p>`;
     }
 
     // ② 오늘 팔로우를 만든 게시물
     // 인스타그램은 게시물별 팔로우 수를 "평생 누적"으로만 준다. 그래서 매일 적어 둔
     // 값(follows_log)의 전날 대비 증가분을 오늘치로 본다.
-    const TITLE2 = `<div class="mini-t">유입 경로 ② 오늘 어느 게시물이 데려왔는가</div>`;
+    const TITLE2 = `<div class="mini-t">어느 게시물이 데려왔나</div>`;
     const gain = [];
     let logged = 0, from = '', to = '';
     posts.forEach(p => {
@@ -514,8 +513,7 @@ BODY = """
       const gap = Math.max(1, Math.round(
         (new Date(to) - new Date(from)) / 86400000));
       right = TITLE2 +
-        `<p class="mini-s">그 게시물을 본 뒤 팔로우를 누른 사람 수입니다.
-           ${from} → ${to}${gap > 1 ? ` (${gap}일치)` : ''} 사이에 늘어난 만큼만 셉니다.</p>
+        `<p class="mini-s">${to} 기준${gap > 1 ? ` (${gap}일치)` : ''} · 그 글을 보고 팔로우한 수</p>
          <table><thead><tr><th>날짜</th><th>내용</th><th class="num">팔로워</th></tr></thead><tbody>` +
         gain.slice(0,5).map(({p, d}) => {
           const cap = esc((p.caption||'').replace(/\\s+/g,' ').trim()).slice(0,60) || '(내용 없음)';
@@ -525,13 +523,9 @@ BODY = """
                   <td class="num">+${n(d)}</td></tr>`;
         }).join('') + `</tbody></table>`;
     } else if (to) {
-      right = TITLE2 + `<p class="mini-s">${from} → ${to} 사이에 팔로우를 만든 게시물이 없습니다.</p>`;
+      right = TITLE2 + `<p class="mini-s">${to} 기준 · 팔로우를 만든 글이 없습니다.</p>`;
     } else {
-      right = TITLE2 + `<p class="mini-s">기록을 모으는 중입니다.
-        인스타그램은 게시물별 팔로우 수를 평생 누적으로만 주기 때문에, 매일 그 값을 적어 두고
-        전날과 비교하는 방식으로 오늘치를 계산합니다.
-        ${logged ? '오늘 첫 기록이 저장됐고, 내일 두 번째 기록이 쌓이면' : '자동 실행이 두 번 돌면'}
-        값이 나옵니다.</p>`;
+      right = TITLE2 + `<p class="mini-s">기록을 모으는 중입니다. 내일부터 값이 나옵니다.</p>`;
     }
 
     box.innerHTML = head + `<div class="split" style="margin-top:16px">

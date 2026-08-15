@@ -26,6 +26,11 @@ html, body { background:#ffffff; }
 body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
 .period { font-size:13px; color:var(--text-secondary); margin:2px 0 20px; }
 .period b { color:var(--text-primary); }
+.hero-box { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin:0 0 4px; }
+.hero-box .hn { font-size:42px; font-weight:650; line-height:1; letter-spacing:-0.02em; }
+.hero-box .hu { font-size:17px; color:var(--text-muted); font-weight:600; }
+.hero-box .hl { font-size:13px; color:var(--text-secondary); font-weight:600; }
+.hero-s { font-size:11.5px; color:var(--text-muted); margin:0 0 16px; }
 section { border:1px solid var(--border); border-radius:10px;
           padding:18px 18px 16px; margin-bottom:20px; }
 section h2 { font-size:16px; margin:0 0 3px; font-weight:700; letter-spacing:-0.01em; }
@@ -70,6 +75,15 @@ def delta_note(d, pct, unit=""):
     if pct is not None:
         body += f" · {'+' if d > 0 else ''}{pct}%"
     return f'<span class="{cls}">{body}</span> (지난주 대비)'
+
+
+def hero(rate, note):
+    """반응률을 맨 위에 크게. 값이 없으면 아무것도 안 그린다."""
+    if rate is None:
+        return ""
+    return (f'<div class="hero-box"><span class="hn">{rate:.2f}</span>'
+            f'<span class="hu">%</span><span class="hl">반응률</span></div>'
+            f'<p class="hero-s">{note}</p>')
 
 
 def tile(label, value, note=""):
@@ -118,6 +132,7 @@ def build_ig():
 <section>
   <h2>{esc(m['label'])}</h2>
   <p class="sub">@{esc(m['user'])} · 이번 주 올린 게시물 {m['posted']}개</p>
+  {hero(m['react_rate'], '본 사람 100명 중 반응한 수 · 최근 게시물 기준')}
   <div class="kpi-row">
     {tile('신규 팔로워', n(m['new_followers'], '명'),
           delta_note(m['new_followers_delta'], m['new_followers_pct'], '명'))}
@@ -144,11 +159,14 @@ def build_th():
         inner = f"""<p class="period"><b>{m['start']} ~ {m['end']}</b> · 지난 7일을 그 앞 7일과 비교합니다.</p>
 <section>
   <h2>스레드</h2>
-  <p class="sub">@{esc(m.get('username') or '?')} · 이번 주 올린 글 {m['posted']}개 ·
-     스레드는 "도달"이 없어 조회수만 볼 수 있습니다.</p>
+  <p class="sub">@{esc(m.get('username') or '?')} · 이번 주 올린 글 {m['posted']}개</p>
+  {hero(m['react_rate'], '조회 100회당 반응 수 · 스레드는 조회수보다 반응이 노출을 만듭니다')}
   <div class="kpi-row">
     {tile('조회수', n(m['views']), delta_note(m['views_delta'], m['views_pct']))}
     {tile('현재 팔로워', n(m['followers'], '명'), fd)}
+    {tile('좋아요', n(m['likes']), '전체 기간 누적')}
+    {tile('리포스트', n(m['reposts']), '전체 기간 누적')}
+    {tile('답글', n(m['replies']), '전체 기간 누적')}
   </div>
   {top_table(m['top'], '조회', '')}
 </section>{ISSUE_NOTE}"""

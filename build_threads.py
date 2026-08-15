@@ -176,6 +176,12 @@ def build():
 <div class="kpi-row" id="kpis"></div>
 
 <section>
+  <div class="sec-h"><h2>누적 반응</h2></div>
+  <p class="sub" id="subTotals"></p>
+  <div class="kpi-row" id="totals" style="margin:0"></div>
+</section>
+
+<section>
   <div class="sec-h">
     <h2>조회수</h2>
     <div class="seg" id="segViews">
@@ -190,7 +196,6 @@ def build():
 
 <section>
   <div class="sec-h"><h2>신규 팔로워 유입</h2></div>
-  <p class="sub">매일 저장해 둔 총 팔로워 수의 차이로 계산한 값입니다.</p>
   <div id="newFollowers"></div>
 </section>
 
@@ -208,15 +213,7 @@ def build():
 </section>
 
 <section>
-  <div class="sec-h"><h2>누적 반응</h2></div>
-  <p class="sub" id="subTotals"></p>
-  <div class="kpi-row" id="totals" style="margin:0"></div>
-</section>
-
-<section>
   <div class="sec-h"><h2>최근 글</h2></div>
-  <p class="sub"><b>조회</b> = 글이 화면에 표시된 횟수 · <b>리포스트</b> = 그대로 다시 올린 수 ·
-     <b>인용</b> = 내 글을 인용해 새 글을 쓴 수</p>
   <table>
     <thead><tr>
       <th>날짜</th><th>내용</th>
@@ -230,17 +227,15 @@ def build():
 
 __CLICK_SEC__
 
-<section>
-  <div class="sec-h"><h2>용어 설명</h2></div>
-  <div class="foot">
-    <b>조회수</b> — 글이 화면에 표시된 총 횟수. 인스타그램의 "도달(본 사람 수)"과 달리
-      스레드는 사람 수를 주지 않아 횟수만 볼 수 있습니다.<br>
-    <b>답글</b> — 내 글에 달린 답글 수. 답글의 답글은 집계되지 않습니다.<br>
-    <b>리포스트</b> — 내 글을 그대로 다시 올린 수. 인스타의 "공유"와 비슷한 확산 신호입니다.<br>
-    <b>인용</b> — 내 글을 인용하면서 자기 의견을 붙여 새로 쓴 수. 리포스트보다 강한 반응입니다.<br>
-    <b>공유</b> — 스레드 밖(메시지·다른 앱)으로 보낸 수.
+<details class="tg"><summary>용어 설명</summary>
+  <div class="tg-body foot">
+    <b>조회</b> — 글이 화면에 표시된 횟수. 스레드는 사람 수를 주지 않습니다.<br>
+    <b>답글</b> — 내 글에 달린 답글 수. 스레드에서 노출에 가장 크게 작용합니다.<br>
+    <b>리포스트</b> — 내 글을 그대로 다시 올린 수. 답글 다음으로 강한 확산 신호입니다.<br>
+    <b>인용</b> — 내 글에 의견을 붙여 새로 쓴 수.<br>
+    <b>공유</b> — 스레드 밖으로 보낸 수.
   </div>
-</section>
+</details>
 
 <script id="t-report" type="application/json">__REPORT__</script>
 <script id="t-hist" type="application/json">__HIST__</script>
@@ -258,8 +253,7 @@ __CLICK_SEC__
   const num = v => (typeof v === 'number' && isFinite(v));
   const esc = t => (t||'').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 
-  const GRAN_NOTE = { day:'최근 7일', week:'최근 4주 (월요일 시작)',
-    month:'올해 · 스레드가 과거 29일까지만 주므로 앞으로 실행될 때마다 달이 채워집니다' };
+  const GRAN_NOTE = { day:'최근 7일', week:'최근 4주 (월요일 시작)', month:'최근 12개월' };
 
   function bucket(key, g) {
     const rows = hist.filter(r => num(r[key]));
@@ -384,21 +378,22 @@ __CLICK_SEC__
     svg.innerHTML = s;
   }
 
-  const FOL_LIMIT = `<div class="note-box">
-    <b>스레드에서는 확인할 수 없는 것</b> — 스레드 API 는 글 단위로 "이 글을 보고 몇 명이 팔로우했다"를
-    주지 않습니다. 글 단위로 받을 수 있는 값은 조회·좋아요·답글·리포스트·인용·공유 여섯 가지뿐입니다.
-    새로 들어온 사람과 기존 팔로워를 나누는 값도 없습니다. 그래서 늘어난 사람 수까지만 알 수 있고,
-    어느 글에서 왔는지는 알 수 없습니다. 팔로워가 어떤 사람들인지는
-    <a href="./threads-analysis.html">콘텐츠 분석</a>의 팔로워 구성(지역·연령·성별)에서 볼 수 있습니다.
-  </div>`;
+  const FOL_LIMIT = `<details class="tg" style="margin-top:16px">
+    <summary>스레드에서는 확인할 수 없는 것</summary>
+    <div class="tg-body" style="font-size:11.5px;color:var(--text-muted);line-height:1.75">
+      스레드는 "이 글을 보고 몇 명이 팔로우했다"를 주지 않습니다. 글 단위로 받을 수 있는 값은
+      조회·좋아요·답글·리포스트·인용·공유 여섯 가지뿐입니다. 그래서 늘어난 사람 수까지만 알 수 있고,
+      어느 글에서 왔는지는 알 수 없습니다. 어떤 사람들인지는
+      <a href="./threads-detail.html">세부 분석</a>의 팔로워 구성에서 볼 수 있습니다.
+    </div></details>`;
 
   function drawNewFollowers() {
     const box = document.getElementById('newFollowers');
     const rows = folRows();
     if (rows.length < 2) {
       box.innerHTML =
-        `<p class="empty">기록이 ${rows.length}일치뿐이라 아직 증감을 계산할 수 없습니다.` +
-        ` 매일 자동 실행될 때마다 하나씩 쌓이며, 두 번째 기록이 생기면 값이 나옵니다.</p>` + FOL_LIMIT;
+        `<p class="empty">기록이 ${rows.length}일치뿐이라 아직 증감을 계산할 수 없습니다. 내일부터 값이 나옵니다.</p>`
+        + FOL_LIMIT;
       return;
     }
     const d = [];
@@ -420,9 +415,7 @@ __CLICK_SEC__
         <span class="n ${cls(last.delta)}">${sign(last.delta)}</span>
         <span class="u">명 · ${last.from} → ${last.date}${last.days > 1 ? ` (${last.days}일치 합산)` : ''}</span>
       </div>
-      <p class="mini-s">최근 ${span}일 <b>${sign(sum)}명</b> · 현재 총 ${n(last.total)}명.
-        스레드는 일별 신규 팔로워를 주지 않아, 매일 저장한 총 팔로워 수의 차이로 계산합니다.
-        기록은 ${rows[0].date}부터 시작합니다. 수집이 실패한 날은 건너뛰고 다음 기록과 묶여 계산됩니다.</p>`;
+      <p class="mini-s">최근 ${span}일 <b>${sign(sum)}명</b> · 현재 총 ${n(last.total)}명</p>`;
 
     const trs = d.slice(-14).reverse().map(r => `<tr>
         <td>${r.date}${r.days > 1 ? ` <span class="dim">(${r.days}일치)</span>` : ''}</td>
@@ -460,20 +453,19 @@ __CLICK_SEC__
         <div class="note">최근 한 달 · 글 ${rv.length}개 평균</div></div>`;
 
     const T = [['좋아요','likes'],['답글','replies'],['리포스트','reposts'],['인용','quotes']];
-    document.getElementById('subTotals').textContent = report.totals_from_posts
-      ? '스레드가 계정 단위 합계를 주지 않아, 인사이트가 있는 글 전체(' + n(report.posts_analyzable) + '개)의 값을 더해서 보여줍니다. 전체 기간 누적입니다.'
-      : '계정 전체 기준 누적입니다.';
+    document.getElementById('subTotals').textContent =
+      '글 ' + n(report.posts_analyzable) + '개 · 전체 기간 누적';
     document.getElementById('totals').innerHTML = T.map(([ko,k]) =>
       `<div class="stat-tile"><div class="label">${ko}</div>
          <div class="value">${n(ins[k])}</div></div>`).join('');
 
     document.getElementById('subViews').textContent =
-      '조회수 = 글이 화면에 표시된 총 횟수 · ' + GRAN_NOTE[gran];
+      GRAN_NOTE[gran];
     drawBars(document.getElementById('viewsChart'), bucket('views', gran));
 
     drawNewFollowers();
     document.getElementById('subFollowers').textContent =
-      '각 구간이 끝나는 시점의 총 팔로워 수입니다 · ' + FOL_NOTE[granFol];
+      FOL_NOTE[granFol];
     drawLine(document.getElementById('followerChart'), folSeries(granFol));
 
     drawTable();

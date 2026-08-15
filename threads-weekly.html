@@ -40,6 +40,17 @@ body { margin:0; color:var(--sh-text);
 .stale.on { display:block; }
 .stale b { color:#6b1414; }
 .stale a { color:#8a1f1f; text-decoration:underline; }
+/* 접었다 펴는 상자 — 자주 안 보는 설명은 여기에 넣는다 */
+details.tg { border:1px solid var(--sh-border); border-radius:10px; margin-bottom:20px;
+             background:#fff; }
+details.tg > summary { cursor:pointer; padding:13px 16px; font-size:13.5px; font-weight:650;
+  color:var(--sh-text2); list-style:none; display:flex; align-items:center; gap:8px; }
+details.tg > summary::-webkit-details-marker { display:none; }
+details.tg > summary::before { content:"\25b8"; color:var(--sh-accent); font-size:11px; }
+details.tg[open] > summary::before { content:"\25be"; }
+details.tg[open] > summary { border-bottom:1px solid var(--sh-line); }
+details.tg .tg-body { padding:15px 16px 16px; }
+
 /* ---------------- 알림 (오른쪽 위 종) ---------------- */
 .site-h .top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .bell-wrap { position:relative; }
@@ -125,6 +136,11 @@ html, body { background:#ffffff; }
 body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
 .period { font-size:13px; color:var(--text-secondary); margin:2px 0 20px; }
 .period b { color:var(--text-primary); }
+.hero-box { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin:0 0 4px; }
+.hero-box .hn { font-size:42px; font-weight:650; line-height:1; letter-spacing:-0.02em; }
+.hero-box .hu { font-size:17px; color:var(--text-muted); font-weight:600; }
+.hero-box .hl { font-size:13px; color:var(--text-secondary); font-weight:600; }
+.hero-s { font-size:11.5px; color:var(--text-muted); margin:0 0 16px; }
 section { border:1px solid var(--border); border-radius:10px;
           padding:18px 18px 16px; margin-bottom:20px; }
 section h2 { font-size:16px; margin:0 0 3px; font-weight:700; letter-spacing:-0.01em; }
@@ -169,7 +185,7 @@ a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:und
 </div></header>
 <div class="toasts" id="toasts"></div>
 <div class="cols">
-  <aside class="side"><a class="" href="./threads.html">일일 리포트</a><a class="on" href="./threads-weekly.html">주간 리포트</a><a class="" href="./threads-analysis.html">콘텐츠 분석</a></aside>
+  <aside class="side"><a class="" href="./threads.html">일일 리포트</a><a class="on" href="./threads-weekly.html">주간 리포트</a><a class="" href="./threads-analysis.html">콘텐츠 분석</a><a class="" href="./threads-detail.html">세부 분석</a></aside>
   <main class="main">
     <div class="page-h"><h1>주간 리포트</h1>
       <span class="updated"></span></div>
@@ -177,11 +193,14 @@ a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:und
 <p class="period"><b>2026-08-08 ~ 2026-08-14</b> · 지난 7일을 그 앞 7일과 비교합니다.</p>
 <section>
   <h2>스레드</h2>
-  <p class="sub">@wevape.no01 · 이번 주 올린 글 0개 ·
-     스레드는 "도달"이 없어 조회수만 볼 수 있습니다.</p>
+  <p class="sub">@wevape.no01 · 이번 주 올린 글 0개</p>
+  <div class="hero-box"><span class="hn">16.71</span><span class="hu">%</span><span class="hl">반응률</span></div><p class="hero-s">조회 100회당 반응 수 · 스레드는 조회수보다 반응이 노출을 만듭니다</p>
   <div class="kpi-row">
     <div class="stat-tile"><div class="label">조회수</div><div class="value">136</div><div class="note"><span class="up">+105 · +339%</span> (지난주 대비)</div></div>
     <div class="stat-tile"><div class="label">현재 팔로워</div><div class="value">1,067명</div><div class="note">증감 기록을 모으는 중입니다</div></div>
+    <div class="stat-tile"><div class="label">좋아요</div><div class="value">1,769</div><div class="note">전체 기간 누적</div></div>
+    <div class="stat-tile"><div class="label">리포스트</div><div class="value">1,260</div><div class="note">전체 기간 누적</div></div>
+    <div class="stat-tile"><div class="label">답글</div><div class="value">1,793</div><div class="note">전체 기간 누적</div></div>
   </div>
   <p class="empty">이 기간에 올린 글이 없습니다.</p>
 </section>

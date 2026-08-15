@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>콘텐츠 분석 · 스레드 · WEVAPE SNS</title>
+<title>세부 분석 · 인스타그램 · WEVAPE SNS</title>
 <style>
 :root { color-scheme: light only;
   --sh-text:#111; --sh-text2:#444; --sh-muted:#6b6b6b;
@@ -125,10 +125,13 @@ details.tg .tg-body { padding:15px 16px 16px; }
   .plat { gap:18px; }
 }
 
-:root { --text:#111; --text2:#444; --muted:#6b6b6b; --grid:#e6e6e6;
-  --border:rgba(17,17,17,.14); --accent:#1f6fc7; --accent-soft:#cde2fb; --gray:#c9c9c9;
+:root { color-scheme: light only;
+  --text:#111; --text2:#444; --muted:#6b6b6b; --grid:#e6e6e6; --border:rgba(17,17,17,.14);
+  --accent:#1f6fc7; --accent-soft:#cde2fb; --gray:#c9c9c9;
   --good:#046a04; --warnc:#8a5a00; --bad:#b32626; }
-.scope { font-size:12px; color:var(--muted); margin:-8px 0 20px; }
+* { box-sizing:border-box; }
+html, body { background:#fff; }
+body { margin:0; color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
 section.acct { border:1px solid var(--border); border-radius:12px; padding:20px 22px; margin-bottom:26px; }
 .acct-h { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px;
   padding-bottom:12px; border-bottom:1px solid var(--grid); }
@@ -147,21 +150,34 @@ h3 { font-size:15px; margin:30px 0 3px; }
 .kpi .lbl { font-size:12px; color:var(--text2); margin-bottom:7px; }
 .kpi .v { font-size:24px; font-weight:620; line-height:1; }
 .kpi .cmp { font-size:11px; margin-top:6px; color:var(--muted); }
+.kpi .cmp.good { color:var(--good); } .kpi .cmp.bad { color:var(--bad); }
 svg { display:block; width:100%; height:auto; overflow:visible; }
 .bar { fill:var(--accent); } .bar.muted { fill:var(--gray); }
 .cat { fill:var(--text2); font-size:12px; }
 .val { fill:var(--text); font-size:12px; font-weight:600; }
 .dim2 { fill:var(--muted); font-weight:400; font-size:11px; }
+.ax { fill:var(--muted); font-size:10px; }
+.grid { stroke:var(--grid); stroke-width:1; }
+.ln { fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.dot { fill:var(--accent); }
+.legend { display:flex; gap:16px; font-size:11.5px; color:var(--text2); margin-top:11px; }
+.sw { display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--accent); margin-right:5px; }
+.sw.g { background:var(--gray); }
 table { width:100%; border-collapse:collapse; font-size:12.5px; }
 th, td { text-align:left; padding:8px 7px; border-bottom:1px solid var(--grid); }
 th { font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; font-weight:500; }
 td.num { text-align:right; font-variant-numeric:tabular-nums; }
 td.strong { font-weight:650; color:var(--accent); }
-td.cap { color:var(--text2); max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+td.cap { color:var(--text2); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 td.cap a { color:var(--text2); text-decoration:none; }
 td.cap a:hover { color:var(--accent); text-decoration:underline; }
 .chip { display:inline-block; font-size:10.5px; padding:2px 7px; border-radius:5px;
   background:var(--accent-soft); color:#164a86; white-space:nowrap; }
+.reads p { font-size:13.5px; line-height:1.65; margin:12px 0 0; }
+.reads p:first-child { margin-top:0; }
+.reads b { color:var(--accent); }
+.reads-box { border:1px solid var(--border); border-left:3px solid var(--accent);
+  border-radius:9px; padding:14px 16px; background:#fbfcfe; }
 .warn { background:#fdf6e6; border:1px solid #f0dca0; color:#6b5300;
   border-radius:8px; padding:9px 12px; font-size:12px; margin-bottom:12px; }
 .empty { color:var(--muted); font-size:13px; }
@@ -169,8 +185,8 @@ details.tg { border:1px solid var(--border); border-radius:9px; margin-bottom:9p
 details.tg summary { cursor:pointer; padding:11px 14px; font-size:13px; font-weight:600;
   color:var(--text2); list-style:none; display:flex; align-items:center; gap:7px; }
 details.tg summary::-webkit-details-marker { display:none; }
-details.tg summary::before { content:"\25b8"; color:var(--accent); font-size:11px; }
-details.tg[open] summary::before { content:"\25be"; }
+details.tg summary::before { content:"▸"; color:var(--accent); font-size:11px; }
+details.tg[open] summary::before { content:"▾"; }
 details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .tg-body { padding:14px; }
 .two { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
@@ -179,13 +195,19 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .demos { display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:16px; }
 .dm-box { border:1px solid var(--border); border-radius:10px; padding:13px 14px; }
 .dm-t { font-size:12px; font-weight:600; color:var(--text2); margin-bottom:10px; }
-.dm { display:grid; grid-template-columns:74px 1fr 44px; align-items:center; gap:8px;
-      margin-bottom:6px; font-size:11.5px; }
+.dm { display:grid; grid-template-columns:74px 1fr 40px; align-items:center; gap:8px; margin-bottom:6px; font-size:11.5px; }
 .dm-k { color:var(--text2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .dm-bar { background:var(--grid); border-radius:3px; height:8px; overflow:hidden; }
 .dm-bar i { display:block; height:100%; background:var(--accent); border-radius:3px; }
-.dm-v { text-align:right; font-variant-numeric:tabular-nums; }
+.dm-v { text-align:right; font-variant-numeric:tabular-nums; color:var(--text); }
+.scope { font-size:12px; color:var(--muted); margin:-8px 0 20px; }
 .limits { font-size:12.5px; color:var(--text2); line-height:1.75; }
+.tabs { display:flex; gap:6px; flex-wrap:wrap; margin:-10px 0 20px; }
+.tabs .tab { padding:7px 14px; border-radius:999px; border:1px solid var(--border);
+  background:#fff; color:var(--text2); font-size:13px; cursor:pointer; font-family:inherit; }
+.tabs .tab[aria-selected="true"] { background:var(--accent); border-color:var(--accent);
+  color:#fff; font-weight:600; }
+.pane[hidden] { display:none; }
 .ins-box, .chk-box { border:1px solid var(--border); border-radius:10px;
   padding:14px 16px; margin-bottom:11px; }
 .ins-box { border-left:3px solid var(--accent); background:#fbfcfe; }
@@ -198,12 +220,13 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .champ { border:1px solid var(--border); border-left:3px solid var(--accent);
   border-radius:10px; padding:14px 16px; margin-bottom:14px; background:#fbfcfe; }
 .champ-h { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; font-size:14px; }
-.champ-v { color:var(--accent); font-weight:700; font-size:15px; }
+.champ-er { color:var(--accent); font-weight:700; font-size:15px; }
 .champ-cap { font-size:13px; color:var(--text2); margin:10px 0 8px; line-height:1.6; }
 .champ-cap a { color:var(--text2); text-decoration:none; }
+.champ-cap a:hover { color:var(--accent); text-decoration:underline; }
 .champ-k { font-size:11.5px; color:var(--muted); font-variant-numeric:tabular-nums;
   line-height:1.6; padding-bottom:10px; border-bottom:1px solid var(--grid); }
-.champ-note { font-size:13px; line-height:1.7; margin:10px 0 0; }
+.champ-note { font-size:13px; line-height:1.7; color:var(--text); margin:10px 0 0; }
 </style>
 </head><body>
 <header class="site-h"><div class="inner">
@@ -222,96 +245,70 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
     </div>
   </div>
   </div>
-  <nav class="plat"><a class="" href="./">인스타그램</a><a class="on" href="./threads.html">스레드</a></nav>
+  <nav class="plat"><a class="on" href="./">인스타그램</a><a class="" href="./threads.html">스레드</a></nav>
 </div></header>
 <div class="toasts" id="toasts"></div>
 <div class="cols">
-  <aside class="side"><a class="" href="./threads.html">일일 리포트</a><a class="" href="./threads-weekly.html">주간 리포트</a><a class="on" href="./threads-analysis.html">콘텐츠 분석</a><a class="" href="./threads-detail.html">세부 분석</a></aside>
+  <aside class="side"><a class="" href="./">일일 리포트</a><a class="" href="./weekly.html">주간 리포트</a><a class="" href="./analysis.html">콘텐츠 분석</a><a class="on" href="./analysis-detail.html">세부 분석</a></aside>
   <main class="main">
-    <div class="page-h"><h1>콘텐츠 분석</h1>
-      <span class="updated">업데이트: 2026-08-15 11:54 (한국시간)</span></div>
-    <div class="stale" id="stale" data-generated="2026-08-15T02:54:00+00:00"></div>
-<p class="scope">전체 글 1128개 중 인사이트 있는 316개 분석</p>
+    <div class="page-h"><h1>세부 분석</h1>
+      <span class="updated">업데이트: 2026-08-15 11:53 (한국시간)</span></div>
+    <div class="stale" id="stale" data-generated="2026-08-15T02:53:27+00:00"></div>
+<p class="scope">자주 볼 지표는 아니지만, 방향을 정할 때 참고합니다.</p>
+<div class="tabs" role="tablist"><button class="tab" role="tab" data-i="0" aria-selected="true">@wevape.no01</button><button class="tab" role="tab" data-i="1" aria-selected="false">@wevape_japan</button></div>
+<div class="pane" data-i="0">
 <section class="acct">
   <div class="acct-h">
     <h2>@wevape.no01</h2>
-    <span class="dim">2025-05-16 ~ 2026-08-07 · 분석 글 316개 · 팔로워 1,072명</span>
-  </div>
-  
-
-  <div class="verdict">
-    <div class="hero">16.71<span class="hu">%</span></div>
-    <span class="badge good">반응 4835건</span>
-    <span class="badge warn">팔로워의 8.5%에 노출</span>
-  </div>
-  <p class="sub">반응률 · 조회 100회당 반응 16.7건. 스레드는 조회수보다 반응이 노출을 만듭니다.</p>
-
-  <h3>핵심 지표</h3>
-  <p class="sub">기간 내 글 316개 기준</p>
-  <div class="kpis">
-    <div class="kpi"><div class="lbl">글당 평균 조회수</div><div class="v">92</div>
-      <div class="cmp">합계 28,939회</div></div>
-    <div class="kpi"><div class="lbl">노출 범위</div><div class="v">8.5%</div>
-      <div class="cmp">팔로워 1,072명 대비</div></div>
-    <div class="kpi"><div class="lbl">반응 합계</div><div class="v">4835</div>
-      <div class="cmp">좋아요+답글+리포스트+인용+공유</div></div>
-    <div class="kpi"><div class="lbl">분석 글</div><div class="v">316</div>
-      <div class="cmp">최근 24개월</div></div>
+    <span class="dim">2025-10-27 ~ 2026-08-07 · 분석 게시물 115개</span>
   </div>
 
-  <h3>분석</h3>
-  <div class="ins-box"><div class="ins-t">💡 오늘의 인사이트</div><p><b>가장 많이 노출된 글은 05-18 텍스트만(980회)입니다.</b> 글당 평균 92회의 10.7배이고, 반응이 188건 붙었습니다. 해시태그 없이 본문 127자였습니다.</p><p><b>텍스트만 글이 가장 많이 노출됩니다.</b> 이미지보다 평균 조회수가 2.0배 높습니다(각각 208개 / 75개). 스레드는 텍스트 중심이라 인스타용 이미지 글을 그대로 넘기면 같은 성과가 나오지 않습니다.</p><p><b>해시태그 없이 쓴 글(283개)이 해시태그를 3개 이상 붙인 글(8개)보다 평균 조회수가 2.6배 높습니다</b>(98회 vs 37회, 반응률 17.4% vs 0.7%). 해시태그가 많은 글은 대개 인스타에서 그대로 넘어온 글입니다 — 스레드에서는 스레드용으로 새로 쓴 글이 훨씬 잘 먹힙니다.</p></div>
-  <div class="chk-box"><div class="chk-t">⚠️ 확인 필요</div><p>반응률은 16.7%로 높은 편인데, 글 하나가 팔로워 1,072명 중 평균 92명분(팔로워의 8.5%)에게만 노출됩니다. 즉 본 사람은 잘 반응하는데 애초에 보여지는 양이 적습니다 — 글 자체보다 게시 빈도와 초반 답글 유도가 병목일 가능성이 큽니다.</p></div>
+  <h3>포맷별 성과</h3>
+  <p class="sub">반응률 — 본 사람 대비 반응 비율</p>
+  <svg viewBox="0 0 860 125"><text class="cat" x="0" y="24">캐러셀</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.8%<tspan class="dim2"> · 60개 · 도달 179</tspan></text><text class="cat" x="0" y="63">단일 이미지</text><rect class="bar muted" x="150" y="45" width="367.2" height="28" rx="4"/><text class="val" x="525.2" y="63">2.8%<tspan class="dim2"> · 45개 · 도달 220</tspan></text><text class="cat" x="0" y="102">동영상</text><rect class="bar muted" x="150" y="84" width="258.2" height="28" rx="4"/><text class="val" x="416.2" y="102">1.9%<tspan class="dim2"> · 10개 · 도달 345</tspan></text></svg>
+  <div class="legend"><span><i class="sw"></i>가장 성과가 좋은 포맷</span>
+    <span><i class="sw g"></i>비교군</span></div>
+  <div class="reads"><p><b>캐러셀가 단일 이미지보다 반응률 1.4배 높습니다.</b> 각각 게시물 60개 / 45개 기준입니다. 업계 벤치마크도 캐러셀 0.55% / 이미지 0.37%로 같은 방향입니다.</p></div>
 
-  <h3>종합 랭킹</h3>
-  <p class="sub">조회수 순 · 상위 5위까지</p>
-  
-  <div class="champ">
-    <div class="champ-h"><span class="badge good">조회 1위</span>
-      <b>텍스트만</b>
-      <span class="champ-v">조회 980회</span>
-      <span class="dim">2025-05-18 일요일 10시</span></div>
-    <p class="champ-cap"><a href="https://www.threads.com/@wevape.no01/post/DJxvmv2TmzD" target="_blank" rel="noopener">스하리 1000명 프로젝트 3일차! 
-벌써 100명을 넘고 열심히 영차영차 달려가고있다!🏃🏻‍♂️🏃🏻‍♂️
-우리 스치니들도 다같이 열심히 달려가보자! 
-내 게시물들 스하리 = 무조건 늦더라도 반하리💖💖💖
-다들 즐거운</a></p>
-    <div class="champ-k">조회 980 · 좋아요 63 · 답글 72 ·
-      리포스트 53 · 인용 0 · 공유 0 ·
-      해시태그 0개 · 본문 127자</div>
-    <p class="champ-note">글당 평균 조회수 92회의 10.7배입니다. 텍스트만 평균(112회)보다도 높습니다. 반응은 188건(반응률 19.2%)으로 전체 평균(16.7%)보다 높습니다 — 노출과 반응이 같이 터진 글입니다.</p>
+  <h3>해시태그별 성과</h3>
+  <p class="sub">5회 이상 사용한 해시태그만 · 반응률 순</p>
+  <svg viewBox="0 0 860 359"><text class="cat" x="0" y="24">#wevape</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.5%<tspan class="dim2"> · 13개</tspan></text><text class="cat" x="0" y="63">#버블몬그래피티3</text><rect class="bar" x="150" y="45" width="438.2" height="28" rx="4"/><text class="val" x="596.2" y="63">3.0%<tspan class="dim2"> · 8개</tspan></text><text class="cat" x="0" y="102">#bubblemongraffitic</text><rect class="bar" x="150" y="84" width="395.5" height="28" rx="4"/><text class="val" x="553.5" y="102">2.7%<tspan class="dim2"> · 6개</tspan></text><text class="cat" x="0" y="141">#위베이프</text><rect class="bar" x="150" y="123" width="380.3" height="28" rx="4"/><text class="val" x="538.3" y="141">2.6%<tspan class="dim2"> · 7개</tspan></text><text class="cat" x="0" y="180">#bubblemongraffiti</text><rect class="bar" x="150" y="162" width="379.8" height="28" rx="4"/><text class="val" x="537.8" y="180">2.6%<tspan class="dim2"> · 18개</tspan></text><text class="cat" x="0" y="219">#bubblemongraffiti2</text><rect class="bar" x="150" y="201" width="375.0" height="28" rx="4"/><text class="val" x="533.0" y="219">2.6%<tspan class="dim2"> · 20개</tspan></text><text class="cat" x="0" y="258">#버블몬그래피티2</text><rect class="bar" x="150" y="240" width="261.9" height="28" rx="4"/><text class="val" x="419.9" y="258">1.8%<tspan class="dim2"> · 6개</tspan></text><text class="cat" x="0" y="297">#버블몬</text><rect class="bar" x="150" y="279" width="256.1" height="28" rx="4"/><text class="val" x="414.1" y="297">1.8%<tspan class="dim2"> · 6개</tspan></text><text class="cat" x="0" y="336">#bubblemon</text><rect class="bar" x="150" y="318" width="256.1" height="28" rx="4"/><text class="val" x="414.1" y="336">1.8%<tspan class="dim2"> · 5개</tspan></text></svg>
+  <div class="reads"><p>해시태그가 있는 게시물은 67개, 없는 게시물은 48개입니다. 게시물당 평균 1.3개를 사용했습니다 (인스타그램 허용 한도는 30개).</p></div>
+
+  <h3>해시태그 개수 · 캡션 길이</h3>
+  <p class="sub">반응률</p>
+  <div class="two">
+    <div><div class="mini-t">해시태그 개수</div><svg viewBox="0 0 400 152"><text class="cat" x="0" y="23">0개</text><rect class="bar" x="78" y="6" width="218.0" height="26" rx="4"/><text class="val" x="304.0" y="23">3.7%<tspan class="dim2"> · 48개</tspan></text><text class="cat" x="0" y="59">1–3개</text><rect class="bar" x="78" y="42" width="178.5" height="26" rx="4"/><text class="val" x="264.5" y="59">3.0%<tspan class="dim2"> · 57개</tspan></text><text class="cat" x="0" y="95">8개 이상</text><rect class="bar" x="78" y="78" width="127.0" height="26" rx="4"/><text class="val" x="213.0" y="95">2.2%<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="131">4–7개</text><rect class="bar" x="78" y="114" width="95.4" height="26" rx="4"/><text class="val" x="181.4" y="131">1.6%<tspan class="dim2"> · 8개</tspan></text></svg></div>
+    <div><div class="mini-t">캡션 길이(해시태그 제외)</div><svg viewBox="0 0 400 152"><text class="cat" x="0" y="23">151–400자</text><rect class="bar" x="78" y="6" width="218.0" height="26" rx="4"/><text class="val" x="304.0" y="23">3.6%<tspan class="dim2"> · 37개</tspan></text><text class="cat" x="0" y="59">400자 초과</text><rect class="bar" x="78" y="42" width="205.0" height="26" rx="4"/><text class="val" x="291.0" y="59">3.4%<tspan class="dim2"> · 3개</tspan></text><text class="cat" x="0" y="95">51–150자</text><rect class="bar" x="78" y="78" width="200.9" height="26" rx="4"/><text class="val" x="286.9" y="95">3.3%<tspan class="dim2"> · 57개</tspan></text><text class="cat" x="0" y="131">~50자</text><rect class="bar" x="78" y="114" width="133.0" height="26" rx="4"/><text class="val" x="219.0" y="131">2.2%<tspan class="dim2"> · 18개</tspan></text></svg></div>
   </div>
-  <table><thead><tr><th>#</th><th>게시일</th><th>유형</th><th>내용</th><th class="num">조회</th><th class="num">반응</th><th class="num">길이</th></tr></thead><tbody><tr><td class="num">1</td><td class="nw">05-18<span class="dim"> 일 10시</span></td><td><span class="chip">텍스트만</span></td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DJxvmv2TmzD" target="_blank" rel="noopener">스하리 1000명 프로젝트 3일차! 
-벌써 100명을 넘고 열심히 영차영</a></td><td class="num strong">980</td><td class="num">188</td><td class="num">127자</td></tr><tr><td class="num">2</td><td class="nw">06-22<span class="dim"> 일 15시</span></td><td><span class="chip">텍스트만</span></td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DLMV_jdJOju" target="_blank" rel="noopener">🥲스치니들 벌써 꿀같은 주말의 끝이다... 그래도 오늘 날씨좋아서 기분은</a></td><td class="num strong">971</td><td class="num">70</td><td class="num">114자</td></tr><tr><td class="num">3</td><td class="nw">05-21<span class="dim"> 수 11시</span></td><td><span class="chip">텍스트만</span></td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DJ5kJ_9T2ag" target="_blank" rel="noopener">🏃🏻스하리 5일차!🏃🏻
-우리 스치니들 덕분에 200명 가까이 달려가고 있</a></td><td class="num strong">867</td><td class="num">212</td><td class="num">192자</td></tr><tr><td class="num">4</td><td class="nw">07-05<span class="dim"> 토 21시</span></td><td><span class="chip">텍스트만</span></td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DLucmoTpWfm" target="_blank" rel="noopener">스하🙌🏻
-오늘 스레드2주년이라 이렇게 모자도 쓰고 기분이 좋아! 게다가 </a></td><td class="num strong">799</td><td class="num">62</td><td class="num">180자</td></tr><tr><td class="num">5</td><td class="nw">07-07<span class="dim"> 월 20시</span></td><td><span class="chip">텍스트만</span></td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DLzjtpfp0PR" target="_blank" rel="noopener">스치니들 안녕~
-와 오늘 날씨가 진짜 너무 덥다... 이번에 더위 대박일</a></td><td class="num strong">553</td><td class="num">32</td><td class="num">192자</td></tr></tbody></table>
-  <h3>반응 랭킹</h3><p class="sub">반응이 생긴 뒤부터 표시됩니다</p><details class="tg"><summary>좋아요 TOP 5</summary><div class="tg-body"><table><thead><tr><th>#</th><th>게시일</th><th>내용</th><th class="num">좋아요</th><th class="num">조회</th></tr></thead><tbody><tr><td class="num">1</td><td class="nw">05-21</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DJ5kJ_9T2ag" target="_blank" rel="noopener">🏃🏻스하리 5일차!🏃🏻
-우리 스치니들 덕분에 200명 가까이 달려가고 있</a></td><td class="num strong">73</td><td class="num">867</td></tr><tr><td class="num">2</td><td class="nw">05-18</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DJxvmv2TmzD" target="_blank" rel="noopener">스하리 1000명 프로젝트 3일차! 
-벌써 100명을 넘고 열심히 영차영</a></td><td class="num strong">63</td><td class="num">980</td></tr><tr><td class="num">3</td><td class="nw">10-04</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DPX5PnGCRhh" target="_blank" rel="noopener">안녕 스치니들! 추석연휴 다들 잘보내고 있어? 나는 추석연휴 너무 잘보내</a></td><td class="num strong">48</td><td class="num">464</td></tr><tr><td class="num">4</td><td class="nw">09-06</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DOPykTsiXc2" target="_blank" rel="noopener">스치니들 주말 잘보내고있어? 주말인데 하필 비오니까 슬프다🥹
-그래도 손님</a></td><td class="num strong">43</td><td class="num">432</td></tr><tr><td class="num">5</td><td class="nw">05-16</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DJssGs6zoba" target="_blank" rel="noopener">다들 금요일에 비까지와서 나른할텐데
-나는 이런 상황에서 처음으로 스하리1</a></td><td class="num strong">38</td><td class="num">458</td></tr></tbody></table></div></details><details class="tg"><summary>답글 TOP 5</summary><div class="tg-body"><table><thead><tr><th>#</th><th>게시일</th><th>내용</th><th class="num">답글</th><th class="num">조회</th></tr></thead><tbody><tr><td class="num">1</td><td class="nw">05-21</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DJ5kJ_9T2ag" target="_blank" rel="noopener">🏃🏻스하리 5일차!🏃🏻
-우리 스치니들 덕분에 200명 가까이 달려가고 있</a></td><td class="num strong">77</td><td class="num">867</td></tr><tr><td class="num">2</td><td class="nw">05-18</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DJxvmv2TmzD" target="_blank" rel="noopener">스하리 1000명 프로젝트 3일차! 
-벌써 100명을 넘고 열심히 영차영</a></td><td class="num strong">72</td><td class="num">980</td></tr><tr><td class="num">3</td><td class="nw">09-06</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DOPykTsiXc2" target="_blank" rel="noopener">스치니들 주말 잘보내고있어? 주말인데 하필 비오니까 슬프다🥹
-그래도 손님</a></td><td class="num strong">65</td><td class="num">432</td></tr><tr><td class="num">4</td><td class="nw">10-04</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DPX5PnGCRhh" target="_blank" rel="noopener">안녕 스치니들! 추석연휴 다들 잘보내고 있어? 나는 추석연휴 너무 잘보내</a></td><td class="num strong">59</td><td class="num">464</td></tr><tr><td class="num">5</td><td class="nw">05-16</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DJssGs6zoba" target="_blank" rel="noopener">다들 금요일에 비까지와서 나른할텐데
-나는 이런 상황에서 처음으로 스하리1</a></td><td class="num strong">57</td><td class="num">458</td></tr></tbody></table></div></details><details class="tg"><summary>리포스트 TOP 5</summary><div class="tg-body"><table><thead><tr><th>#</th><th>게시일</th><th>내용</th><th class="num">리포스트</th><th class="num">조회</th></tr></thead><tbody><tr><td class="num">1</td><td class="nw">05-21</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DJ5kJ_9T2ag" target="_blank" rel="noopener">🏃🏻스하리 5일차!🏃🏻
-우리 스치니들 덕분에 200명 가까이 달려가고 있</a></td><td class="num strong">62</td><td class="num">867</td></tr><tr><td class="num">2</td><td class="nw">05-18</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DJxvmv2TmzD" target="_blank" rel="noopener">스하리 1000명 프로젝트 3일차! 
-벌써 100명을 넘고 열심히 영차영</a></td><td class="num strong">53</td><td class="num">980</td></tr><tr><td class="num">3</td><td class="nw">10-04</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DPX5PnGCRhh" target="_blank" rel="noopener">안녕 스치니들! 추석연휴 다들 잘보내고 있어? 나는 추석연휴 너무 잘보내</a></td><td class="num strong">36</td><td class="num">464</td></tr><tr><td class="num">4</td><td class="nw">09-06</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DOPykTsiXc2" target="_blank" rel="noopener">스치니들 주말 잘보내고있어? 주말인데 하필 비오니까 슬프다🥹
-그래도 손님</a></td><td class="num strong">36</td><td class="num">432</td></tr><tr><td class="num">5</td><td class="nw">05-16</td><td class="cap"><a href="https://www.threads.com/@wevape.no01/post/DJssGs6zoba" target="_blank" rel="noopener">다들 금요일에 비까지와서 나른할텐데
-나는 이런 상황에서 처음으로 스하리1</a></td><td class="num strong">33</td><td class="num">458</td></tr></tbody></table></div></details>
-</section>
 
+  <h3>팔로워 구성</h3>
+  <p class="sub">인스타그램이 추정한 값입니다</p>
+  <div class="demos"><div class="dm-box"><div class="dm-t">연령</div><div class="dm"><span class="dm-k">25-34</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">240</span></div><div class="dm"><span class="dm-k">35-44</span><span class="dm-bar"><i style="width:90%"></i></span><span class="dm-v">215</span></div><div class="dm"><span class="dm-k">45-54</span><span class="dm-bar"><i style="width:47%"></i></span><span class="dm-v">113</span></div><div class="dm"><span class="dm-k">55-64</span><span class="dm-bar"><i style="width:16%"></i></span><span class="dm-v">38</span></div><div class="dm"><span class="dm-k">18-24</span><span class="dm-bar"><i style="width:15%"></i></span><span class="dm-v">36</span></div><div class="dm"><span class="dm-k">65+</span><span class="dm-bar"><i style="width:2%"></i></span><span class="dm-v">5</span></div></div><div class="dm-box"><div class="dm-t">성별</div><div class="dm"><span class="dm-k">M</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">276</span></div><div class="dm"><span class="dm-k">U</span><span class="dm-bar"><i style="width:99%"></i></span><span class="dm-v">273</span></div><div class="dm"><span class="dm-k">F</span><span class="dm-bar"><i style="width:36%"></i></span><span class="dm-v">99</span></div></div><div class="dm-box"><div class="dm-t">도시</div><div class="dm"><span class="dm-k">Seoul, Seoul</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">128</span></div><div class="dm"><span class="dm-k">Incheon, Incheon</span><span class="dm-bar"><i style="width:66%"></i></span><span class="dm-v">84</span></div><div class="dm"><span class="dm-k">Busan, Busan</span><span class="dm-bar"><i style="width:31%"></i></span><span class="dm-v">40</span></div><div class="dm"><span class="dm-k">Shenzhen, Guangdong</span><span class="dm-bar"><i style="width:22%"></i></span><span class="dm-v">28</span></div><div class="dm"><span class="dm-k">Daejeon, Daejeon</span><span class="dm-bar"><i style="width:16%"></i></span><span class="dm-v">21</span></div><div class="dm"><span class="dm-k">Shanghai, Shanghai</span><span class="dm-bar"><i style="width:15%"></i></span><span class="dm-v">19</span></div></div><div class="dm-box"><div class="dm-t">국가</div><div class="dm"><span class="dm-k">KR</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">471</span></div><div class="dm"><span class="dm-k">CN</span><span class="dm-bar"><i style="width:24%"></i></span><span class="dm-v">112</span></div><div class="dm"><span class="dm-k">JP</span><span class="dm-bar"><i style="width:3%"></i></span><span class="dm-v">12</span></div><div class="dm"><span class="dm-k">US</span><span class="dm-bar"><i style="width:2%"></i></span><span class="dm-v">10</span></div><div class="dm"><span class="dm-k">MY</span><span class="dm-bar"><i style="width:1%"></i></span><span class="dm-v">5</span></div><div class="dm"><span class="dm-k">FR</span><span class="dm-bar"><i style="width:1%"></i></span><span class="dm-v">4</span></div></div></div>
 
-<details class="tg"><summary>이 분석의 한계</summary>
-  <div class="tg-body limits">
-    스레드에는 "도달"이 없습니다. 조회수는 화면에 표시된 <b>횟수</b>라 같은 사람이 여러 번 보면 그만큼 올라갑니다.<br>
-    답글의 답글은 집계되지 않습니다. 리포스트로 올라간 글은 인사이트가 비어 있어 분석에서 빠집니다.<br>
-    어떤 경로로 들어왔는지는 API가 주지 않습니다.
-  </div>
-</details>
+  <h3>참고 지표</h3>
+  <p class="sub">표본이 적어 참고용입니다. 필요할 때 펼쳐 보세요.</p>
+  <details class="tg"><summary>언어별 성과</summary><div class="tg-body"><div class="warn">⚠️ 언어별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 203"><text class="cat" x="0" y="24">중국어</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.9%<tspan class="dim2"> · 16개</tspan></text><text class="cat" x="0" y="63">한국어</text><rect class="bar" x="150" y="45" width="441.1" height="28" rx="4"/><text class="val" x="599.1" y="63">3.3%<tspan class="dim2"> · 44개</tspan></text><text class="cat" x="0" y="102">일본어</text><rect class="bar" x="150" y="84" width="393.6" height="28" rx="4"/><text class="val" x="551.6" y="102">3.0%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="141">영문</text><rect class="bar" x="150" y="123" width="388.7" height="28" rx="4"/><text class="val" x="546.7" y="141">2.9%<tspan class="dim2"> · 50개</tspan></text><text class="cat" x="0" y="180">기타</text><rect class="bar" x="150" y="162" width="30.8" height="28" rx="4"/><text class="val" x="188.8" y="180">0.2%<tspan class="dim2"> · 1개</tspan></text></svg></div></details>
+  <details class="tg"><summary>게시 시각별 성과</summary><div class="tg-body"><div class="warn">⚠️ 시각별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 359"><text class="cat" x="0" y="24">16시</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">6.2%<tspan class="dim2"> · 1개</tspan></text><text class="cat" x="0" y="63">18시</text><rect class="bar" x="150" y="45" width="362.8" height="28" rx="4"/><text class="val" x="520.8" y="63">4.4%<tspan class="dim2"> · 7개</tspan></text><text class="cat" x="0" y="102">21시</text><rect class="bar" x="150" y="84" width="281.6" height="28" rx="4"/><text class="val" x="439.6" y="102">3.4%<tspan class="dim2"> · 43개</tspan></text><text class="cat" x="0" y="141">20시</text><rect class="bar" x="150" y="123" width="263.6" height="28" rx="4"/><text class="val" x="421.6" y="141">3.2%<tspan class="dim2"> · 39개</tspan></text><text class="cat" x="0" y="180">15시</text><rect class="bar" x="150" y="162" width="221.8" height="28" rx="4"/><text class="val" x="379.8" y="180">2.7%<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="219">19시</text><rect class="bar" x="150" y="201" width="210.9" height="28" rx="4"/><text class="val" x="368.9" y="219">2.6%<tspan class="dim2"> · 15개</tspan></text><text class="cat" x="0" y="258">14시</text><rect class="bar" x="150" y="240" width="183.4" height="28" rx="4"/><text class="val" x="341.4" y="258">2.2%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="297">12시</text><rect class="bar" x="150" y="279" width="146.3" height="28" rx="4"/><text class="val" x="304.3" y="297">1.8%<tspan class="dim2"> · 3개</tspan></text><text class="cat" x="0" y="336">11시</text><rect class="bar" x="150" y="318" width="128.0" height="28" rx="4"/><text class="val" x="286.0" y="336">1.6%<tspan class="dim2"> · 1개</tspan></text></svg></div></details>
+  <details class="tg"><summary>요일별 성과</summary><div class="tg-body"><svg viewBox="0 0 860 281"><text class="cat" x="0" y="24">목요일</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.9%<tspan class="dim2"> · 24개</tspan></text><text class="cat" x="0" y="63">수요일</text><rect class="bar" x="150" y="45" width="431.7" height="28" rx="4"/><text class="val" x="589.7" y="63">3.3%<tspan class="dim2"> · 10개</tspan></text><text class="cat" x="0" y="102">금요일</text><rect class="bar" x="150" y="84" width="428.7" height="28" rx="4"/><text class="val" x="586.7" y="102">3.3%<tspan class="dim2"> · 20개</tspan></text><text class="cat" x="0" y="141">화요일</text><rect class="bar" x="150" y="123" width="422.2" height="28" rx="4"/><text class="val" x="580.2" y="141">3.3%<tspan class="dim2"> · 16개</tspan></text><text class="cat" x="0" y="180">월요일</text><rect class="bar" x="150" y="162" width="411.3" height="28" rx="4"/><text class="val" x="569.3" y="180">3.2%<tspan class="dim2"> · 14개</tspan></text><text class="cat" x="0" y="219">일요일</text><rect class="bar" x="150" y="201" width="397.4" height="28" rx="4"/><text class="val" x="555.4" y="219">3.1%<tspan class="dim2"> · 12개</tspan></text><text class="cat" x="0" y="258">토요일</text><rect class="bar" x="150" y="240" width="298.4" height="28" rx="4"/><text class="val" x="456.4" y="258">2.3%<tspan class="dim2"> · 19개</tspan></text></svg></div></details>
+</section></div><div class="pane" data-i="1" hidden><section class="acct"><p class="empty">게시물이 적어 세부 분석을 만들지 않았습니다.</p></section></div>
+
   </main>
 </div>
-
+<script>
+document.querySelectorAll('.tabs .tab').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var i = b.dataset.i;
+    document.querySelectorAll('.tabs .tab').forEach(function (x) {
+      x.setAttribute('aria-selected', x === b ? 'true' : 'false');
+    });
+    document.querySelectorAll('.pane').forEach(function (p) {
+      p.hidden = (p.dataset.i !== i);
+    });
+    window.scrollTo({ top: 0 });
+  });
+});
+</script>
 <script>
 (function () {
   // 수집이 실패하면 페이지가 다시 만들어지지 않는다.

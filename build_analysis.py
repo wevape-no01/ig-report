@@ -24,9 +24,9 @@ OUT = os.path.join(DIR, "analysis.html")
 
 BENCH_ER_FOLLOWERS = 0.48          # 2026 업계 평균 참여율(팔로워 기준), Socialinsider
 BENCH_FORMAT = {"CAROUSEL_ALBUM": 0.55, "IMAGE": 0.37, "VIDEO": 0.52, "REELS": 0.52}
-RANK_LIMIT = 10                    # 전체 랭킹은 10위까지만
+RANK_LIMIT = 5                     # 전체 랭킹은 5위까지만
 MINI_RANK = 5                      # 도달·저장·공유 랭킹은 5위까지만
-TOP_VISIBLE = 3                    # 상위 3개만 펼쳐서 보여줌
+TOP_VISIBLE = 5                    # 5위까지 접지 않고 그대로 보여줌
 MIN_N = 5                          # 이 미만이면 "표본 부족" 경고
 
 # 오래된 게시물은 인스타그램이 도달을 과소 집계해 좋아요보다 도달이 작아지는 경우가 있다
@@ -312,19 +312,20 @@ def render_thin(a):
         f'<td class="num">{p["reach"]}</td><td class="num">{p["likes"]}</td>'
         f'<td class="num">{p["comments"]}</td></tr>'
         for p in posts)
-    return f"""
+    thin = f"""
 <section class="acct">
   <div class="acct-h">
     <h2>@{esc(uname)}</h2>
     <span class="dim">분석 가능 게시물 {len(posts)}개 · 팔로워 {prof.get("followers_count", 0):,}명</span>
   </div>
-  <div class="warn">게시물이 {MIN_POSTS}개 미만이라 반응률·저장률 같은 비율 지표를 계산하지 않았습니다.
-  도달이 한 자릿수라 비율로 바꾸면 수치가 크게 튀어 잘못된 판단을 유도합니다.
-  게시물이 {MIN_POSTS}개 이상 쌓이면 자동으로 전체 분석이 표시됩니다.</div>
+  <div class="warn">게시물이 {MIN_POSTS}개 미만이라 비율 지표는 계산하지 않았습니다.
+  {MIN_POSTS}개 이상 쌓이면 자동으로 전체 분석이 나옵니다.</div>
   <table><thead><tr><th>게시일</th><th>포맷</th><th>내용</th>
-    <th class="num">도달<br>(본 사람 수)</th><th class="num">좋아요</th><th class="num">댓글</th></tr></thead>
+    <th class="num">도달</th><th class="num">좋아요</th><th class="num">댓글</th></tr></thead>
     <tbody>{rows}</tbody></table>
 </section>"""
+    return {"core": thin, "detail":
+            '<section class="acct"><p class="empty">게시물이 적어 세부 분석을 만들지 않았습니다.</p></section>'}
 
 
 def render_account(a):
@@ -397,7 +398,7 @@ def render_account(a):
       <span class="champ-er">반응률 {champ["er"]:.1f}%</span>
       <span class="dim">{champ["date"]} {champ["dow"]}요일 {champ["hour"]}시</span></div>
     <p class="champ-cap">{linked(champ, 90)}</p>
-    <div class="champ-k">도달(본 사람 수) {champ["reach"]:,} · 반응 {champ["inter"]} ·
+    <div class="champ-k">도달 {champ["reach"]:,} · 반응 {champ["inter"]} ·
       좋아요 {champ["likes"]} · 댓글 {champ["comments"]} · 저장 {champ["saved"]} ·
       공유 {champ["shares"]} · 팔로워 +{champ["follows"]}</div>
     <p class="champ-note">{" ".join(p for p in parts if p)}</p>
@@ -415,7 +416,7 @@ def render_account(a):
                 f'<td class="num">{(p["saved"]+p["shares"]) or "–"}</td></tr>')
 
     head = ('<thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th>'
-            '<th class="num">반응률</th><th class="num">도달<br>(본 사람 수)</th>'
+            '<th class="num">반응률</th><th class="num">도달</th>'
             '<th class="num">반응</th><th class="num">저장+공유</th></tr></thead>')
     top_rows = "".join(rank_row(i, p) for i, p in enumerate(ranked[:TOP_VISIBLE]))
     rest_rows = "".join(rank_row(i + TOP_VISIBLE, p) for i, p in enumerate(ranked[TOP_VISIBLE:]))
@@ -442,7 +443,7 @@ def render_account(a):
         return f'<table>{h}<tbody>{b}</tbody></table>'
 
     other_ranks = (
-        toggle(f"도달(본 사람 수) TOP {MINI_RANK} — 가장 널리 퍼진 게시물",
+        toggle(f"도달 TOP {MINI_RANK} — 가장 널리 퍼진 게시물",
                mini_rank("reach", "도달"))
         + toggle(f"저장 TOP {MINI_RANK} — 다시 보려고 담아둔 게시물",
                  mini_rank("saved", "저장"))
@@ -517,11 +518,9 @@ def render_account(a):
         ex_parts.append(f"{ANALYSIS_MONTHS}개월 이전 {ex_old}개")
     if ex_bad:
         ex_parts.append(f"도달 집계 오류 {ex_bad}개")
-    ex_note = (f'<div class="warn" style="margin-top:12px">제외된 게시물: {" · ".join(ex_parts)}. '
-               f'오래된 게시물은 인스타그램이 도달을 과소 집계해 반응률이 비정상으로 나오므로 '
-               f'최근 {ANALYSIS_MONTHS}개월만 분석합니다.</div>') if ex_parts else ""
+    ex_note = ""        # 제외 안내는 아래 "이 분석의 한계" 토글에만 둔다
 
-    return f"""
+    core = f"""
 <section class="acct">
   <div class="acct-h">
     <h2>@{esc(uname)}</h2>
@@ -534,37 +533,42 @@ def render_account(a):
     <span class="badge {'good' if bench_x >= 1 else 'warn'}">업계 평균의 {bench_x:.1f}배</span>
     <span class="badge {'warn' if save_rate < 0.5 else 'good'}">저장률 {save_rate:.2f}%</span>
   </div>
-  <p class="sub">팔로워 반응률(참고용). 팔로워 수 대비 반응 비율로, 업계 평균과 비교할 수 있는 유일한 지표입니다.
-     2026년 인스타그램 평균은 {BENCH_ER_FOLLOWERS}%입니다.</p>
+  <p class="sub">팔로워 반응률(참고용) · 2026년 인스타그램 평균은 {BENCH_ER_FOLLOWERS}%입니다.</p>
 
   <h3>핵심 지표</h3>
   <p class="sub">기간 내 게시물 {n}개 기준</p>
   <div class="kpis">
     <div class="kpi"><div class="lbl">반응률</div><div class="v">{er_reach:.1f}%</div>
-      <div class="cmp">본 사람 100명 중 {er_reach:.0f}명이 좋아요·댓글·저장·공유를 남김</div></div>
+      <div class="cmp">100명 중 {er_reach:.0f}명</div></div>
     <div class="kpi"><div class="lbl">팔로워 반응률(참고용)</div><div class="v">{er_fol:.2f}%</div>
       <div class="cmp {'good' if er_fol >= BENCH_ER_FOLLOWERS else 'bad'}">업계 평균 대비 {(er_fol-BENCH_ER_FOLLOWERS)/BENCH_ER_FOLLOWERS*100:+.0f}%</div></div>
     <div class="kpi"><div class="lbl">노출 범위</div><div class="v">{a_reach/F*100:.1f}%</div>
-      <div class="cmp">게시물 하나가 평균 {a_reach:.0f}명에게 도달 · 팔로워 수 대비 비율</div></div>
+      <div class="cmp">평균 {a_reach:.0f}명에게 도달</div></div>
     <div class="kpi"><div class="lbl">저장률</div><div class="v">{save_rate:.2f}%</div>
-      <div class="cmp">합계 {tot_save}건 · 다시 보려고 담아둔 비율</div></div>
+      <div class="cmp">합계 {tot_save}건</div></div>
     <div class="kpi"><div class="lbl">공유율</div><div class="v">{share_rate:.2f}%</div>
-      <div class="cmp">합계 {tot_share}건 · 남에게 보낸 비율</div></div>
+      <div class="cmp">합계 {tot_share}건</div></div>
   </div>
 
   <h3>분석</h3>
-  <p class="sub">데이터가 갱신될 때마다 다시 쓰입니다</p>
   {ins_html}
   {chk_html}
 
   <h3>게시물 랭킹</h3>
-  <p class="sub">반응률(본 사람 대비 반응) 순 · 상위 {RANK_LIMIT}위까지</p>
+  <p class="sub">반응률 순 · 상위 {RANK_LIMIT}위까지</p>
   {champ_html}
   {rank_html}
   <div style="margin-top:14px">{other_ranks}</div>
+</section>"""
+
+    detail = f"""
+<section class="acct">
+  <div class="acct-h">
+    <h2>@{esc(uname)}</h2>
+    <span class="dim">{esc(period)} · 분석 게시물 {n}개</span>
+  </div>
 
   <h3>포맷별 성과</h3>
-  <p class="sub">반응률 — 본 사람 대비 반응 비율</p>
   {fmt_html}
   <div class="legend"><span><i class="sw"></i>가장 성과가 좋은 포맷</span>
     <span><i class="sw g"></i>비교군</span></div>
@@ -583,15 +587,16 @@ def render_account(a):
   </div>
 
   <h3>팔로워 구성</h3>
-  <p class="sub">인스타그램이 추정한 값입니다</p>
   <div class="demos">{demo_html}</div>
 
   <h3>참고 지표</h3>
-  <p class="sub">표본이 적어 참고용입니다. 필요할 때 펼쳐 보세요.</p>
+  <p class="sub">표본이 적어 참고용입니다.</p>
   {toggle("언어별 성과", lang_inner)}
   {toggle("게시 시각별 성과", hour_inner)}
   {toggle("요일별 성과", dow_inner)}
 </section>"""
+
+    return {"core": core, "detail": detail}
 
 
 CSS = """
@@ -700,49 +705,18 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 """
 
 
-def build():
-    cache = load("posts_cache.json", {})
-    report = load("report_data.json", {"accounts": []})
-    accounts = prep(cache, report)
-
-    gen = report.get("generated_at", "")
-
-    # 계정별 탭 — 일일 리포트와 같은 방식으로 하나씩 골라 본다
-    tabs, panes = [], []
-    for i, a in enumerate(accounts):
-        prof = a["acc"].get("profile", {})
-        u = prof.get("username") or a["acc"].get("label") or "?"
-        inner = render_account(a) if len(a["posts"]) >= MIN_POSTS else render_thin(a)
-        sel = "true" if i == 0 else "false"
-        hid = "" if i == 0 else " hidden"
-        tabs.append(f'<button class="tab" role="tab" data-i="{i}" aria-selected="{sel}">'
-                    f'@{esc(u)}</button>')
-        panes.append(f'<div class="pane" data-i="{i}"{hid}>{inner}</div>')
-
-    tabbar = f'<div class="tabs" role="tablist">{"".join(tabs)}</div>' if len(accounts) > 1 else ""
-    body = "".join(panes) or \
-        '<section class="acct"><p class="empty">분석할 데이터가 없습니다. instagram_api.py 를 먼저 실행하세요.</p></section>'
-
-    total = sum(a["acc"].get("posts_total", 0) for a in accounts)
-    anal = sum(len(a["posts"]) for a in accounts)
-
-    inner = f"""<p class="scope">전체 게시물 {total}개 중 인사이트 있는 {anal}개 분석</p>
-{tabbar}
-{body}
-<section class="acct">
-  <h2 style="font-size:15px;margin:0 0 12px">이 분석의 한계</h2>
-  <div class="limits">
-    인사이트(도달·조회·저장)는 계정을 프로페셔널로 전환한 이후 게시물에만 존재합니다. 그 이전 게시물은 좋아요·댓글·해시태그만 남아 분석에서 제외됩니다.<br>
-    "반응률"은 게시물을 본 사람 대비 좋아요·댓글·저장·공유의 비율입니다. 업계에서는 참여율(engagement rate)이라 부릅니다.<br>
-    표본이 {MIN_N}개 미만인 항목은 경고를 붙였습니다. 우연일 가능성이 높아 판단 근거로 쓰지 마세요.<br>
-    게시물별로 "해시태그를 타고 들어왔는지"는 API가 제공하지 않습니다. 비팔로워 도달로 신규 유입 총량만 알 수 있고, 경로별 구분은 인스타그램 앱에서 직접 확인해야 합니다.<br>
-    "왜 좋았는지"의 진짜 원인(이미지의 매력, 소재의 시의성)은 숫자로 나오지 않습니다.
+LIMITS_HTML = f"""
+<details class="tg"><summary>이 분석의 한계</summary>
+  <div class="tg-body limits">
+    도달·조회·저장 같은 인사이트는 계정을 프로페셔널로 바꾼 뒤 올린 게시물에만 있습니다. 그 이전 글은 분석에서 빠집니다.<br>
+    오래된 게시물은 인스타그램이 도달을 적게 집계해 반응률이 튑니다. 그래서 최근 {ANALYSIS_MONTHS}개월만 봅니다.<br>
+    표본이 {MIN_N}개 미만인 항목에는 경고를 붙였습니다. 우연일 수 있으니 판단 근거로 쓰지 마세요.<br>
+    어느 해시태그를 타고 들어왔는지는 API가 주지 않습니다. 새 사람에게 얼마나 닿았는지 총량만 알 수 있습니다.<br>
+    왜 잘됐는지의 진짜 이유(사진의 매력, 소재의 시의성)는 숫자에 안 나옵니다.
   </div>
-</section>
-"""
+</details>"""
 
-    script = """<script>
-// 계정 탭 전환
+TAB_JS = """<script>
 document.querySelectorAll('.tabs .tab').forEach(function (b) {
   b.addEventListener('click', function () {
     var i = b.dataset.i;
@@ -757,13 +731,49 @@ document.querySelectorAll('.tabs .tab').forEach(function (b) {
 });
 </script>"""
 
-    html = layout.document("ig", "analysis", "콘텐츠 분석", inner, CSS,
-                           updated=layout.fmt_updated(gen), body_end=script,
-                           generated_iso=gen)
 
-    with open(OUT, "w", encoding="utf-8") as f:
-        f.write(html)
-    print(f"저장됨: {OUT} (계정 {len(accounts)}개 · 분석 게시물 {anal}개)")
+def build():
+    cache = load("posts_cache.json", {})
+    report = load("report_data.json", {"accounts": []})
+    accounts = prep(cache, report)
+    gen = report.get("generated_at", "")
+
+    # 계정마다 핵심/세부 두 벌을 한 번에 만들어 둔다
+    made = []
+    for a in accounts:
+        prof = a["acc"].get("profile", {})
+        u = prof.get("username") or a["acc"].get("label") or "?"
+        parts = render_account(a) if len(a["posts"]) >= MIN_POSTS else render_thin(a)
+        made.append((u, parts))
+
+    total = sum(a["acc"].get("posts_total", 0) for a in accounts)
+    anal = sum(len(a["posts"]) for a in accounts)
+
+    def page(part, page_key, out_name, title, head, tail=""):
+        tabs, panes = [], []
+        for i, (u, parts) in enumerate(made):
+            sel = "true" if i == 0 else "false"
+            hid = "" if i == 0 else " hidden"
+            tabs.append(f'<button class="tab" role="tab" data-i="{i}" aria-selected="{sel}">'
+                        f'@{esc(u)}</button>')
+            panes.append(f'<div class="pane" data-i="{i}"{hid}>{parts[part]}</div>')
+        tabbar = f'<div class="tabs" role="tablist">{"".join(tabs)}</div>' if len(made) > 1 else ""
+        body = "".join(panes) or ('<section class="acct"><p class="empty">분석할 데이터가 없습니다. '
+                                  'instagram_api.py 를 먼저 실행하세요.</p></section>')
+        inner = f"{head}\n{tabbar}\n{body}\n{tail}"
+        html = layout.document("ig", page_key, title, inner, CSS,
+                               updated=layout.fmt_updated(gen), body_end=TAB_JS,
+                               generated_iso=gen)
+        out = os.path.join(DIR, out_name)
+        with open(out, "w", encoding="utf-8") as f:
+            f.write(html)
+        print(f"저장됨: {out_name} (계정 {len(made)}개 · 분석 게시물 {anal}개)")
+
+    page("core", "analysis", "analysis.html", "콘텐츠 분석",
+         f'<p class="scope">전체 게시물 {total}개 중 인사이트 있는 {anal}개 분석</p>',
+         LIMITS_HTML)
+    page("detail", "detail", "analysis-detail.html", "세부 분석",
+         '<p class="scope">자주 볼 지표는 아니지만, 방향을 정할 때 참고합니다.</p>')
 
 
 if __name__ == "__main__":

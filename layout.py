@@ -5,10 +5,12 @@
   WEVAPE SNS 운영 현황
   ├ 인스타그램 ─┬ 일일 리포트   (index.html)
   │             ├ 주간 리포트   (weekly.html)
-  │             └ 콘텐츠 분석   (analysis.html)
+  │             ├ 콘텐츠 분석   (analysis.html)
+  │             └ 세부 분석     (analysis-detail.html)
   └ 스레드     ─┬ 일일 리포트   (threads.html)
                 ├ 주간 리포트   (threads-weekly.html)
-                └ 콘텐츠 분석   (threads-analysis.html)
+                ├ 콘텐츠 분석   (threads-analysis.html)
+                └ 세부 분석     (threads-detail.html)
 
 각 페이지 생성기는 본문 HTML 과 자기 CSS 만 만들고 document() 로 감싼다.
 """
@@ -23,10 +25,12 @@ PLATFORMS = [
 SUBPAGES = {
     "ig": [("daily", "일일 리포트", "./"),
            ("weekly", "주간 리포트", "./weekly.html"),
-           ("analysis", "콘텐츠 분석", "./analysis.html")],
+           ("analysis", "콘텐츠 분석", "./analysis.html"),
+           ("detail", "세부 분석", "./analysis-detail.html")],
     "th": [("daily", "일일 리포트", "./threads.html"),
            ("weekly", "주간 리포트", "./threads-weekly.html"),
-           ("analysis", "콘텐츠 분석", "./threads-analysis.html")],
+           ("analysis", "콘텐츠 분석", "./threads-analysis.html"),
+           ("detail", "세부 분석", "./threads-detail.html")],
 }
 
 SHELL_CSS = """
@@ -65,6 +69,17 @@ body { margin:0; color:var(--sh-text);
 .stale.on { display:block; }
 .stale b { color:#6b1414; }
 .stale a { color:#8a1f1f; text-decoration:underline; }
+/* 접었다 펴는 상자 — 자주 안 보는 설명은 여기에 넣는다 */
+details.tg { border:1px solid var(--sh-border); border-radius:10px; margin-bottom:20px;
+             background:#fff; }
+details.tg > summary { cursor:pointer; padding:13px 16px; font-size:13.5px; font-weight:650;
+  color:var(--sh-text2); list-style:none; display:flex; align-items:center; gap:8px; }
+details.tg > summary::-webkit-details-marker { display:none; }
+details.tg > summary::before { content:"\\25b8"; color:var(--sh-accent); font-size:11px; }
+details.tg[open] > summary::before { content:"\\25be"; }
+details.tg[open] > summary { border-bottom:1px solid var(--sh-line); }
+details.tg .tg-body { padding:15px 16px 16px; }
+
 /* ---------------- 알림 (오른쪽 위 종) ---------------- */
 .site-h .top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .bell-wrap { position:relative; }

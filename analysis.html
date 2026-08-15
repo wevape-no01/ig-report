@@ -40,6 +40,17 @@ body { margin:0; color:var(--sh-text);
 .stale.on { display:block; }
 .stale b { color:#6b1414; }
 .stale a { color:#8a1f1f; text-decoration:underline; }
+/* 접었다 펴는 상자 — 자주 안 보는 설명은 여기에 넣는다 */
+details.tg { border:1px solid var(--sh-border); border-radius:10px; margin-bottom:20px;
+             background:#fff; }
+details.tg > summary { cursor:pointer; padding:13px 16px; font-size:13.5px; font-weight:650;
+  color:var(--sh-text2); list-style:none; display:flex; align-items:center; gap:8px; }
+details.tg > summary::-webkit-details-marker { display:none; }
+details.tg > summary::before { content:"\25b8"; color:var(--sh-accent); font-size:11px; }
+details.tg[open] > summary::before { content:"\25be"; }
+details.tg[open] > summary { border-bottom:1px solid var(--sh-line); }
+details.tg .tg-body { padding:15px 16px 16px; }
+
 /* ---------------- 알림 (오른쪽 위 종) ---------------- */
 .site-h .top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .bell-wrap { position:relative; }
@@ -238,7 +249,7 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 </div></header>
 <div class="toasts" id="toasts"></div>
 <div class="cols">
-  <aside class="side"><a class="" href="./">일일 리포트</a><a class="" href="./weekly.html">주간 리포트</a><a class="on" href="./analysis.html">콘텐츠 분석</a></aside>
+  <aside class="side"><a class="" href="./">일일 리포트</a><a class="" href="./weekly.html">주간 리포트</a><a class="on" href="./analysis.html">콘텐츠 분석</a><a class="" href="./analysis-detail.html">세부 분석</a></aside>
   <main class="main">
     <div class="page-h"><h1>콘텐츠 분석</h1>
       <span class="updated">업데이트: 2026-08-15 11:53 (한국시간)</span></div>
@@ -251,29 +262,28 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
     <h2>@wevape.no01</h2>
     <span class="dim">2025-10-27 ~ 2026-08-07 · 분석 게시물 115개 · 팔로워 719명</span>
   </div>
-  <div class="warn" style="margin-top:12px">제외된 게시물: 24개월 이전 27개. 오래된 게시물은 인스타그램이 도달을 과소 집계해 반응률이 비정상으로 나오므로 최근 24개월만 분석합니다.</div>
+  
 
   <div class="verdict">
     <div class="hero">0.91<span class="hu">%</span></div>
     <span class="badge good">업계 평균의 1.9배</span>
     <span class="badge warn">저장률 0.13%</span>
   </div>
-  <p class="sub">팔로워 반응률(참고용). 팔로워 수 대비 반응 비율로, 업계 평균과 비교할 수 있는 유일한 지표입니다.
-     2026년 인스타그램 평균은 0.48%입니다.</p>
+  <p class="sub">팔로워 반응률(참고용) · 2026년 인스타그램 평균은 0.48%입니다.</p>
 
   <h3>핵심 지표</h3>
   <p class="sub">기간 내 게시물 115개 기준</p>
   <div class="kpis">
     <div class="kpi"><div class="lbl">반응률</div><div class="v">3.1%</div>
-      <div class="cmp">본 사람 100명 중 3명이 좋아요·댓글·저장·공유를 남김</div></div>
+      <div class="cmp">100명 중 3명</div></div>
     <div class="kpi"><div class="lbl">팔로워 반응률(참고용)</div><div class="v">0.91%</div>
       <div class="cmp good">업계 평균 대비 +89%</div></div>
     <div class="kpi"><div class="lbl">노출 범위</div><div class="v">29.1%</div>
-      <div class="cmp">게시물 하나가 평균 209명에게 도달 · 팔로워 수 대비 비율</div></div>
+      <div class="cmp">평균 209명에게 도달</div></div>
     <div class="kpi"><div class="lbl">저장률</div><div class="v">0.13%</div>
-      <div class="cmp">합계 31건 · 다시 보려고 담아둔 비율</div></div>
+      <div class="cmp">합계 31건</div></div>
     <div class="kpi"><div class="lbl">공유율</div><div class="v">0.11%</div>
-      <div class="cmp">합계 27건 · 남에게 보낸 비율</div></div>
+      <div class="cmp">합계 27건</div></div>
   </div>
 
   <h3>분석</h3>
@@ -282,7 +292,7 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
   <div class="chk-box"><div class="chk-t">⚠️ 확인 필요</div><p>저장률 0.13%는 낮습니다. 지금 게시물이 "보고 지나가는" 콘텐츠에 가깝다는 신호입니다.</p><p>공유율 0.11%도 낮습니다. 공유는 새 사람에게 닿는 가장 싼 경로인데 거의 발생하지 않고 있습니다.</p></div>
 
   <h3>게시물 랭킹</h3>
-  <p class="sub">반응률(본 사람 대비 반응) 순 · 상위 10위까지</p>
+  <p class="sub">반응률 순 · 상위 5위까지</p>
   
   <div class="champ">
     <div class="champ-h"><span class="badge good">전체 1위</span>
@@ -311,70 +321,38 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 
 절제된 디자인,
 그리</a></td><td class="num strong">8.1%</td><td class="num">124</td><td class="num">10</td><td class="num">–</td></tr><tr><td class="num">3</td><td class="nw">01-22<span class="dim"> 목 21시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DT0AO_XE6kn/" target="_blank" rel="noopener">역대급 성능과 화려한 LED와 따스한 파스텔톤의 만남!
-디자인</a></td><td class="num strong">7.9%</td><td class="num">114</td><td class="num">9</td><td class="num">2</td></tr></tbody></table><details class="tg"><summary>4위 ~ 10위 보기</summary><div class="tg-body"><table><thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th><th class="num">반응률</th><th class="num">도달<br>(본 사람 수)</th><th class="num">반응</th><th class="num">저장+공유</th></tr></thead><tbody><tr><td class="num">4</td><td class="nw">01-24<span class="dim"> 토 21시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DT5JZxBE7ru/" target="_blank" rel="noopener">요즘 누수때문에 고민이 심하다면? 디자인과 누수, 맛표현을 다</a></td><td class="num strong">6.9%</td><td class="num">144</td><td class="num">10</td><td class="num">1</td></tr><tr><td class="num">5</td><td class="nw">01-26<span class="dim"> 월 18시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DT-B5Fck4uj/" target="_blank" rel="noopener">성능과 외관을 다잡은 기기를 원한다면?
+디자인</a></td><td class="num strong">7.9%</td><td class="num">114</td><td class="num">9</td><td class="num">2</td></tr><tr><td class="num">4</td><td class="nw">01-24<span class="dim"> 토 21시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DT5JZxBE7ru/" target="_blank" rel="noopener">요즘 누수때문에 고민이 심하다면? 디자인과 누수, 맛표현을 다</a></td><td class="num strong">6.9%</td><td class="num">144</td><td class="num">10</td><td class="num">1</td></tr><tr><td class="num">5</td><td class="nw">01-26<span class="dim"> 월 18시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DT-B5Fck4uj/" target="_blank" rel="noopener">성능과 외관을 다잡은 기기를 원한다면?
  
-♥️근처에 있는 위</a></td><td class="num strong">6.7%</td><td class="num">149</td><td class="num">10</td><td class="num">–</td></tr><tr><td class="num">6</td><td class="nw">12-11<span class="dim"> 목 21시</span></td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/DSH2rmFE4TI/" target="_blank" rel="noopener">Where is the Incheon-Gyeonggi dist</a></td><td class="num strong">6.3%</td><td class="num">126</td><td class="num">8</td><td class="num">1</td></tr><tr><td class="num">7</td><td class="nw">01-07<span class="dim"> 수 20시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DTNVajykzmO/" target="_blank" rel="noopener">The unwavering passion! New flavor</a></td><td class="num strong">6.3%</td><td class="num">142</td><td class="num">9</td><td class="num">1</td></tr><tr><td class="num">8</td><td class="nw">10-31<span class="dim"> 금 16시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DQduuLDE4QO/" target="_blank" rel="noopener">bubblemongraffiti不用担心缺货或数量问题。联系我们，</a></td><td class="num strong">6.2%</td><td class="num">113</td><td class="num">7</td><td class="num">–</td></tr><tr><td class="num">9</td><td class="nw">01-26<span class="dim"> 월 20시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DT-L3qFE1BR/" target="_blank" rel="noopener">맛표현,디자인,가격까지 다 잡은 리필형 기기를 찾는다면?  🔥</a></td><td class="num strong">5.9%</td><td class="num">119</td><td class="num">7</td><td class="num">1</td></tr><tr><td class="num">10</td><td class="nw">02-08<span class="dim"> 일 21시</span></td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DUfxcaFkwQM/" target="_blank" rel="noopener">핫한 을지로에서 요즘 더욱 핫한  즐겨보고 사고싶다면? -&gt; </a></td><td class="num strong">5.9%</td><td class="num">188</td><td class="num">11</td><td class="num">3</td></tr></tbody></table></div></details>
+♥️근처에 있는 위</a></td><td class="num strong">6.7%</td><td class="num">149</td><td class="num">10</td><td class="num">–</td></tr></tbody></table>
   <div style="margin-top:14px"><details class="tg"><summary>도달(본 사람 수) TOP 5 — 가장 널리 퍼진 게시물</summary><div class="tg-body"><table><thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th><th class="num">도달</th><th class="num">반응률</th></tr></thead><tbody><tr><td class="num">1</td><td class="nw">11-01</td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/DQgpI8Wk7Cl/" target="_blank" rel="noopener">The emotion of graffiti💖💖</a></td><td class="num strong">2,434</td><td class="num">1.3%</td></tr><tr><td class="num">2</td><td class="nw">12-03</td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DRzPxJuk-sv/" target="_blank" rel="noopener">Bubblemon Graffiti 2 Compared to L</a></td><td class="num strong">624</td><td class="num">2.2%</td></tr><tr><td class="num">3</td><td class="nw">10-27</td><td><span class="chip">동영상</span></td><td class="cap"><a href="https://www.instagram.com/reel/DQTP9_nE9nW/" target="_blank" rel="noopener">버블몬 그래피티 인천 경기 총판 지점 입니다.</a></td><td class="num strong">470</td><td class="num">2.8%</td></tr><tr><td class="num">4</td><td class="nw">11-25</td><td><span class="chip">동영상</span></td><td class="cap"><a href="https://www.instagram.com/reel/DReps_SgIg-/" target="_blank" rel="noopener">Bubblemon Graffiti 2 shines bright</a></td><td class="num strong">436</td><td class="num">2.5%</td></tr><tr><td class="num">5</td><td class="nw">01-02</td><td><span class="chip">동영상</span></td><td class="cap"><a href="https://www.instagram.com/reel/DS_u6xUE5he/" target="_blank" rel="noopener">(내용 없음)</a></td><td class="num strong">430</td><td class="num">0.2%</td></tr></tbody></table></div></details><details class="tg"><summary>저장 TOP 5 — 다시 보려고 담아둔 게시물</summary><div class="tg-body"><table><thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th><th class="num">저장</th><th class="num">반응률</th></tr></thead><tbody><tr><td class="num">1</td><td class="nw">12-03</td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DRzPxJuk-sv/" target="_blank" rel="noopener">Bubblemon Graffiti 2 Compared to L</a></td><td class="num strong">3</td><td class="num">2.2%</td></tr><tr><td class="num">2</td><td class="nw">01-22</td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DT0AO_XE6kn/" target="_blank" rel="noopener">역대급 성능과 화려한 LED와 따스한 파스텔톤의 만남!
 디자인</a></td><td class="num strong">2</td><td class="num">7.9%</td></tr><tr><td class="num">3</td><td class="nw">12-11</td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/DSH3DPbE-FJ/" target="_blank" rel="noopener">Where are the Incheon, Gyeonggi, a</a></td><td class="num strong">2</td><td class="num">4.2%</td></tr><tr><td class="num">4</td><td class="nw">12-04</td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DR1y0G1Ey1P/" target="_blank" rel="noopener">Bubblemon Graffiti 2 Lollipot is s</a></td><td class="num strong">2</td><td class="num">3.0%</td></tr><tr><td class="num">5</td><td class="nw">11-25</td><td><span class="chip">동영상</span></td><td class="cap"><a href="https://www.instagram.com/reel/DReps_SgIg-/" target="_blank" rel="noopener">Bubblemon Graffiti 2 shines bright</a></td><td class="num strong">2</td><td class="num">2.5%</td></tr></tbody></table></div></details><details class="tg"><summary>공유 TOP 5 — 남에게 보낸 게시물</summary><div class="tg-body"><table><thead><tr><th>#</th><th>게시일</th><th>포맷</th><th>내용</th><th class="num">공유</th><th class="num">반응률</th></tr></thead><tbody><tr><td class="num">1</td><td class="nw">11-01</td><td><span class="chip">단일 이미지</span></td><td class="cap"><a href="https://www.instagram.com/p/DQgpI8Wk7Cl/" target="_blank" rel="noopener">The emotion of graffiti💖💖</a></td><td class="num strong">6</td><td class="num">1.3%</td></tr><tr><td class="num">2</td><td class="nw">02-08</td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DUfxcaFkwQM/" target="_blank" rel="noopener">핫한 을지로에서 요즘 더욱 핫한  즐겨보고 사고싶다면? -&gt; </a></td><td class="num strong">2</td><td class="num">5.9%</td></tr><tr><td class="num">3</td><td class="nw">01-08</td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DTP7FJAk12X/" target="_blank" rel="noopener">The popularity of Bubblemon Graffi</a></td><td class="num strong">2</td><td class="num">5.4%</td></tr><tr><td class="num">4</td><td class="nw">12-03</td><td><span class="chip">캐러셀</span></td><td class="cap"><a href="https://www.instagram.com/p/DRzPxJuk-sv/" target="_blank" rel="noopener">Bubblemon Graffiti 2 Compared to L</a></td><td class="num strong">2</td><td class="num">2.2%</td></tr><tr><td class="num">5</td><td class="nw">11-06</td><td><span class="chip">동영상</span></td><td class="cap"><a href="https://www.instagram.com/reel/DQtpV1EgAZK/" target="_blank" rel="noopener">Bubblemon Graffiti今天大量到货，咨询量很大💖 在这</a></td><td class="num strong">2</td><td class="num">3.7%</td></tr></tbody></table></div></details></div>
-
-  <h3>포맷별 성과</h3>
-  <p class="sub">반응률 — 본 사람 대비 반응 비율</p>
-  <svg viewBox="0 0 860 125"><text class="cat" x="0" y="24">캐러셀</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.8%<tspan class="dim2"> · 60개 · 도달 179</tspan></text><text class="cat" x="0" y="63">단일 이미지</text><rect class="bar muted" x="150" y="45" width="367.2" height="28" rx="4"/><text class="val" x="525.2" y="63">2.8%<tspan class="dim2"> · 45개 · 도달 220</tspan></text><text class="cat" x="0" y="102">동영상</text><rect class="bar muted" x="150" y="84" width="258.2" height="28" rx="4"/><text class="val" x="416.2" y="102">1.9%<tspan class="dim2"> · 10개 · 도달 345</tspan></text></svg>
-  <div class="legend"><span><i class="sw"></i>가장 성과가 좋은 포맷</span>
-    <span><i class="sw g"></i>비교군</span></div>
-  <div class="reads"><p><b>캐러셀가 단일 이미지보다 반응률 1.4배 높습니다.</b> 각각 게시물 60개 / 45개 기준입니다. 업계 벤치마크도 캐러셀 0.55% / 이미지 0.37%로 같은 방향입니다.</p></div>
-
-  <h3>해시태그별 성과</h3>
-  <p class="sub">5회 이상 사용한 해시태그만 · 반응률 순</p>
-  <svg viewBox="0 0 860 359"><text class="cat" x="0" y="24">#wevape</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.5%<tspan class="dim2"> · 13개</tspan></text><text class="cat" x="0" y="63">#버블몬그래피티3</text><rect class="bar" x="150" y="45" width="438.2" height="28" rx="4"/><text class="val" x="596.2" y="63">3.0%<tspan class="dim2"> · 8개</tspan></text><text class="cat" x="0" y="102">#bubblemongraffitic</text><rect class="bar" x="150" y="84" width="395.5" height="28" rx="4"/><text class="val" x="553.5" y="102">2.7%<tspan class="dim2"> · 6개</tspan></text><text class="cat" x="0" y="141">#위베이프</text><rect class="bar" x="150" y="123" width="380.3" height="28" rx="4"/><text class="val" x="538.3" y="141">2.6%<tspan class="dim2"> · 7개</tspan></text><text class="cat" x="0" y="180">#bubblemongraffiti</text><rect class="bar" x="150" y="162" width="379.8" height="28" rx="4"/><text class="val" x="537.8" y="180">2.6%<tspan class="dim2"> · 18개</tspan></text><text class="cat" x="0" y="219">#bubblemongraffiti2</text><rect class="bar" x="150" y="201" width="375.0" height="28" rx="4"/><text class="val" x="533.0" y="219">2.6%<tspan class="dim2"> · 20개</tspan></text><text class="cat" x="0" y="258">#버블몬그래피티2</text><rect class="bar" x="150" y="240" width="261.9" height="28" rx="4"/><text class="val" x="419.9" y="258">1.8%<tspan class="dim2"> · 6개</tspan></text><text class="cat" x="0" y="297">#버블몬</text><rect class="bar" x="150" y="279" width="256.1" height="28" rx="4"/><text class="val" x="414.1" y="297">1.8%<tspan class="dim2"> · 6개</tspan></text><text class="cat" x="0" y="336">#bubblemon</text><rect class="bar" x="150" y="318" width="256.1" height="28" rx="4"/><text class="val" x="414.1" y="336">1.8%<tspan class="dim2"> · 5개</tspan></text></svg>
-  <div class="reads"><p>해시태그가 있는 게시물은 67개, 없는 게시물은 48개입니다. 게시물당 평균 1.3개를 사용했습니다 (인스타그램 허용 한도는 30개).</p></div>
-
-  <h3>해시태그 개수 · 캡션 길이</h3>
-  <p class="sub">반응률</p>
-  <div class="two">
-    <div><div class="mini-t">해시태그 개수</div><svg viewBox="0 0 400 152"><text class="cat" x="0" y="23">0개</text><rect class="bar" x="78" y="6" width="218.0" height="26" rx="4"/><text class="val" x="304.0" y="23">3.7%<tspan class="dim2"> · 48개</tspan></text><text class="cat" x="0" y="59">1–3개</text><rect class="bar" x="78" y="42" width="178.5" height="26" rx="4"/><text class="val" x="264.5" y="59">3.0%<tspan class="dim2"> · 57개</tspan></text><text class="cat" x="0" y="95">8개 이상</text><rect class="bar" x="78" y="78" width="127.0" height="26" rx="4"/><text class="val" x="213.0" y="95">2.2%<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="131">4–7개</text><rect class="bar" x="78" y="114" width="95.4" height="26" rx="4"/><text class="val" x="181.4" y="131">1.6%<tspan class="dim2"> · 8개</tspan></text></svg></div>
-    <div><div class="mini-t">캡션 길이(해시태그 제외)</div><svg viewBox="0 0 400 152"><text class="cat" x="0" y="23">151–400자</text><rect class="bar" x="78" y="6" width="218.0" height="26" rx="4"/><text class="val" x="304.0" y="23">3.6%<tspan class="dim2"> · 37개</tspan></text><text class="cat" x="0" y="59">400자 초과</text><rect class="bar" x="78" y="42" width="205.0" height="26" rx="4"/><text class="val" x="291.0" y="59">3.4%<tspan class="dim2"> · 3개</tspan></text><text class="cat" x="0" y="95">51–150자</text><rect class="bar" x="78" y="78" width="200.9" height="26" rx="4"/><text class="val" x="286.9" y="95">3.3%<tspan class="dim2"> · 57개</tspan></text><text class="cat" x="0" y="131">~50자</text><rect class="bar" x="78" y="114" width="133.0" height="26" rx="4"/><text class="val" x="219.0" y="131">2.2%<tspan class="dim2"> · 18개</tspan></text></svg></div>
-  </div>
-
-  <h3>팔로워 구성</h3>
-  <p class="sub">인스타그램이 추정한 값입니다</p>
-  <div class="demos"><div class="dm-box"><div class="dm-t">연령</div><div class="dm"><span class="dm-k">25-34</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">240</span></div><div class="dm"><span class="dm-k">35-44</span><span class="dm-bar"><i style="width:90%"></i></span><span class="dm-v">215</span></div><div class="dm"><span class="dm-k">45-54</span><span class="dm-bar"><i style="width:47%"></i></span><span class="dm-v">113</span></div><div class="dm"><span class="dm-k">55-64</span><span class="dm-bar"><i style="width:16%"></i></span><span class="dm-v">38</span></div><div class="dm"><span class="dm-k">18-24</span><span class="dm-bar"><i style="width:15%"></i></span><span class="dm-v">36</span></div><div class="dm"><span class="dm-k">65+</span><span class="dm-bar"><i style="width:2%"></i></span><span class="dm-v">5</span></div></div><div class="dm-box"><div class="dm-t">성별</div><div class="dm"><span class="dm-k">M</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">276</span></div><div class="dm"><span class="dm-k">U</span><span class="dm-bar"><i style="width:99%"></i></span><span class="dm-v">273</span></div><div class="dm"><span class="dm-k">F</span><span class="dm-bar"><i style="width:36%"></i></span><span class="dm-v">99</span></div></div><div class="dm-box"><div class="dm-t">도시</div><div class="dm"><span class="dm-k">Seoul, Seoul</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">128</span></div><div class="dm"><span class="dm-k">Incheon, Incheon</span><span class="dm-bar"><i style="width:66%"></i></span><span class="dm-v">84</span></div><div class="dm"><span class="dm-k">Busan, Busan</span><span class="dm-bar"><i style="width:31%"></i></span><span class="dm-v">40</span></div><div class="dm"><span class="dm-k">Shenzhen, Guangdong</span><span class="dm-bar"><i style="width:22%"></i></span><span class="dm-v">28</span></div><div class="dm"><span class="dm-k">Daejeon, Daejeon</span><span class="dm-bar"><i style="width:16%"></i></span><span class="dm-v">21</span></div><div class="dm"><span class="dm-k">Shanghai, Shanghai</span><span class="dm-bar"><i style="width:15%"></i></span><span class="dm-v">19</span></div></div><div class="dm-box"><div class="dm-t">국가</div><div class="dm"><span class="dm-k">KR</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">471</span></div><div class="dm"><span class="dm-k">CN</span><span class="dm-bar"><i style="width:24%"></i></span><span class="dm-v">112</span></div><div class="dm"><span class="dm-k">JP</span><span class="dm-bar"><i style="width:3%"></i></span><span class="dm-v">12</span></div><div class="dm"><span class="dm-k">US</span><span class="dm-bar"><i style="width:2%"></i></span><span class="dm-v">10</span></div><div class="dm"><span class="dm-k">MY</span><span class="dm-bar"><i style="width:1%"></i></span><span class="dm-v">5</span></div><div class="dm"><span class="dm-k">FR</span><span class="dm-bar"><i style="width:1%"></i></span><span class="dm-v">4</span></div></div></div>
-
-  <h3>참고 지표</h3>
-  <p class="sub">표본이 적어 참고용입니다. 필요할 때 펼쳐 보세요.</p>
-  <details class="tg"><summary>언어별 성과</summary><div class="tg-body"><div class="warn">⚠️ 언어별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 203"><text class="cat" x="0" y="24">중국어</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.9%<tspan class="dim2"> · 16개</tspan></text><text class="cat" x="0" y="63">한국어</text><rect class="bar" x="150" y="45" width="441.1" height="28" rx="4"/><text class="val" x="599.1" y="63">3.3%<tspan class="dim2"> · 44개</tspan></text><text class="cat" x="0" y="102">일본어</text><rect class="bar" x="150" y="84" width="393.6" height="28" rx="4"/><text class="val" x="551.6" y="102">3.0%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="141">영문</text><rect class="bar" x="150" y="123" width="388.7" height="28" rx="4"/><text class="val" x="546.7" y="141">2.9%<tspan class="dim2"> · 50개</tspan></text><text class="cat" x="0" y="180">기타</text><rect class="bar" x="150" y="162" width="30.8" height="28" rx="4"/><text class="val" x="188.8" y="180">0.2%<tspan class="dim2"> · 1개</tspan></text></svg></div></details>
-  <details class="tg"><summary>게시 시각별 성과</summary><div class="tg-body"><div class="warn">⚠️ 시각별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 359"><text class="cat" x="0" y="24">16시</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">6.2%<tspan class="dim2"> · 1개</tspan></text><text class="cat" x="0" y="63">18시</text><rect class="bar" x="150" y="45" width="362.8" height="28" rx="4"/><text class="val" x="520.8" y="63">4.4%<tspan class="dim2"> · 7개</tspan></text><text class="cat" x="0" y="102">21시</text><rect class="bar" x="150" y="84" width="281.6" height="28" rx="4"/><text class="val" x="439.6" y="102">3.4%<tspan class="dim2"> · 43개</tspan></text><text class="cat" x="0" y="141">20시</text><rect class="bar" x="150" y="123" width="263.6" height="28" rx="4"/><text class="val" x="421.6" y="141">3.2%<tspan class="dim2"> · 39개</tspan></text><text class="cat" x="0" y="180">15시</text><rect class="bar" x="150" y="162" width="221.8" height="28" rx="4"/><text class="val" x="379.8" y="180">2.7%<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="219">19시</text><rect class="bar" x="150" y="201" width="210.9" height="28" rx="4"/><text class="val" x="368.9" y="219">2.6%<tspan class="dim2"> · 15개</tspan></text><text class="cat" x="0" y="258">14시</text><rect class="bar" x="150" y="240" width="183.4" height="28" rx="4"/><text class="val" x="341.4" y="258">2.2%<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="297">12시</text><rect class="bar" x="150" y="279" width="146.3" height="28" rx="4"/><text class="val" x="304.3" y="297">1.8%<tspan class="dim2"> · 3개</tspan></text><text class="cat" x="0" y="336">11시</text><rect class="bar" x="150" y="318" width="128.0" height="28" rx="4"/><text class="val" x="286.0" y="336">1.6%<tspan class="dim2"> · 1개</tspan></text></svg></div></details>
-  <details class="tg"><summary>요일별 성과</summary><div class="tg-body"><svg viewBox="0 0 860 281"><text class="cat" x="0" y="24">목요일</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.9%<tspan class="dim2"> · 24개</tspan></text><text class="cat" x="0" y="63">수요일</text><rect class="bar" x="150" y="45" width="431.7" height="28" rx="4"/><text class="val" x="589.7" y="63">3.3%<tspan class="dim2"> · 10개</tspan></text><text class="cat" x="0" y="102">금요일</text><rect class="bar" x="150" y="84" width="428.7" height="28" rx="4"/><text class="val" x="586.7" y="102">3.3%<tspan class="dim2"> · 20개</tspan></text><text class="cat" x="0" y="141">화요일</text><rect class="bar" x="150" y="123" width="422.2" height="28" rx="4"/><text class="val" x="580.2" y="141">3.3%<tspan class="dim2"> · 16개</tspan></text><text class="cat" x="0" y="180">월요일</text><rect class="bar" x="150" y="162" width="411.3" height="28" rx="4"/><text class="val" x="569.3" y="180">3.2%<tspan class="dim2"> · 14개</tspan></text><text class="cat" x="0" y="219">일요일</text><rect class="bar" x="150" y="201" width="397.4" height="28" rx="4"/><text class="val" x="555.4" y="219">3.1%<tspan class="dim2"> · 12개</tspan></text><text class="cat" x="0" y="258">토요일</text><rect class="bar" x="150" y="240" width="298.4" height="28" rx="4"/><text class="val" x="456.4" y="258">2.3%<tspan class="dim2"> · 19개</tspan></text></svg></div></details>
 </section></div><div class="pane" data-i="1" hidden>
 <section class="acct">
   <div class="acct-h">
     <h2>@wevape_japan</h2>
     <span class="dim">분석 가능 게시물 1개 · 팔로워 4명</span>
   </div>
-  <div class="warn">게시물이 10개 미만이라 반응률·저장률 같은 비율 지표를 계산하지 않았습니다.
-  도달이 한 자릿수라 비율로 바꾸면 수치가 크게 튀어 잘못된 판단을 유도합니다.
-  게시물이 10개 이상 쌓이면 자동으로 전체 분석이 표시됩니다.</div>
+  <div class="warn">게시물이 10개 미만이라 비율 지표는 계산하지 않았습니다.
+  10개 이상 쌓이면 자동으로 전체 분석이 나옵니다.</div>
   <table><thead><tr><th>게시일</th><th>포맷</th><th>내용</th>
-    <th class="num">도달<br>(본 사람 수)</th><th class="num">좋아요</th><th class="num">댓글</th></tr></thead>
+    <th class="num">도달</th><th class="num">좋아요</th><th class="num">댓글</th></tr></thead>
     <tbody><tr><td class="nw">2026-07-25</td><td><span class="chip">단일 이미지</span></td><td class="cap">EXCLUSIVE FOR VIP STORES.
 
 限られた場所で</td><td class="num">3</td><td class="num">2</td><td class="num">1</td></tr></tbody></table>
 </section></div>
-<section class="acct">
-  <h2 style="font-size:15px;margin:0 0 12px">이 분석의 한계</h2>
-  <div class="limits">
-    인사이트(도달·조회·저장)는 계정을 프로페셔널로 전환한 이후 게시물에만 존재합니다. 그 이전 게시물은 좋아요·댓글·해시태그만 남아 분석에서 제외됩니다.<br>
-    "반응률"은 게시물을 본 사람 대비 좋아요·댓글·저장·공유의 비율입니다. 업계에서는 참여율(engagement rate)이라 부릅니다.<br>
-    표본이 5개 미만인 항목은 경고를 붙였습니다. 우연일 가능성이 높아 판단 근거로 쓰지 마세요.<br>
-    게시물별로 "해시태그를 타고 들어왔는지"는 API가 제공하지 않습니다. 비팔로워 도달로 신규 유입 총량만 알 수 있고, 경로별 구분은 인스타그램 앱에서 직접 확인해야 합니다.<br>
-    "왜 좋았는지"의 진짜 원인(이미지의 매력, 소재의 시의성)은 숫자로 나오지 않습니다.
-  </div>
-</section>
 
+<details class="tg"><summary>이 분석의 한계</summary>
+  <div class="tg-body limits">
+    도달·조회·저장 같은 인사이트는 계정을 프로페셔널로 바꾼 뒤 올린 게시물에만 있습니다. 그 이전 글은 분석에서 빠집니다.<br>
+    오래된 게시물은 인스타그램이 도달을 적게 집계해 반응률이 튑니다. 그래서 최근 24개월만 봅니다.<br>
+    표본이 5개 미만인 항목에는 경고를 붙였습니다. 우연일 수 있으니 판단 근거로 쓰지 마세요.<br>
+    어느 해시태그를 타고 들어왔는지는 API가 주지 않습니다. 새 사람에게 얼마나 닿았는지 총량만 알 수 있습니다.<br>
+    왜 잘됐는지의 진짜 이유(사진의 매력, 소재의 시의성)는 숫자에 안 나옵니다.
+  </div>
+</details>
   </main>
 </div>
 <script>
-// 계정 탭 전환
 document.querySelectorAll('.tabs .tab').forEach(function (b) {
   b.addEventListener('click', function () {
     var i = b.dataset.i;

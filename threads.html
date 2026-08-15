@@ -40,6 +40,17 @@ body { margin:0; color:var(--sh-text);
 .stale.on { display:block; }
 .stale b { color:#6b1414; }
 .stale a { color:#8a1f1f; text-decoration:underline; }
+/* 접었다 펴는 상자 — 자주 안 보는 설명은 여기에 넣는다 */
+details.tg { border:1px solid var(--sh-border); border-radius:10px; margin-bottom:20px;
+             background:#fff; }
+details.tg > summary { cursor:pointer; padding:13px 16px; font-size:13.5px; font-weight:650;
+  color:var(--sh-text2); list-style:none; display:flex; align-items:center; gap:8px; }
+details.tg > summary::-webkit-details-marker { display:none; }
+details.tg > summary::before { content:"\25b8"; color:var(--sh-accent); font-size:11px; }
+details.tg[open] > summary::before { content:"\25be"; }
+details.tg[open] > summary { border-bottom:1px solid var(--sh-line); }
+details.tg .tg-body { padding:15px 16px 16px; }
+
 /* ---------------- 알림 (오른쪽 위 종) ---------------- */
 .site-h .top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .bell-wrap { position:relative; }
@@ -221,13 +232,19 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
 </div></header>
 <div class="toasts" id="toasts"></div>
 <div class="cols">
-  <aside class="side"><a class="on" href="./threads.html">일일 리포트</a><a class="" href="./threads-weekly.html">주간 리포트</a><a class="" href="./threads-analysis.html">콘텐츠 분석</a></aside>
+  <aside class="side"><a class="on" href="./threads.html">일일 리포트</a><a class="" href="./threads-weekly.html">주간 리포트</a><a class="" href="./threads-analysis.html">콘텐츠 분석</a><a class="" href="./threads-detail.html">세부 분석</a></aside>
   <main class="main">
     <div class="page-h"><h1>일일 리포트</h1>
       <span class="updated">업데이트: 2026-08-15 11:54 (한국시간)</span></div>
     <div class="stale" id="stale" data-generated="2026-08-15T02:54:00+00:00"></div>
 
 <div class="kpi-row" id="kpis"></div>
+
+<section>
+  <div class="sec-h"><h2>누적 반응</h2></div>
+  <p class="sub" id="subTotals"></p>
+  <div class="kpi-row" id="totals" style="margin:0"></div>
+</section>
 
 <section>
   <div class="sec-h">
@@ -244,7 +261,6 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
 
 <section>
   <div class="sec-h"><h2>신규 팔로워 유입</h2></div>
-  <p class="sub">매일 저장해 둔 총 팔로워 수의 차이로 계산한 값입니다.</p>
   <div id="newFollowers"></div>
 </section>
 
@@ -262,15 +278,7 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
 </section>
 
 <section>
-  <div class="sec-h"><h2>누적 반응</h2></div>
-  <p class="sub" id="subTotals"></p>
-  <div class="kpi-row" id="totals" style="margin:0"></div>
-</section>
-
-<section>
   <div class="sec-h"><h2>최근 글</h2></div>
-  <p class="sub"><b>조회</b> = 글이 화면에 표시된 횟수 · <b>리포스트</b> = 그대로 다시 올린 수 ·
-     <b>인용</b> = 내 글을 인용해 새 글을 쓴 수</p>
   <table>
     <thead><tr>
       <th>날짜</th><th>내용</th>
@@ -284,17 +292,15 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
 
 
 
-<section>
-  <div class="sec-h"><h2>용어 설명</h2></div>
-  <div class="foot">
-    <b>조회수</b> — 글이 화면에 표시된 총 횟수. 인스타그램의 "도달(본 사람 수)"과 달리
-      스레드는 사람 수를 주지 않아 횟수만 볼 수 있습니다.<br>
-    <b>답글</b> — 내 글에 달린 답글 수. 답글의 답글은 집계되지 않습니다.<br>
-    <b>리포스트</b> — 내 글을 그대로 다시 올린 수. 인스타의 "공유"와 비슷한 확산 신호입니다.<br>
-    <b>인용</b> — 내 글을 인용하면서 자기 의견을 붙여 새로 쓴 수. 리포스트보다 강한 반응입니다.<br>
-    <b>공유</b> — 스레드 밖(메시지·다른 앱)으로 보낸 수.
+<details class="tg"><summary>용어 설명</summary>
+  <div class="tg-body foot">
+    <b>조회</b> — 글이 화면에 표시된 횟수. 스레드는 사람 수를 주지 않습니다.<br>
+    <b>답글</b> — 내 글에 달린 답글 수. 스레드에서 노출에 가장 크게 작용합니다.<br>
+    <b>리포스트</b> — 내 글을 그대로 다시 올린 수. 답글 다음으로 강한 확산 신호입니다.<br>
+    <b>인용</b> — 내 글에 의견을 붙여 새로 쓴 수.<br>
+    <b>공유</b> — 스레드 밖으로 보낸 수.
   </div>
-</section>
+</details>
 
 <script id="t-report" type="application/json">{"generated_at": "2026-08-15T02:54:00+00:00", "profile": {"id": "27952081351123554", "username": "wevape.no01", "name": "위베이프 전자담배 인천/경기 대표지점", "threads_profile_picture_url": "https://scontent-sea5-1.cdninstagram.com/v/t51.75761-19/497021579_18306545473300073_4264936472795959615_n.jpg?stp=dst-jpg_s206x206_tt6&_nc_cat=105&ccb=7-5&_nc_sid=30ff31&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy5DMyJ9&_nc_ohc=z8NukHdUUIcQ7kNvwHV8Mm7&_nc_oc=AdpZjBiPuB24JIcRAJKIltXcX0vCobZlypDN0XtO0dNXwLCKhuNopAnm71lPmVW71cs&_nc_zt=24&_nc_ht=scontent-sea5-1.cdninstagram.com&edm=AP4hL3IEAAAA&_nc_gid=ZEVtALzRKik0HpGc4KSeJw&_nc_tpa=Q5bMBQJSIauSyXQl6LYQD7IVulZ8x6g4S7C2qfRdtr8QIw4S5rzDpQ7pk2rNljJ4AqWVKEpSHsqQ_LCLQQ&oh=00_AQEvfRLspbyCR-A6vHDPxENIVUKkvOw_zq4-0NhMmiz23w&oe=6A85B3C9", "threads_biography": "베이핑 유저들을 위한 전자담배 매장✨ 위베이프 인천,경기지부\n1️⃣위베이프 부천상동점\n2️⃣위베이프 부천신중동점\n3️⃣위베이프 인천논현점\n4️⃣위베이프 인천연수점\n5️⃣위베이프 구월로데오점\n6️⃣위베이프 구월길병원점\n7️⃣인천공항점 \n👇자세한 정보와 문의는? 👇"}, "account_insights": {"likes": 1769, "replies": 1793, "reposts": 1260, "quotes": 10, "followers_count": 1072}, "demographics": {"age": {"13-17": 2, "18-24": 48, "25-34": 346, "35-44": 341, "45-54": 187, "55-64": 60, "65+": 14}, "gender": {"F": 196, "M": 390, "U": 412}, "city": {"Chuncheon, Gangwon-do": 4, "Gwangyang, Jeollanam-do": 5, "Jeju, Jeju-do": 11, "Wonju, Gangwon-do": 4, "Jinju, Gyeongsangnam-do": 5, "Gwangju, Gwangju": 23, "Yongin, Gyeonggi-do": 17, "Daegu, Daegu": 36, "Osan, Gyeonggi-do": 6, "Busan, Busan": 59, "Seoul, Seoul": 247, "Yangju, Gyeonggi-do": 9, "Goyang, Gyeonggi-do": 18, "Pocheon, Gyeonggi-do": 4, "Pohang, Gyeongsangbuk-do": 6, "Geoje, Gyeongsangnam-do": 6, "Namyangju, Gyeonggi-do": 12, "Gumi, Gyeongsangbuk-do": 4, "Gimpo, Gyeonggi-do": 10, "Hanam, Gyeonggi-do": 5, "Incheon, Incheon": 80, "Jeonju, Jeollabuk-do": 7, "Hwaseong, Gyeonggi-do": 22, "Seogwipo, Jeju-do": 4, "Yangsan, Gyeongsangnam-do": 9, "Daejeon, Daejeon": 24, "Ansan, Gyeonggi-do": 10, "Anyang, Gyeonggi-do": 14, "Changwon, Gyeongsangnam-do": 18, "Sokcho, Gangwon-do": 5, "Cheonan, Chungcheongnam-do": 14, "Cheongju, Chungcheongbuk-do": 13, "Suwon, Gyeonggi-do": 20, "Bucheon, Gyeonggi-do": 20, "Gwangju, Gyeonggi-do": 7, "Gunsan, Jeollabuk-do": 7, "Ulsan, Ulsan": 8, "Pyeongtaek, Gyeonggi-do": 16, "Uijeongbu, Gyeonggi-do": 9, "Gimhae, Gyeongsangnam-do": 10, "Seongnam, Gyeonggi-do": 12, "Gunpo, Gyeonggi-do": 8, "Siheung, Gyeonggi-do": 12, "Gwangmyeong, Gyeonggi-do": 4, "Paju, Gyeonggi-do": 14}, "country": {"SV": 1, "IN": 2, "JP": 8, "KR": 954, "CN": 8, "UA": 1, "FR": 1, "GT": 1, "AU": 2, "TH": 2, "PH": 1, "VN": 4, "PK": 1, "GB": 3, "US": 9}}, "posts_total": 1128, "posts_analyzable": 316, "posts_recent_days": 31, "posts_recent_count": 2, "posts": [{"id": "18387219556162485", "text": "简约的设计，\n还有愈发深沉的存在感。\n\n握在手中的瞬间，能感受到稳定的握持感和\n更加清晰的LED显示屏。\n\n5ml大容量液体，\n最大25W输出，\n1500mAh大容量电池，\n孩子气孔调节功能，\n甚至包括C型充电。\n\n基本保持不变，\n提高了完成度。\n\n现在，\n快来体验泡泡蒙·洛利波特J吧。", "media_type": "CAROUSEL_ALBUM", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-08-07T05:57:08+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DbulvDrk8o6", "insights": {"views": 10, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18106135874469693", "text": "BUBBLE MON LOLLIPOT J\n\n절제된 디자인,\n그리고 깊어진 존재감.\n\n손에 쥐는 순간 느껴지는 안정적인 그립감과\n더 선명해진 LED 디스플레이.\n\n5ml 대용량 액상,\n최대 25W 출력,\n1500mAh 대용량 배터리,\n에어홀 조절 기능,\nC-TYPE 충전까지.\n\n기본은 그대로,\n완성도는 더 높였습니다.\n\n지금,\nBUBBLE MON LOLLIPOT J를 만나보세요.", "media_type": "CAROUSEL_ALBUM", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-08-02T10:11:58+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DbiK7LDEylW", "insights": {"views": 21, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18104890747821292", "text": "VIP店舗限定モデル\n\nBUBBLEMON PA-15\nNIC 3%バージョン登場\n\nさらに高まった満足感。\nそして、好みに合わせて選べる10種類のフレーバー。\n\n■ シングル / デュアル吸引の2つのMODE\n■ 好みに合わせて選べるフレーバーラインナップ\n■ VIP店舗限定販売\n\nどこでも手に入る製品ではない、\n特別な限定モデル。\n\n🏆 今すぐVIP店舗でチェック。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-06-12T11:05:16+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DZe8evvE8a1", "insights": {"views": 32, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "17929053354322336", "text": "VIP门店专属限定版\n\nBUBBLEMON PA-15\n全新 NIC 3% 强势登场\n\n更强劲的满足感，\n10 种精选风味随心选择。\n\n✓ 单吸 / 双吸双模式切换\n✓ 丰富风味自由选择\n✓ VIP 门店限定发售\n\n不是每一家门店都能买到的\n限量特别版产品。\n\n🏆 现已登陆 VIP 门店，抢先体验！", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-06-07T05:57:01+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DZRhOsiE6o4", "insights": {"views": 28, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18370223698207042", "text": "Bubblemon Graffiti-C ユーザーの皆さまへ\n\nより強い満足感を実現し、\nGraffiti-C POD NEW 3% NIC が登場。\n\nしかし、\n今回のラインアップは特別です。\n\n全国すべての店舗で購入できる商品ではありません。\n\nVIP認定店舗限定で展開される\n特別限定ラインアップ。\n\n限られた店舗でのみ、\nいち早く手に入れることができる\n\nBubblemon Graffiti-C 3% POD\n\n探しても、\nどこにでもある商品ではありません。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-29T10:35:30+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DY618k3k-eR", "insights": {"views": 29, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "17973611880048173", "text": "【NEW ARRIVAL】\n\nBubblemon Graffiti-C POD\nNEW 3% NIC ラインアップ登場\n\nより強い満足感。\nより特別な出会い。\n\nVIP認定店舗限定で購入できる\n特別限定ラインアップ。\n\n限られた場所で、\nいち早くお楽しみください。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-29T10:34:36+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DY6118ik5EB", "insights": {"views": 27, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18103981126804207", "text": "Bubblemon Graffiti-C 用户请注意\n\n以更强烈的满足感回归的\nGraffiti-C POD NEW 3% NIC\n\n但这次的系列，格外特别。\n\n这并不是一款能在全国所有门店都见到的产品，\n而是仅限 VIP 精选门店发售的限定系列。\n\n只能在限定门店率先邂逅的\nBubblemon Graffiti-C 3% POD\n\n这不是一款随处都能找到的产品。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-26T06:16:30+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYyp673E4Fk", "insights": {"views": 21, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18413228524177811", "text": "【新品上市】\n\nBubblemon Graffiti-C POD\n全新 3% NIC 系列正式公开\n\n更强烈的满足感，\n更特别的相遇。\n\n仅限 VIP 精选门店可购买的\n限定系列\n\n于限定门店，率先邂逅。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-26T06:13:26+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYypkYdExR5", "insights": {"views": 20, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18079387583534845", "text": "VIP 매장에서만 만날 수 있는 한정판\n\nBUBBLEMON PA-15\nNIC 3% 버전 출시\n\n더 강해진 만족감,\n그리고 취향대로 고르는 10가지 플레이버\n\n■ 단일 / 이중 흡입 2가지 MODE\n■ 취향별 플레이버 구성\n■ VIP 매장 한정 판매\n\n모든 곳에서 만날 수 없는\n특별한 한정판 제품.\n\n🏆 지금 VIP 매장에서 만나보세요.", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-20T09:44:22+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYjk8Jfk7Ts", "insights": {"views": 36, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "17901739311429918", "text": "버블몬 그래피티C 유저분들 주목\n\n더 강해진 만족감으로 돌아온 \nGraffiti-C POD NEW 3% NIC\n\n하지만 이번 라인업은 특별합니다.\n\n전국 모든 매장에서 만나볼 수 있는 제품이 아닌, \n오직 VIP 선정 매장에서만 구매 가능한 한정판 라인업\n\n한정된 매장에서만 가장 먼저 만나볼 수 있는 \n버블몬 그래피티C 3% POD\n\n찾는다고 어디에나 있는 제품은 아닙니다.", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-16T12:45:49+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYZmhl3E-XI", "insights": {"views": 22, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18117304813687246", "text": "[ NEW ARRIVAL ]\n\n버블몬 Graffiti-C POD \nNEW 3% NIC 라인업 공개\n\n더 강해진 만족감, \n더 특별해진 만남.\n\n오직 VIP 선정 매장에서만 구매 가능한 \n한정판 라인업\n\n한정된 곳에서 가장 먼저 만나보세요.", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-16T12:45:14+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYZmdUEk1-T", "insights": {"views": 18, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "17879001918592854", "text": "위베이프 인천/경기에서는\n#고유가지원금 도 사용가능합니다!\n캐쉬백 낭낭하게 챙겨드리니까\n오시면 액상도 채워드리겠습니다 ~~!!\n#전자담배 #위베이프 #버블몬 #택배가능", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-12T10:30:05+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYPDz7tE4Oi", "insights": {"views": 32, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}], "totals_from_posts": true}</script>
 <script id="t-hist" type="application/json">[{"date": "2026-07-15", "views": 3}, {"date": "2026-07-16", "views": 2}, {"date": "2026-07-17", "views": 1}, {"date": "2026-07-18", "views": 30}, {"date": "2026-07-19", "views": 2}, {"date": "2026-07-20", "views": 1}, {"date": "2026-07-21", "views": 108}, {"date": "2026-07-22", "views": 1}, {"date": "2026-07-23", "views": 2}, {"date": "2026-07-24", "views": 1}, {"date": "2026-07-25", "views": 6}, {"date": "2026-07-26", "views": 1}, {"date": "2026-07-27", "views": 3}, {"date": "2026-07-28", "views": 1}, {"date": "2026-07-29", "views": 0}, {"date": "2026-07-30", "views": 6}, {"date": "2026-07-31", "views": 0}, {"date": "2026-08-01", "views": 1}, {"date": "2026-08-02", "views": 5}, {"date": "2026-08-03", "views": 2}, {"date": "2026-08-04", "views": 3}, {"date": "2026-08-05", "views": 7}, {"date": "2026-08-06", "views": 9}, {"date": "2026-08-07", "views": 4}, {"date": "2026-08-08", "views": 5}, {"date": "2026-08-09", "views": 2}, {"date": "2026-08-10", "views": 92}, {"date": "2026-08-11", "views": 1}, {"date": "2026-08-12", "views": 5}, {"date": "2026-08-13", "views": 13, "followers_count": 1067, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0}, {"date": "2026-08-14", "views": 18}, {"date": "2026-08-15", "followers_count": 1072, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0}]</script>
@@ -312,8 +318,7 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
   const num = v => (typeof v === 'number' && isFinite(v));
   const esc = t => (t||'').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 
-  const GRAN_NOTE = { day:'최근 7일', week:'최근 4주 (월요일 시작)',
-    month:'올해 · 스레드가 과거 29일까지만 주므로 앞으로 실행될 때마다 달이 채워집니다' };
+  const GRAN_NOTE = { day:'최근 7일', week:'최근 4주 (월요일 시작)', month:'최근 12개월' };
 
   function bucket(key, g) {
     const rows = hist.filter(r => num(r[key]));
@@ -438,21 +443,22 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
     svg.innerHTML = s;
   }
 
-  const FOL_LIMIT = `<div class="note-box">
-    <b>스레드에서는 확인할 수 없는 것</b> — 스레드 API 는 글 단위로 "이 글을 보고 몇 명이 팔로우했다"를
-    주지 않습니다. 글 단위로 받을 수 있는 값은 조회·좋아요·답글·리포스트·인용·공유 여섯 가지뿐입니다.
-    새로 들어온 사람과 기존 팔로워를 나누는 값도 없습니다. 그래서 늘어난 사람 수까지만 알 수 있고,
-    어느 글에서 왔는지는 알 수 없습니다. 팔로워가 어떤 사람들인지는
-    <a href="./threads-analysis.html">콘텐츠 분석</a>의 팔로워 구성(지역·연령·성별)에서 볼 수 있습니다.
-  </div>`;
+  const FOL_LIMIT = `<details class="tg" style="margin-top:16px">
+    <summary>스레드에서는 확인할 수 없는 것</summary>
+    <div class="tg-body" style="font-size:11.5px;color:var(--text-muted);line-height:1.75">
+      스레드는 "이 글을 보고 몇 명이 팔로우했다"를 주지 않습니다. 글 단위로 받을 수 있는 값은
+      조회·좋아요·답글·리포스트·인용·공유 여섯 가지뿐입니다. 그래서 늘어난 사람 수까지만 알 수 있고,
+      어느 글에서 왔는지는 알 수 없습니다. 어떤 사람들인지는
+      <a href="./threads-detail.html">세부 분석</a>의 팔로워 구성에서 볼 수 있습니다.
+    </div></details>`;
 
   function drawNewFollowers() {
     const box = document.getElementById('newFollowers');
     const rows = folRows();
     if (rows.length < 2) {
       box.innerHTML =
-        `<p class="empty">기록이 ${rows.length}일치뿐이라 아직 증감을 계산할 수 없습니다.` +
-        ` 매일 자동 실행될 때마다 하나씩 쌓이며, 두 번째 기록이 생기면 값이 나옵니다.</p>` + FOL_LIMIT;
+        `<p class="empty">기록이 ${rows.length}일치뿐이라 아직 증감을 계산할 수 없습니다. 내일부터 값이 나옵니다.</p>`
+        + FOL_LIMIT;
       return;
     }
     const d = [];
@@ -474,9 +480,7 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
         <span class="n ${cls(last.delta)}">${sign(last.delta)}</span>
         <span class="u">명 · ${last.from} → ${last.date}${last.days > 1 ? ` (${last.days}일치 합산)` : ''}</span>
       </div>
-      <p class="mini-s">최근 ${span}일 <b>${sign(sum)}명</b> · 현재 총 ${n(last.total)}명.
-        스레드는 일별 신규 팔로워를 주지 않아, 매일 저장한 총 팔로워 수의 차이로 계산합니다.
-        기록은 ${rows[0].date}부터 시작합니다. 수집이 실패한 날은 건너뛰고 다음 기록과 묶여 계산됩니다.</p>`;
+      <p class="mini-s">최근 ${span}일 <b>${sign(sum)}명</b> · 현재 총 ${n(last.total)}명</p>`;
 
     const trs = d.slice(-14).reverse().map(r => `<tr>
         <td>${r.date}${r.days > 1 ? ` <span class="dim">(${r.days}일치)</span>` : ''}</td>
@@ -514,20 +518,19 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
         <div class="note">최근 한 달 · 글 ${rv.length}개 평균</div></div>`;
 
     const T = [['좋아요','likes'],['답글','replies'],['리포스트','reposts'],['인용','quotes']];
-    document.getElementById('subTotals').textContent = report.totals_from_posts
-      ? '스레드가 계정 단위 합계를 주지 않아, 인사이트가 있는 글 전체(' + n(report.posts_analyzable) + '개)의 값을 더해서 보여줍니다. 전체 기간 누적입니다.'
-      : '계정 전체 기준 누적입니다.';
+    document.getElementById('subTotals').textContent =
+      '글 ' + n(report.posts_analyzable) + '개 · 전체 기간 누적';
     document.getElementById('totals').innerHTML = T.map(([ko,k]) =>
       `<div class="stat-tile"><div class="label">${ko}</div>
          <div class="value">${n(ins[k])}</div></div>`).join('');
 
     document.getElementById('subViews').textContent =
-      '조회수 = 글이 화면에 표시된 총 횟수 · ' + GRAN_NOTE[gran];
+      GRAN_NOTE[gran];
     drawBars(document.getElementById('viewsChart'), bucket('views', gran));
 
     drawNewFollowers();
     document.getElementById('subFollowers').textContent =
-      '각 구간이 끝나는 시점의 총 팔로워 수입니다 · ' + FOL_NOTE[granFol];
+      FOL_NOTE[granFol];
     drawLine(document.getElementById('followerChart'), folSeries(granFol));
 
     drawTable();
