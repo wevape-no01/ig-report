@@ -117,8 +117,20 @@
  },
  {
   "date": "2026-08-13",
-  "views": 12,
+  "views": 13,
   "followers_count": 1067,
+  "likes": 0,
+  "replies": 0,
+  "reposts": 0,
+  "quotes": 0
+ },
+ {
+  "date": "2026-08-14",
+  "views": 18
+ },
+ {
+  "date": "2026-08-15",
+  "followers_count": 1072,
   "likes": 0,
   "replies": 0,
   "reposts": 0,

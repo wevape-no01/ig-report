@@ -1,41 +1,41 @@
 {
- "generated_at": "2026-08-13T12:39:56+00:00",
+ "generated_at": "2026-08-15T02:53:27+00:00",
  "accounts": [
   {
    "label": "위베이프",
    "profile": {
     "username": "wevape.no01",
     "name": "위베이프 전자담배 인천/경기 대표지점",
-    "followers_count": 716,
-    "follows_count": 1247,
+    "followers_count": 719,
+    "follows_count": 1246,
     "media_count": 240,
     "id": "17841409002160818"
    },
    "account_insights": {
-    "reach": 12,
-    "views": 169,
-    "profile_views": 21,
+    "reach": 22,
+    "views": 209,
+    "profile_views": 22,
     "accounts_engaged": 0,
     "total_interactions": 0,
-    "reach_non_follower": 8,
-    "reach_follower": 4,
-    "views_follower": 13,
-    "views_non_follower": 156
+    "reach_non_follower": 17,
+    "reach_follower": 5,
+    "views_non_follower": 204,
+    "views_follower": 5
    },
    "demographics": {
     "age": {
      "13-17": 1,
      "18-24": 36,
      "25-34": 240,
-     "35-44": 213,
+     "35-44": 215,
      "45-54": 113,
      "55-64": 38,
      "65+": 5
     },
     "gender": {
-     "F": 98,
+     "F": 99,
      "M": 276,
-     "U": 272
+     "U": 273
     },
     "city": {
      "Jeju, Jeju-do": 4,
@@ -57,13 +57,12 @@
      "Iksan, Jeollabuk-do": 3,
      "Beijing, Beijing": 6,
      "Hanam, Gyeonggi-do": 8,
-     "Incheon, Incheon": 83,
-     "Guri, Gyeonggi-do": 2,
+     "Incheon, Incheon": 84,
      "Hwaseong, Gyeonggi-do": 3,
      "Asan, Chungcheongnam-do": 3,
      "Daejeon, Daejeon": 21,
-     "Hefei, Anhui": 4,
      "Ansan, Gyeonggi-do": 4,
+     "Hefei, Anhui": 4,
      "Changwon, Gyeongsangnam-do": 3,
      "Anyang, Gyeonggi-do": 4,
      "Cheonan, Chungcheongnam-do": 3,
@@ -77,6 +76,7 @@
      "Uijeongbu, Gyeonggi-do": 5,
      "Seongnam, Gyeonggi-do": 9,
      "Torrance, California": 2,
+     "Chongqing, Chongqing": 2,
      "Siheung, Gyeonggi-do": 5,
      "Gwangmyeong, Gyeonggi-do": 3,
      "Foshan, Guangdong": 2,
@@ -85,12 +85,12 @@
      "Changsha, Hunan": 2
     },
     "country": {
-     "DE": 1,
+     "DE": 2,
      "HK": 1,
      "TW": 2,
      "RU": 3,
-     "JO": 1,
      "RW": 1,
+     "JO": 1,
      "JP": 12,
      "FR": 4,
      "BR": 1,
@@ -101,7 +101,7 @@
      "MO": 1,
      "UZ": 1,
      "IN": 2,
-     "KR": 470,
+     "KR": 471,
      "IR": 1,
      "GR": 1,
      "IT": 2,
@@ -110,8 +110,8 @@
      "ES": 3,
      "AT": 1,
      "AU": 1,
-     "VN": 2,
-     "PH": 2
+     "PH": 2,
+     "VN": 2
     }
    },
    "posts_total": 240,
@@ -129,8 +129,8 @@
      "like_count": 5,
      "comments_count": 1,
      "insights": {
-      "reach": 63,
-      "views": 154,
+      "reach": 72,
+      "views": 170,
       "saved": 0,
       "shares": 0,
       "total_interactions": 6,
@@ -148,8 +148,8 @@
      "like_count": 8,
      "comments_count": 2,
      "insights": {
-      "reach": 125,
-      "views": 326,
+      "reach": 129,
+      "views": 336,
       "saved": 0,
       "shares": 0,
       "total_interactions": 10,
