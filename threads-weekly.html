@@ -30,6 +30,12 @@ body { margin:0; color:var(--sh-text);
           padding:9px 12px; border-radius:8px; }
 .side a:hover { background:#f4f6f9; }
 .side a.on { background:var(--sh-accent); color:#fff; font-weight:650; }
+.side a.sub { margin-left:12px; font-size:12.5px; color:var(--sh-muted);
+              padding:7px 12px; position:relative; }
+.side a.sub::before { content:""; position:absolute; left:-6px; top:50%; width:6px;
+  height:1px; background:var(--sh-line); }
+.side a.sub.on { background:#eaf2fd; color:var(--sh-accent); font-weight:650; }
+.side a.sub.on::before { background:var(--sh-accent); }
 .main { min-width:0; }
 .page-h { display:flex; justify-content:space-between; align-items:baseline;
           flex-wrap:wrap; gap:10px; margin-bottom:18px; }
@@ -185,7 +191,7 @@ a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:und
 </div></header>
 <div class="toasts" id="toasts"></div>
 <div class="cols">
-  <aside class="side"><a class="" href="./threads.html">일일 리포트</a><a class="on" href="./threads-weekly.html">주간 리포트</a><a class="" href="./threads-analysis.html">콘텐츠 분석</a><a class="" href="./threads-detail.html">세부 분석</a></aside>
+  <aside class="side"><a class="" href="./threads.html">일일 리포트</a><a class="on" href="./threads-weekly.html">주간 리포트</a><a class="" href="./threads-analysis.html">콘텐츠 분석</a></aside>
   <main class="main">
     <div class="page-h"><h1>주간 리포트</h1>
       <span class="updated"></span></div>

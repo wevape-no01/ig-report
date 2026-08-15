@@ -22,15 +22,16 @@ PLATFORMS = [
     ("th", "스레드", "./threads.html"),
 ]
 
+# 네 번째 자리는 하위 메뉴. 부모나 자기 자신을 보고 있을 때만 펼쳐 보인다.
 SUBPAGES = {
     "ig": [("daily", "일일 리포트", "./"),
            ("weekly", "주간 리포트", "./weekly.html"),
-           ("analysis", "콘텐츠 분석", "./analysis.html"),
-           ("detail", "세부 분석", "./analysis-detail.html")],
+           ("analysis", "콘텐츠 분석", "./analysis.html",
+            [("detail", "세부 분석", "./analysis-detail.html")])],
     "th": [("daily", "일일 리포트", "./threads.html"),
            ("weekly", "주간 리포트", "./threads-weekly.html"),
-           ("analysis", "콘텐츠 분석", "./threads-analysis.html"),
-           ("detail", "세부 분석", "./threads-detail.html")],
+           ("analysis", "콘텐츠 분석", "./threads-analysis.html",
+            [("detail", "세부 분석", "./threads-detail.html")])],
 }
 
 SHELL_CSS = """
@@ -59,6 +60,12 @@ body { margin:0; color:var(--sh-text);
           padding:9px 12px; border-radius:8px; }
 .side a:hover { background:#f4f6f9; }
 .side a.on { background:var(--sh-accent); color:#fff; font-weight:650; }
+.side a.sub { margin-left:12px; font-size:12.5px; color:var(--sh-muted);
+              padding:7px 12px; position:relative; }
+.side a.sub::before { content:""; position:absolute; left:-6px; top:50%; width:6px;
+  height:1px; background:var(--sh-line); }
+.side a.sub.on { background:#eaf2fd; color:var(--sh-accent); font-weight:650; }
+.side a.sub.on::before { background:var(--sh-accent); }
 .main { min-width:0; }
 .page-h { display:flex; justify-content:space-between; align-items:baseline;
           flex-wrap:wrap; gap:10px; margin-bottom:18px; }
@@ -321,9 +328,17 @@ def document(platform, page, page_title, inner, page_css="",
     plat_links = "".join(
         f'<a class="{"on" if k == platform else ""}" href="{href}">{name}</a>'
         for k, name, href in PLATFORMS)
-    side_links = "".join(
-        f'<a class="{"on" if k == page else ""}" href="{href}">{name}</a>'
-        for k, name, href in SUBPAGES[platform])
+    parts = []
+    for item in SUBPAGES[platform]:
+        k, name, href = item[0], item[1], item[2]
+        kids = item[3] if len(item) > 3 else []
+        parts.append(f'<a class="{"on" if k == page else ""}" href="{href}">{name}</a>')
+        # 하위 메뉴는 부모를 보고 있거나 하위 자신을 보고 있을 때만 펼친다
+        if kids and (k == page or any(c[0] == page for c in kids)):
+            for ck, cname, chref in kids:
+                parts.append(f'<a class="sub {"on" if ck == page else ""}" '
+                             f'href="{chref}">{cname}</a>')
+    side_links = "".join(parts)
     plat_name = next(n for k, n, _ in PLATFORMS if k == platform)
 
     return f"""<!doctype html>
