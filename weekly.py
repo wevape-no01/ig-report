@@ -183,6 +183,46 @@ def threads(today=None):
             "top": _top(posts, "views", a, b)}
 
 
+def week_label(start):
+    """'2026-08-08' → '8월 2주차'. 그 달의 며칠인지로 주차를 센다."""
+    d = datetime.strptime(start, "%Y-%m-%d").date()
+    return f"{d.month}월 {(d.day - 1) // 7 + 1}주차"
+
+
+def _first_record_date():
+    """기록이 시작된 날. 이보다 앞선 주차는 만들지 않는다."""
+    starts = []
+    hist = load("history.json", {})
+    if isinstance(hist, dict):
+        for rows in hist.values():
+            ds = [r.get("date") for r in rows if isinstance(r, dict) and r.get("date")]
+            if ds:
+                starts.append(min(ds))
+    th = load("threads_history.json", [])
+    if isinstance(th, list):
+        ds = [r.get("date") for r in th if isinstance(r, dict) and r.get("date")]
+        if ds:
+            starts.append(min(ds))
+    return min(starts) if starts else None
+
+
+def past_weeks(limit=26, today=None):
+    """지난 주차들을 최근 것부터. 각 항목: {label, start, end, ig, th}"""
+    first = _first_record_date()
+    if not first:
+        return []
+    t = today or datetime.now(timezone.utc).date()
+    out = []
+    for i in range(limit):
+        d = t - timedelta(days=7 * i)
+        a, b, _, _ = periods(d)
+        if b < first:                     # 기록보다 앞선 주차는 그만
+            break
+        out.append({"label": week_label(a), "start": a, "end": b,
+                    "ig": instagram(d), "th": threads(d)})
+    return out
+
+
 # ---------------------------------------------------------------- 이슈 본문
 def _n(v):
     return "-" if v is None else f"{v:,}"

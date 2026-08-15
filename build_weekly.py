@@ -178,6 +178,142 @@ def build_th():
     print("저장됨: threads-weekly.html")
 
 
+# ------------------------------------------------------- 지난 리포트 (주차 목록)
+# 왼쪽 목록 / 오른쪽 리포트. 누르면 오른쪽만 바뀌므로 화면이 움직이지 않는다.
+PAST_CSS = """
+.two { display:grid; grid-template-columns:236px 1fr; gap:18px; align-items:start; }
+@media (max-width:760px) { .two { grid-template-columns:1fr; } }
+.wk-list { display:flex; flex-direction:column; gap:7px; }
+.wk { border:1px solid var(--border); border-radius:9px; padding:11px 13px;
+      cursor:pointer; background:#fff; }
+.wk:hover { background:#f7f9fc; }
+.wk.on { border-color:var(--series-1); background:#f2f7fe; }
+.wk .t { font-size:13px; font-weight:700; }
+.wk .d { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.wk .s { font-size:11px; color:var(--text-secondary); margin-top:5px; }
+.pager { display:flex; justify-content:center; gap:5px; margin-top:11px; }
+.pager button { border:1px solid var(--border); background:#fff; border-radius:7px;
+  font-family:inherit; font-size:11px; min-width:26px; height:26px; cursor:pointer;
+  color:var(--text-secondary); }
+.pager button[aria-current="true"] { background:var(--series-1); border-color:var(--series-1);
+  color:#fff; font-weight:700; }
+.pager button:disabled { opacity:.35; cursor:default; }
+.dim { color:var(--text-muted); }
+"""
+
+PAST_JS = """<script>
+(function () {
+  const WEEKS = JSON.parse(document.getElementById('weeks').textContent);
+  const KIND = document.getElementById('weeks').dataset.kind;
+  const PER = 5;
+  let page = 0, sel = 0;
+
+  const n = (v, u) => (v === null || v === undefined) ? '-' : v.toLocaleString() + (u || '');
+  function dl(d, pct, u) {
+    if (d === null || d === undefined) return '<span class="dim">비교값 없음</span>';
+    if (d === 0) return '<span class="dim">지난주와 같음</span>';
+    const c = d > 0 ? 'up' : 'down';
+    let s = (d > 0 ? '+' : '') + d.toLocaleString() + (u || '');
+    if (pct !== null && pct !== undefined) s += ' · ' + (d > 0 ? '+' : '') + pct + '%';
+    return '<span class="' + c + '">' + s + '</span> <span class="dim">(전주 대비)</span>';
+  }
+  const md = a => a.slice(5).replace('-', '/');
+  const tile = (l, v, note) =>
+    `<div class="stat-tile"><div class="label">${l}</div><div class="value">${v}</div>
+     <div class="note">${note}</div></div>`;
+
+  function summary(w) {
+    if (KIND === 'th') {
+      const t = w.th;
+      if (!t) return '기록 없음';
+      return '조회 ' + n(t.views) + ' · 팔로워 ' + n(t.followers, '명');
+    }
+    const m = (w.ig || [])[0];
+    if (!m) return '기록 없음';
+    return '신규 ' + n(m.new_followers, '명') + ' · 도달 ' + n(m.reach);
+  }
+
+  function card(w) {
+    let h = `<p class="period"><b>${w.start} ~ ${w.end}</b> · 그 앞 7일과 비교합니다.</p>`;
+    if (KIND === 'th') {
+      const t = w.th;
+      if (!t) return h + '<p class="empty">이 주는 기록이 없습니다.</p>';
+      h += `<section><h2>스레드</h2>
+        <p class="sub">@${t.username || '?'} · 이 주에 올린 글 ${t.posted}개</p>
+        <div class="kpi-row">
+          ${tile('조회수', n(t.views), dl(t.views_delta, t.views_pct))}
+          ${tile('주말 기준 팔로워', n(t.followers, '명'), dl(t.followers_delta, null, '명'))}
+          ${tile('좋아요', n(t.likes), '전체 기간 누적')}
+          ${tile('리포스트', n(t.reposts), '전체 기간 누적')}
+        </div></section>`;
+      return h;
+    }
+    (w.ig || []).forEach(m => {
+      h += `<section><h2>${m.label}</h2>
+        <p class="sub">@${m.user} · 이 주에 올린 게시물 ${m.posted}개</p>
+        <div class="kpi-row">
+          ${tile('신규 팔로워', n(m.new_followers, '명'),
+                 dl(m.new_followers_delta, m.new_followers_pct, '명'))}
+          ${tile('도달', n(m.reach), dl(m.reach_delta, m.reach_pct))}
+          ${tile('조회수', n(m.views), dl(m.views_delta, m.views_pct))}
+          ${tile('주말 기준 팔로워', n(m.followers, '명'),
+                 dl(m.followers_delta, m.followers_pct, '명'))}
+        </div></section>`;
+    });
+    return h;
+  }
+
+  function draw() {
+    const s = page * PER, part = WEEKS.slice(s, s + PER);
+    document.getElementById('wkList').innerHTML = part.map((w, i) => `
+      <div class="wk ${s + i === sel ? 'on' : ''}" data-i="${s + i}">
+        <div class="t">${w.label}</div>
+        <div class="d">${md(w.start)} ~ ${md(w.end)}</div>
+        <div class="s">${summary(w)}</div></div>`).join('');
+    document.querySelectorAll('.wk').forEach(el => el.onclick = () => {
+      sel = +el.dataset.i; draw();
+    });
+    const pages = Math.ceil(WEEKS.length / PER);
+    let p = `<button ${page === 0 ? 'disabled' : ''} data-p="${page - 1}">‹</button>`;
+    for (let i = 0; i < pages; i++)
+      p += `<button data-p="${i}" aria-current="${i === page}">${i + 1}</button>`;
+    p += `<button ${page >= pages - 1 ? 'disabled' : ''} data-p="${page + 1}">›</button>`;
+    document.getElementById('pager').innerHTML = pages > 1 ? p : '';
+    document.querySelectorAll('#pager button').forEach(b => b.onclick = () => {
+      page = +b.dataset.p; draw();
+    });
+    document.getElementById('wkCard').innerHTML = card(WEEKS[sel]);
+  }
+  draw();
+})();
+</script>"""
+
+
+def build_past(platform, out_name):
+    import json
+    weeks = weekly.past_weeks()
+    if not weeks:
+        inner = '<p class="empty">아직 지난 리포트를 만들 기록이 없습니다.</p>'
+        body_end = ""
+    else:
+        inner = (f'<p class="period">주차를 누르면 오른쪽에 그 주 리포트가 나옵니다 · '
+                 f'모두 {len(weeks)}주</p>'
+                 '<div class="two">'
+                 '<div><div class="wk-list" id="wkList"></div>'
+                 '<div class="pager" id="pager"></div></div>'
+                 '<div id="wkCard"></div></div>'
+                 f'<script id="weeks" type="application/json" data-kind="{platform}">'
+                 f'{json.dumps(weeks, ensure_ascii=False)}</script>')
+        body_end = PAST_JS
+    html = layout.document(platform, "past", "지난 리포트", inner, CSS + PAST_CSS,
+                           body_end=body_end)
+    with open(os.path.join(DIR, out_name), "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"저장됨: {out_name} ({len(weeks)}주)")
+
+
 if __name__ == "__main__":
     build_ig()
     build_th()
+    build_past("ig", "weekly-past.html")
+    build_past("th", "threads-weekly-past.html")

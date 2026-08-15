@@ -25,11 +25,13 @@ PLATFORMS = [
 # 네 번째 자리는 하위 메뉴. 부모나 자기 자신을 보고 있을 때만 펼쳐 보인다.
 SUBPAGES = {
     "ig": [("daily", "일일 리포트", "./"),
-           ("weekly", "주간 리포트", "./weekly.html"),
+           ("weekly", "주간 리포트", "./weekly.html",
+            [("past", "지난 리포트", "./weekly-past.html")]),
            ("analysis", "콘텐츠 분석", "./analysis.html",
             [("detail", "세부 분석", "./analysis-detail.html")])],
     "th": [("daily", "일일 리포트", "./threads.html"),
-           ("weekly", "주간 리포트", "./threads-weekly.html"),
+           ("weekly", "주간 리포트", "./threads-weekly.html",
+            [("past", "지난 리포트", "./threads-weekly-past.html")]),
            ("analysis", "콘텐츠 분석", "./threads-analysis.html",
             [("detail", "세부 분석", "./threads-detail.html")])],
 }
