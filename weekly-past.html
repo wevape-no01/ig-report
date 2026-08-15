@@ -185,6 +185,16 @@ a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:und
   color:#fff; font-weight:700; }
 .pager button:disabled { opacity:.35; cursor:default; }
 .dim { color:var(--text-muted); }
+/* 지나간 주를 훑어보는 용도라 오른쪽 리포트는 작게 줄인다 */
+#wkCard .period { font-size:12px; margin:0 0 12px; }
+#wkCard section { padding:14px 15px 13px; margin-bottom:13px; }
+#wkCard section h2 { font-size:14px; }
+#wkCard section .sub { font-size:11px; margin:0 0 11px; }
+#wkCard .kpi-row { grid-template-columns:repeat(auto-fit,minmax(128px,1fr)); gap:9px; }
+#wkCard .stat-tile { padding:10px 12px; border-radius:9px; }
+#wkCard .stat-tile .label { font-size:11px; margin-bottom:4px; }
+#wkCard .stat-tile .value { font-size:19px; }
+#wkCard .stat-tile .note { font-size:10px; margin-top:4px; line-height:1.45; }
 </style>
 </head><body>
 <header class="site-h"><div class="inner">
