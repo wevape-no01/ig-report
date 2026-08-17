@@ -1,88 +1,88 @@
 {
- "generated_at": "2026-08-16T22:49:30+00:00",
+ "generated_at": "2026-08-17T22:55:17+00:00",
  "accounts": [
   {
    "label": "위베이프",
    "profile": {
     "username": "wevape.no01",
     "name": "위베이프 전자담배 인천/경기 대표지점",
-    "followers_count": 719,
+    "followers_count": 718,
     "follows_count": 1249,
     "media_count": 240,
     "id": "17841409002160818"
    },
    "account_insights": {
-    "reach": 15,
-    "views": 180,
-    "profile_views": 17,
+    "reach": 8,
+    "views": 40,
+    "profile_views": 13,
     "accounts_engaged": 0,
     "total_interactions": 0,
-    "reach_non_follower": 14,
-    "reach_follower": 1,
-    "views_non_follower": 177,
-    "views_follower": 3
+    "reach_non_follower": 6,
+    "reach_follower": 2,
+    "views_follower": 13,
+    "views_non_follower": 27
    },
    "demographics": {
     "age": {
      "13-17": 1,
-     "18-24": 36,
+     "18-24": 37,
      "25-34": 240,
      "35-44": 215,
-     "45-54": 113,
-     "55-64": 38,
+     "45-54": 114,
+     "55-64": 37,
      "65+": 5
     },
     "gender": {
      "F": 99,
      "M": 276,
-     "U": 273
+     "U": 274
     },
     "city": {
      "Jeju, Jeju-do": 4,
      "Jinju, Gyeongsangnam-do": 3,
      "Gwangju, Gwangju": 10,
      "Yongin, Gyeonggi-do": 4,
-     "Daegu, Daegu": 10,
-     "Osan, Gyeonggi-do": 3,
-     "Busan, Busan": 40,
+     "Daegu, Daegu": 11,
+     "Osan, Gyeonggi-do": 4,
+     "Busan, Busan": 39,
      "Seoul, Seoul": 128,
      "Yangju, Gyeonggi-do": 5,
      "Goyang, Gyeonggi-do": 11,
      "Dongducheon, Gyeonggi-do": 3,
      "Guangzhou, Guangdong": 9,
-     "Ho Chi Minh City, Ho Chi Minh City": 2,
-     "Namyangju, Gyeonggi-do": 4,
+     "Namyangju, Gyeonggi-do": 5,
      "Gimpo, Gyeonggi-do": 6,
-     "Shanghai, Shanghai": 19,
+     "Shanghai, Shanghai": 20,
      "Iksan, Jeollabuk-do": 3,
-     "Beijing, Beijing": 6,
+     "Beijing, Beijing": 7,
      "Hanam, Gyeonggi-do": 8,
-     "Incheon, Incheon": 84,
-     "Hwaseong, Gyeonggi-do": 3,
+     "Incheon, Incheon": 83,
+     "Jeonju, Jeollabuk-do": 2,
+     "Hwaseong, Gyeonggi-do": 4,
      "Asan, Chungcheongnam-do": 3,
-     "Daejeon, Daejeon": 21,
+     "Daejeon, Daejeon": 19,
      "Ansan, Gyeonggi-do": 4,
-     "Hefei, Anhui": 4,
      "Changwon, Gyeongsangnam-do": 3,
      "Anyang, Gyeonggi-do": 4,
      "Cheonan, Chungcheongnam-do": 3,
      "Cheongju, Chungcheongbuk-do": 9,
      "Suwon, Gyeonggi-do": 10,
      "Bucheon, Gyeonggi-do": 11,
-     "Dongguan, Guangdong": 3,
      "Ulsan, Ulsan": 5,
      "Pyeongtaek, Gyeonggi-do": 7,
-     "Shenzhen, Guangdong": 28,
+     "Shenzhen, Guangdong": 25,
      "Uijeongbu, Gyeonggi-do": 5,
      "Seongnam, Gyeonggi-do": 9,
+     "Yangzhou, Jiangsu": 2,
+     "Lanzhou, Gansu": 2,
      "Torrance, California": 2,
-     "Chongqing, Chongqing": 2,
+     "Chongqing, Chongqing": 3,
+     "Shenyang, Liaoning": 2,
      "Siheung, Gyeonggi-do": 5,
+     "Hwacheon, Gangwon-do": 2,
      "Gwangmyeong, Gyeonggi-do": 3,
-     "Foshan, Guangdong": 2,
      "zhengzhou, Henan": 5,
-     "Paju, Gyeonggi-do": 2,
-     "Changsha, Hunan": 2
+     "Paju, Gyeonggi-do": 2
     },
     "country": {
      "DE": 2,
@@ -101,7 +101,7 @@
      "MO": 1,
      "UZ": 1,
      "IN": 2,
-     "KR": 471,
+     "KR": 472,
      "IR": 1,
      "GR": 1,
      "IT": 2,
@@ -110,8 +110,8 @@
      "ES": 3,
      "AT": 1,
      "AU": 1,
-     "PH": 2,
-     "VN": 2
+     "VN": 2,
+     "PH": 2
     }
    },
    "posts_total": 240,
@@ -130,7 +130,7 @@
      "comments_count": 1,
      "insights": {
       "reach": 84,
-      "views": 186,
+      "views": 189,
       "saved": 0,
       "shares": 0,
       "total_interactions": 6,
@@ -139,7 +139,8 @@
      },
      "follows_log": {
       "2026-08-15": 0,
-      "2026-08-16": 0
+      "2026-08-16": 0,
+      "2026-08-17": 0
      }
     },
     {
@@ -153,7 +154,7 @@
      "comments_count": 2,
      "insights": {
       "reach": 135,
-      "views": 345,
+      "views": 346,
       "saved": 0,
       "shares": 0,
       "total_interactions": 10,
@@ -162,7 +163,8 @@
      },
      "follows_log": {
       "2026-08-15": 0,
-      "2026-08-16": 0
+      "2026-08-16": 0,
+      "2026-08-17": 0
      }
     },
     {
@@ -369,17 +371,16 @@
    },
    "account_insights": {
     "reach": 0,
-    "views": 1,
+    "views": 0,
     "profile_views": 0,
-    "accounts_engaged": 1,
-    "total_interactions": 1,
-    "views_follower": 1
+    "accounts_engaged": 0,
+    "total_interactions": 0
    },
    "demographics": {},
    "posts_total": 13,
    "posts_analyzable": 8,
    "posts_recent_days": 31,
-   "posts_recent_count": 13,
+   "posts_recent_count": 12,
    "posts": [
     {
      "id": "18093051179389142",
@@ -400,7 +401,8 @@
       "follows": 0
      },
      "follows_log": {
-      "2026-08-16": 0
+      "2026-08-16": 0,
+      "2026-08-17": 0
      }
     },
     {
@@ -423,7 +425,8 @@
      },
      "follows_log": {
       "2026-08-15": 0,
-      "2026-08-16": 0
+      "2026-08-16": 0,
+      "2026-08-17": 0
      }
     },
     {
@@ -446,7 +449,8 @@
      },
      "follows_log": {
       "2026-08-15": 0,
-      "2026-08-16": 0
+      "2026-08-16": 0,
+      "2026-08-17": 0
      }
     },
     {
@@ -469,7 +473,8 @@
      },
      "follows_log": {
       "2026-08-15": 0,
-      "2026-08-16": 0
+      "2026-08-16": 0,
+      "2026-08-17": 0
      }
     },
     {
@@ -492,7 +497,8 @@
      },
      "follows_log": {
       "2026-08-15": 0,
-      "2026-08-16": 0
+      "2026-08-16": 0,
+      "2026-08-17": 0
      }
     },
     {
@@ -515,7 +521,8 @@
      },
      "follows_log": {
       "2026-08-15": 0,
-      "2026-08-16": 0
+      "2026-08-16": 0,
+      "2026-08-17": 0
      }
     },
     {
@@ -538,7 +545,8 @@
      },
      "follows_log": {
       "2026-08-15": 0,
-      "2026-08-16": 0
+      "2026-08-16": 0,
+      "2026-08-17": 0
      }
     },
     {
@@ -561,7 +569,8 @@
      },
      "follows_log": {
       "2026-08-15": 0,
-      "2026-08-16": 0
+      "2026-08-16": 0,
+      "2026-08-17": 0
      }
     },
     {
@@ -608,18 +617,6 @@
      "timestamp": "2026-07-18T09:40:29+0000",
      "permalink": "https://www.instagram.com/p/Da7fZZVEpR6/",
      "like_count": 1,
-     "comments_count": 1,
-     "insights": {},
-     "no_insights": true
-    },
-    {
-     "id": "17897365629556531",
-     "caption": "夜のネオンに、そっと溶け込む。\n映るのは、街だけじゃない。\nこの夜のムードまで。\nBubblemon Graffiti-C",
-     "media_type": "IMAGE",
-     "media_product_type": "FEED",
-     "timestamp": "2026-07-17T07:00:35+0000",
-     "permalink": "https://www.instagram.com/p/Da4oTXpEhVf/",
-     "like_count": 2,
      "comments_count": 1,
      "insights": {},
      "no_insights": true
