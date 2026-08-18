@@ -1,31 +1,31 @@
 {
- "generated_at": "2026-08-17T22:55:17+00:00",
+ "generated_at": "2026-08-18T22:56:25+00:00",
  "accounts": [
   {
    "label": "위베이프",
    "profile": {
     "username": "wevape.no01",
     "name": "위베이프 전자담배 인천/경기 대표지점",
-    "followers_count": 718,
-    "follows_count": 1249,
+    "followers_count": 720,
+    "follows_count": 1250,
     "media_count": 240,
     "id": "17841409002160818"
    },
    "account_insights": {
-    "reach": 8,
-    "views": 40,
-    "profile_views": 13,
+    "reach": 11,
+    "views": 98,
+    "profile_views": 16,
     "accounts_engaged": 0,
     "total_interactions": 0,
-    "reach_non_follower": 6,
     "reach_follower": 2,
+    "reach_non_follower": 9,
     "views_follower": 13,
-    "views_non_follower": 27
+    "views_non_follower": 85
    },
    "demographics": {
     "age": {
      "13-17": 1,
-     "18-24": 37,
+     "18-24": 38,
      "25-34": 240,
      "35-44": 215,
      "45-54": 114,
@@ -34,7 +34,7 @@
     },
     "gender": {
      "F": 99,
-     "M": 276,
+     "M": 277,
      "U": 274
     },
     "city": {
@@ -44,8 +44,8 @@
      "Yongin, Gyeonggi-do": 4,
      "Daegu, Daegu": 11,
      "Osan, Gyeonggi-do": 4,
-     "Busan, Busan": 39,
-     "Seoul, Seoul": 128,
+     "Busan, Busan": 40,
+     "Seoul, Seoul": 130,
      "Yangju, Gyeonggi-do": 5,
      "Goyang, Gyeonggi-do": 11,
      "Dongducheon, Gyeonggi-do": 3,
@@ -56,11 +56,11 @@
      "Iksan, Jeollabuk-do": 3,
      "Beijing, Beijing": 7,
      "Hanam, Gyeonggi-do": 8,
-     "Incheon, Incheon": 83,
-     "Jeonju, Jeollabuk-do": 2,
+     "Incheon, Incheon": 82,
      "Hwaseong, Gyeonggi-do": 4,
      "Asan, Chungcheongnam-do": 3,
      "Daejeon, Daejeon": 19,
+     "Hefei, Anhui": 3,
      "Ansan, Gyeonggi-do": 4,
      "Changwon, Gyeongsangnam-do": 3,
      "Anyang, Gyeonggi-do": 4,
@@ -68,29 +68,29 @@
      "Cheongju, Chungcheongbuk-do": 9,
      "Suwon, Gyeonggi-do": 10,
      "Bucheon, Gyeonggi-do": 11,
+     "Xuzhou, Jiangsu": 2,
+     "Nanning, Guangxi": 2,
      "Ulsan, Ulsan": 5,
      "Pyeongtaek, Gyeonggi-do": 7,
-     "Shenzhen, Guangdong": 25,
+     "Shenzhen, Guangdong": 26,
      "Uijeongbu, Gyeonggi-do": 5,
      "Seongnam, Gyeonggi-do": 9,
-     "Yangzhou, Jiangsu": 2,
      "Lanzhou, Gansu": 2,
-     "Torrance, California": 2,
      "Chongqing, Chongqing": 3,
-     "Shenyang, Liaoning": 2,
      "Siheung, Gyeonggi-do": 5,
-     "Hwacheon, Gangwon-do": 2,
      "Gwangmyeong, Gyeonggi-do": 3,
-     "zhengzhou, Henan": 5,
-     "Paju, Gyeonggi-do": 2
+     "Foshan, Guangdong": 2,
+     "zhengzhou, Henan": 4,
+     "Paju, Gyeonggi-do": 2,
+     "Changsha, Hunan": 2
     },
     "country": {
      "DE": 2,
      "HK": 1,
      "TW": 2,
      "RU": 3,
-     "RW": 1,
      "JO": 1,
+     "RW": 1,
      "JP": 12,
      "FR": 4,
      "BR": 1,
@@ -101,7 +101,7 @@
      "MO": 1,
      "UZ": 1,
      "IN": 2,
-     "KR": 472,
+     "KR": 473,
      "IR": 1,
      "GR": 1,
      "IT": 2,
@@ -129,8 +129,8 @@
      "like_count": 5,
      "comments_count": 1,
      "insights": {
-      "reach": 84,
-      "views": 189,
+      "reach": 86,
+      "views": 193,
       "saved": 0,
       "shares": 0,
       "total_interactions": 6,
@@ -140,7 +140,8 @@
      "follows_log": {
       "2026-08-15": 0,
       "2026-08-16": 0,
-      "2026-08-17": 0
+      "2026-08-17": 0,
+      "2026-08-18": 0
      }
     },
     {
@@ -153,8 +154,8 @@
      "like_count": 8,
      "comments_count": 2,
      "insights": {
-      "reach": 135,
-      "views": 346,
+      "reach": 136,
+      "views": 347,
       "saved": 0,
       "shares": 0,
       "total_interactions": 10,
@@ -164,7 +165,8 @@
      "follows_log": {
       "2026-08-15": 0,
       "2026-08-16": 0,
-      "2026-08-17": 0
+      "2026-08-17": 0,
+      "2026-08-18": 0
      }
     },
     {
@@ -370,17 +372,19 @@
     "id": "17841414418204375"
    },
    "account_insights": {
-    "reach": 0,
-    "views": 0,
+    "reach": 1,
+    "views": 3,
     "profile_views": 0,
     "accounts_engaged": 0,
-    "total_interactions": 0
+    "total_interactions": 0,
+    "reach_follower": 1,
+    "views_follower": 3
    },
    "demographics": {},
    "posts_total": 13,
    "posts_analyzable": 8,
    "posts_recent_days": 31,
-   "posts_recent_count": 12,
+   "posts_recent_count": 11,
    "posts": [
     {
      "id": "18093051179389142",
@@ -392,8 +396,8 @@
      "like_count": 0,
      "comments_count": 1,
      "insights": {
-      "reach": 0,
-      "views": 0,
+      "reach": 1,
+      "views": 3,
       "saved": 0,
       "shares": 0,
       "total_interactions": 1,
@@ -402,7 +406,8 @@
      },
      "follows_log": {
       "2026-08-16": 0,
-      "2026-08-17": 0
+      "2026-08-17": 0,
+      "2026-08-18": 0
      }
     },
     {
@@ -426,7 +431,8 @@
      "follows_log": {
       "2026-08-15": 0,
       "2026-08-16": 0,
-      "2026-08-17": 0
+      "2026-08-17": 0,
+      "2026-08-18": 0
      }
     },
     {
@@ -450,7 +456,8 @@
      "follows_log": {
       "2026-08-15": 0,
       "2026-08-16": 0,
-      "2026-08-17": 0
+      "2026-08-17": 0,
+      "2026-08-18": 0
      }
     },
     {
@@ -474,7 +481,8 @@
      "follows_log": {
       "2026-08-15": 0,
       "2026-08-16": 0,
-      "2026-08-17": 0
+      "2026-08-17": 0,
+      "2026-08-18": 0
      }
     },
     {
@@ -498,7 +506,8 @@
      "follows_log": {
       "2026-08-15": 0,
       "2026-08-16": 0,
-      "2026-08-17": 0
+      "2026-08-17": 0,
+      "2026-08-18": 0
      }
     },
     {
@@ -522,7 +531,8 @@
      "follows_log": {
       "2026-08-15": 0,
       "2026-08-16": 0,
-      "2026-08-17": 0
+      "2026-08-17": 0,
+      "2026-08-18": 0
      }
     },
     {
@@ -546,7 +556,8 @@
      "follows_log": {
       "2026-08-15": 0,
       "2026-08-16": 0,
-      "2026-08-17": 0
+      "2026-08-17": 0,
+      "2026-08-18": 0
      }
     },
     {
@@ -570,7 +581,8 @@
      "follows_log": {
       "2026-08-15": 0,
       "2026-08-16": 0,
-      "2026-08-17": 0
+      "2026-08-17": 0,
+      "2026-08-18": 0
      }
     },
     {
