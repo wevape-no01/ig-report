@@ -1,32 +1,32 @@
 {
- "generated_at": "2026-08-18T22:56:25+00:00",
+ "generated_at": "2026-08-19T22:56:27+00:00",
  "accounts": [
   {
    "label": "위베이프",
    "profile": {
     "username": "wevape.no01",
     "name": "위베이프 전자담배 인천/경기 대표지점",
-    "followers_count": 720,
-    "follows_count": 1250,
+    "followers_count": 721,
+    "follows_count": 1252,
     "media_count": 240,
     "id": "17841409002160818"
    },
    "account_insights": {
-    "reach": 11,
+    "reach": 14,
     "views": 98,
-    "profile_views": 16,
+    "profile_views": 18,
     "accounts_engaged": 0,
     "total_interactions": 0,
-    "reach_follower": 2,
-    "reach_non_follower": 9,
-    "views_follower": 13,
-    "views_non_follower": 85
+    "reach_follower": 4,
+    "reach_non_follower": 10,
+    "views_follower": 9,
+    "views_non_follower": 89
    },
    "demographics": {
     "age": {
      "13-17": 1,
-     "18-24": 38,
-     "25-34": 240,
+     "18-24": 37,
+     "25-34": 241,
      "35-44": 215,
      "45-54": 114,
      "55-64": 37,
@@ -34,30 +34,30 @@
     },
     "gender": {
      "F": 99,
-     "M": 277,
-     "U": 274
+     "M": 276,
+     "U": 275
     },
     "city": {
      "Jeju, Jeju-do": 4,
      "Jinju, Gyeongsangnam-do": 3,
      "Gwangju, Gwangju": 10,
-     "Yongin, Gyeonggi-do": 4,
-     "Daegu, Daegu": 11,
+     "Yongin, Gyeonggi-do": 3,
+     "Daegu, Daegu": 10,
      "Osan, Gyeonggi-do": 4,
-     "Busan, Busan": 40,
-     "Seoul, Seoul": 130,
-     "Yangju, Gyeonggi-do": 5,
+     "Busan, Busan": 39,
+     "Seoul, Seoul": 131,
+     "Yangju, Gyeonggi-do": 4,
      "Goyang, Gyeonggi-do": 11,
      "Dongducheon, Gyeonggi-do": 3,
-     "Guangzhou, Guangdong": 9,
+     "Guangzhou, Guangdong": 8,
      "Namyangju, Gyeonggi-do": 5,
      "Gimpo, Gyeonggi-do": 6,
-     "Shanghai, Shanghai": 20,
+     "Shanghai, Shanghai": 21,
      "Iksan, Jeollabuk-do": 3,
      "Beijing, Beijing": 7,
      "Hanam, Gyeonggi-do": 8,
      "Incheon, Incheon": 82,
-     "Hwaseong, Gyeonggi-do": 4,
+     "Hwaseong, Gyeonggi-do": 5,
      "Asan, Chungcheongnam-do": 3,
      "Daejeon, Daejeon": 19,
      "Hefei, Anhui": 3,
@@ -72,15 +72,15 @@
      "Nanning, Guangxi": 2,
      "Ulsan, Ulsan": 5,
      "Pyeongtaek, Gyeonggi-do": 7,
-     "Shenzhen, Guangdong": 26,
+     "Shenzhen, Guangdong": 28,
      "Uijeongbu, Gyeonggi-do": 5,
      "Seongnam, Gyeonggi-do": 9,
-     "Lanzhou, Gansu": 2,
      "Chongqing, Chongqing": 3,
      "Siheung, Gyeonggi-do": 5,
      "Gwangmyeong, Gyeonggi-do": 3,
+     "Osaka, Osaka Prefecture": 2,
      "Foshan, Guangdong": 2,
-     "zhengzhou, Henan": 4,
+     "zhengzhou, Henan": 3,
      "Paju, Gyeonggi-do": 2,
      "Changsha, Hunan": 2
     },
@@ -89,8 +89,8 @@
      "HK": 1,
      "TW": 2,
      "RU": 3,
-     "JO": 1,
      "RW": 1,
+     "JO": 1,
      "JP": 12,
      "FR": 4,
      "BR": 1,
@@ -101,7 +101,7 @@
      "MO": 1,
      "UZ": 1,
      "IN": 2,
-     "KR": 473,
+     "KR": 472,
      "IR": 1,
      "GR": 1,
      "IT": 2,
@@ -110,8 +110,9 @@
      "ES": 3,
      "AT": 1,
      "AU": 1,
+     "PH": 2,
      "VN": 2,
-     "PH": 2
+     "NG": 1
     }
    },
    "posts_total": 240,
@@ -129,8 +130,8 @@
      "like_count": 5,
      "comments_count": 1,
      "insights": {
-      "reach": 86,
-      "views": 193,
+      "reach": 90,
+      "views": 203,
       "saved": 0,
       "shares": 0,
       "total_interactions": 6,
@@ -141,7 +142,8 @@
       "2026-08-15": 0,
       "2026-08-16": 0,
       "2026-08-17": 0,
-      "2026-08-18": 0
+      "2026-08-18": 0,
+      "2026-08-19": 0
      }
     },
     {
@@ -166,7 +168,8 @@
       "2026-08-15": 0,
       "2026-08-16": 0,
       "2026-08-17": 0,
-      "2026-08-18": 0
+      "2026-08-18": 0,
+      "2026-08-19": 0
      }
     },
     {
@@ -368,24 +371,46 @@
     "name": "wevape",
     "followers_count": 4,
     "follows_count": 9,
-    "media_count": 13,
+    "media_count": 14,
     "id": "17841414418204375"
    },
    "account_insights": {
     "reach": 1,
-    "views": 3,
+    "views": 4,
     "profile_views": 0,
-    "accounts_engaged": 0,
-    "total_interactions": 0,
+    "accounts_engaged": 1,
+    "total_interactions": 1,
     "reach_follower": 1,
-    "views_follower": 3
+    "views_follower": 4
    },
    "demographics": {},
-   "posts_total": 13,
-   "posts_analyzable": 8,
+   "posts_total": 14,
+   "posts_analyzable": 9,
    "posts_recent_days": 31,
    "posts_recent_count": 11,
    "posts": [
+    {
+     "id": "18090645815217722",
+     "caption": "韓国旅行の途中に、気軽に立ち寄れる。🇰🇷✨\n\n富川でVAPEショップを探すなら、\nWEVAPE チュンドン店へ。\n\nシンジュンドン駅から徒歩約6分。🚶\n旅行やショッピングの途中にも立ち寄りやすい\nVAPE SHOPです。\n\nRELX・WAKA・BUBBLEMONをはじめ、\nGraffitiシリーズなど、\n韓国で人気のアイテムを豊富に取り揃えています。\n\n日本語でのご案内もOK！🇯🇵\n初めての方でも安心して\nお買い物をお楽しみいただけます。\n\n━━━━━━━━━━━━━━\n\n📍 WEVAPE チュンドン店\n🚉 シンジュンドン駅 3番出口から徒歩約6分\n🚗 地下駐車場利用可能・1時間無料\n💬 日本語対応OK\n🕥 OPEN 10:30 / CLOSE 22:00\n\n韓国旅行の途中に、\nお気に入りのVAPEを探してみませんか？🛍️✨\n\n皆さまのご来店をお待ちしております。",
+     "media_type": "IMAGE",
+     "media_product_type": "FEED",
+     "timestamp": "2026-08-19T05:52:07+0000",
+     "permalink": "https://www.instagram.com/p/DcNes1tEsPH/",
+     "like_count": 0,
+     "comments_count": 1,
+     "insights": {
+      "reach": 0,
+      "views": 1,
+      "saved": 0,
+      "shares": 0,
+      "total_interactions": 1,
+      "profile_visits": 0,
+      "follows": 0
+     },
+     "follows_log": {
+      "2026-08-19": 0
+     }
+    },
     {
      "id": "18093051179389142",
      "caption": "韓国旅行の途中に、ふらっと寄れる。🇰🇷✨\n\n仁川でVAPEショップを探すなら、\nWEVAPE クウォル店へ。\n\nソクチョンサゴリ駅 4番出口から徒歩約5分。🚶\n旅行やショッピングの途中にも立ち寄りやすい\nVAPE SHOPです。\n\nRELX・WAKA・BUBBLEMONをはじめ、\nGraffitiシリーズなど、\n韓国で人気のアイテムを豊富に取り揃えています。\n\n日本語でのご案内もOK！🇯🇵\n初めての方でも安心して\nお買い物をお楽しみいただけます。\n\n━━━━━━━━━━━━━━\n\n📍 WEVAPE クウォル店\n🚉 ソクチョンサゴリ駅 4番出口から徒歩約5分\n🚗 地下駐車場利用可能・1時間無料\n💬 日本語対応OK\n🕥 OPEN 10:30 / CLOSE 22:00\n\n韓国旅行の途中に、\nお気に入りのVAPEを探しに来ませんか？🛍️✨\n\n皆さまのご来店をお待ちしております。",
@@ -407,7 +432,8 @@
      "follows_log": {
       "2026-08-16": 0,
       "2026-08-17": 0,
-      "2026-08-18": 0
+      "2026-08-18": 0,
+      "2026-08-19": 0
      }
     },
     {
@@ -432,7 +458,8 @@
       "2026-08-15": 0,
       "2026-08-16": 0,
       "2026-08-17": 0,
-      "2026-08-18": 0
+      "2026-08-18": 0,
+      "2026-08-19": 0
      }
     },
     {
@@ -457,7 +484,8 @@
       "2026-08-15": 0,
       "2026-08-16": 0,
       "2026-08-17": 0,
-      "2026-08-18": 0
+      "2026-08-18": 0,
+      "2026-08-19": 0
      }
     },
     {
@@ -482,7 +510,8 @@
       "2026-08-15": 0,
       "2026-08-16": 0,
       "2026-08-17": 0,
-      "2026-08-18": 0
+      "2026-08-18": 0,
+      "2026-08-19": 0
      }
     },
     {
@@ -507,7 +536,8 @@
       "2026-08-15": 0,
       "2026-08-16": 0,
       "2026-08-17": 0,
-      "2026-08-18": 0
+      "2026-08-18": 0,
+      "2026-08-19": 0
      }
     },
     {
@@ -532,7 +562,8 @@
       "2026-08-15": 0,
       "2026-08-16": 0,
       "2026-08-17": 0,
-      "2026-08-18": 0
+      "2026-08-18": 0,
+      "2026-08-19": 0
      }
     },
     {
@@ -557,7 +588,8 @@
       "2026-08-15": 0,
       "2026-08-16": 0,
       "2026-08-17": 0,
-      "2026-08-18": 0
+      "2026-08-18": 0,
+      "2026-08-19": 0
      }
     },
     {
@@ -582,7 +614,8 @@
       "2026-08-15": 0,
       "2026-08-16": 0,
       "2026-08-17": 0,
-      "2026-08-18": 0
+      "2026-08-18": 0,
+      "2026-08-19": 0
      }
     },
     {
@@ -616,18 +649,6 @@
      "media_product_type": "FEED",
      "timestamp": "2026-07-19T10:38:44+0000",
      "permalink": "https://www.instagram.com/p/Da-K276kgn8/",
-     "like_count": 1,
-     "comments_count": 1,
-     "insights": {},
-     "no_insights": true
-    },
-    {
-     "id": "18115366736302198",
-     "caption": "SWAP. PLAY. ENJOY.\n\n気分を変えたいなら、\nPODを替えるだけ。\n\nお気に入りのデザインも、\nその日の気分も、\nGraffiti-IIならもっと自由に。\n\nLEDディスプレイ、\n交換式POD、\nデュアルメッシュコイル。\n\n毎日の一服を、\nもっと自分らしく。\n\nColor Your Day. ✨",
-     "media_type": "IMAGE",
-     "media_product_type": "FEED",
-     "timestamp": "2026-07-18T09:40:29+0000",
-     "permalink": "https://www.instagram.com/p/Da7fZZVEpR6/",
      "like_count": 1,
      "comments_count": 1,
      "insights": {},
