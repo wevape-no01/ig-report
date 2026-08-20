@@ -5,153 +5,175 @@
 <meta name="color-scheme" content="light">
 <title>지난 리포트 · 인스타그램 · WEVAPE SNS</title>
 <style>
-:root { color-scheme: light only;
-  --sh-text:#111; --sh-text2:#444; --sh-muted:#6b6b6b;
-  --sh-line:#e6e6e6; --sh-border:rgba(17,17,17,.14); --sh-accent:#1f6fc7; }
+:root {
+  color-scheme: light only;
+  --yellow:#FFC800; --yellow-dim:#FFF3C4;
+  --ink:#1A1A1A; --ink-soft:#54524B; --paper:#FFFFFF;
+  --line:#E7E2D6; --bg:#F4F1E8; --side:#1A1A1A; --side-text:#E8E2D3;
+  --sh-text:#1A1A1A; --sh-text2:#54524B; --sh-muted:#7a756a;
+  --sh-line:#E7E2D6; --sh-border:#E7E2D6; --sh-accent:#1A1A1A;
+}
 * { box-sizing:border-box; }
-html, body { background:#fff; }
-body { margin:0; color:var(--sh-text);
-       font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
-.site-h { border-bottom:1px solid var(--sh-line); background:#fff;
-          position:sticky; top:0; z-index:20; }
-.site-h .inner { max-width:1180px; margin:0 auto; padding:16px 20px 0;
-                 display:flex; flex-direction:column; gap:12px; }
-.brand { font-size:15px; font-weight:750; letter-spacing:-0.01em; }
-.brand span { color:var(--sh-muted); font-weight:400; font-size:12px; margin-left:8px; }
-.plat { display:flex; gap:24px; }
-.plat a { font-size:15px; font-weight:600; color:var(--sh-muted); text-decoration:none;
-          padding:6px 2px 11px; border-bottom:2px solid transparent; }
-.plat a:hover { color:var(--sh-text2); }
-.plat a.on { color:var(--sh-accent); border-bottom-color:var(--sh-accent); }
-.cols { max-width:1180px; margin:0 auto; padding:24px 20px 72px;
-        display:grid; grid-template-columns:172px 1fr; gap:32px; align-items:start; }
-.side { position:sticky; top:96px; display:flex; flex-direction:column; gap:3px; }
-.side a { font-size:13.5px; color:var(--sh-text2); text-decoration:none;
-          padding:9px 12px; border-radius:8px; }
-.side a:hover { background:#f4f6f9; }
-.side a.on { background:var(--sh-accent); color:#fff; font-weight:650; }
-.side a.sub { margin-left:14px; font-size:12px; color:var(--sh-muted); padding:6px 12px; }
-.side a.sub.on { background:#eaf2fd; color:var(--sh-accent); font-weight:650; }
-.main { min-width:0; }
+html, body { background:var(--bg); }
+body { margin:0; color:var(--ink); font-size:14px;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,sans-serif; }
+
+.shell { display:grid; grid-template-columns:210px 1fr; min-height:100vh; }
+
+/* ---------------- 왼쪽: 브랜드 + 페이지 메뉴 ---------------- */
+.side { background:var(--side); color:var(--side-text); position:sticky; top:0;
+        height:100vh; padding:22px 12px; }
+.brand { padding:0 6px 18px; border-bottom:1px solid #2e2e2e; margin-bottom:16px; }
+.brand b { display:block; color:var(--yellow); font-weight:800; font-size:19px;
+           letter-spacing:-.02em; line-height:1.25; }
+.brand span { display:block; color:#c4beb0; font-weight:650; font-size:13.5px;
+              margin-top:5px; letter-spacing:-.01em; }
+.menu a { display:block; font-size:13px; color:var(--side-text); text-decoration:none;
+          padding:9px 11px; border-radius:7px; margin-bottom:2px; }
+.menu a::before { content:"● "; color:#4a4a4a; font-size:9px; vertical-align:2px; }
+.menu a:hover { background:#232323; }
+.menu a.on { background:#262626; color:var(--yellow); font-weight:700; }
+.menu a.on::before { color:var(--yellow); }
+.menu a.sub { margin-left:13px; font-size:12px; color:#a9a396; padding:6px 11px; }
+.menu a.sub::before { content:"- "; color:#5a5a5a; }
+.menu a.sub.on { background:#262626; color:var(--yellow); }
+
+/* ---------------- 맨 위: 상위 메뉴(플랫폼) ---------------- */
+.topbar { background:var(--side); position:sticky; top:0; z-index:20; padding:0 30px;
+          display:flex; justify-content:space-between; align-items:center; gap:16px; }
+.plat { display:flex; gap:26px; }
+.plat a { font-size:14.5px; font-weight:650; color:#a9a396; text-decoration:none;
+          padding:16px 2px 14px; border-bottom:3px solid transparent; letter-spacing:-.01em; }
+.plat a:hover { color:var(--side-text); }
+.plat a.on { color:var(--yellow); border-bottom-color:var(--yellow); font-weight:750; }
+
+.main { padding:24px 30px 64px; max-width:1120px; min-width:0; }
 .page-h { display:flex; justify-content:space-between; align-items:baseline;
-          flex-wrap:wrap; gap:10px; margin-bottom:18px; }
-.page-h h1 { font-size:22px; margin:0; letter-spacing:-0.01em; }
-.page-h .updated { font-size:12px; color:var(--sh-muted); }
+          flex-wrap:wrap; gap:10px; border-bottom:1px solid var(--line);
+          padding-bottom:12px; margin-bottom:6px; }
+.page-h h1 { font-size:24px; font-weight:700; margin:0; letter-spacing:-.02em; }
+.page-h .updated { font-size:12px; color:var(--ink-soft); }
+/* 제목 아래 한 줄 — 내용이 없어도 자리를 지켜 첫 카드 높이가 안 바뀐다 */
+/* 제목 아래 두 줄은 내용이 없어도 자리를 지킨다. 그래야 어느 페이지를 눌러도
+   첫 카드가 같은 높이에서 시작한다. */
+.scope, .period { font-size:12px; color:var(--ink-soft); line-height:1.6;
+                  min-height:38px; margin:0 0 10px; }   /* 두 줄 자리 확보 */
+.tabslot { min-height:34px; margin-bottom:12px; display:flex; align-items:center; }
+.tabslot > * { margin:0 !important; }
 .stale { display:none; background:#fdecec; border:1px solid #f3b9b9; color:#8a1f1f;
-  border-radius:10px; padding:12px 16px; font-size:13px; line-height:1.65; margin-bottom:18px; }
+  border-radius:10px; padding:12px 16px; font-size:13px; line-height:1.65; margin-bottom:16px; }
 .stale.on { display:block; }
 .stale b { color:#6b1414; }
 .stale a { color:#8a1f1f; text-decoration:underline; }
-/* 접었다 펴는 상자 — 자주 안 보는 설명은 여기에 넣는다 */
-details.tg { border:1px solid var(--sh-border); border-radius:10px; margin-bottom:20px;
-             background:#fff; }
-details.tg > summary { cursor:pointer; padding:13px 16px; font-size:13.5px; font-weight:650;
-  color:var(--sh-text2); list-style:none; display:flex; align-items:center; gap:8px; }
+
+/* 접었다 펴는 상자 */
+details.tg { border:1px solid var(--line); border-radius:10px; margin-bottom:16px;
+             background:var(--paper); }
+details.tg > summary { cursor:pointer; padding:13px 16px; font-size:13.5px; font-weight:700;
+  color:var(--ink-soft); list-style:none; display:flex; align-items:center; gap:8px; }
 details.tg > summary::-webkit-details-marker { display:none; }
-details.tg > summary::before { content:"\25b8"; color:var(--sh-accent); font-size:11px; }
-details.tg[open] > summary::before { content:"\25be"; }
-details.tg[open] > summary { border-bottom:1px solid var(--sh-line); }
+details.tg > summary::before { content:"▸"; color:var(--yellow); font-size:11px; }
+details.tg[open] > summary::before { content:"▾"; }
+details.tg[open] > summary { border-bottom:1px solid var(--line); }
 details.tg .tg-body { padding:15px 16px 16px; }
 
 /* ---------------- 알림 (오른쪽 위 종) ---------------- */
-.site-h .top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .bell-wrap { position:relative; }
-.bell { position:relative; border:1px solid var(--sh-border); background:#fff;
+.bell { position:relative; border:1px solid #3a3a3a; background:#262626;
         border-radius:9px; width:36px; height:34px; cursor:pointer; padding:0;
         display:flex; align-items:center; justify-content:center; }
-.bell:hover { background:#f4f6f9; }
-.bell svg { width:17px; height:17px; stroke:var(--sh-text2); fill:none; stroke-width:1.7;
+.bell:hover { background:#333; }
+.bell svg { width:17px; height:17px; stroke:#c4beb0; fill:none; stroke-width:1.7;
             stroke-linecap:round; stroke-linejoin:round; }
-.bell.unread { border-color:#d33; }
-.bell.unread svg { stroke:#d33; }
+.bell.unread { border-color:var(--yellow); }
+.bell.unread svg { stroke:var(--yellow); }
 .bell .count { position:absolute; top:-6px; right:-6px; min-width:17px; height:17px;
   background:#d33; color:#fff; border-radius:99px; font-size:10.5px; font-weight:700;
   line-height:17px; text-align:center; padding:0 4px; display:none; }
 .bell.unread .count { display:block; }
-@keyframes bell-pulse { 0%,100%{ box-shadow:0 0 0 0 rgba(221,51,51,.45);} 55%{ box-shadow:0 0 0 7px rgba(221,51,51,0);} }
+@keyframes bell-pulse { 0%,100%{ box-shadow:0 0 0 0 rgba(255,200,0,.45);} 55%{ box-shadow:0 0 0 7px rgba(255,200,0,0);} }
 .bell.unread { animation:bell-pulse 2s ease-out 3; }
-.panel { position:absolute; right:0; top:42px; width:330px; max-width:calc(100vw - 28px);
-  background:#fff; border:1px solid var(--sh-border); border-radius:12px; z-index:90;
-  box-shadow:0 10px 34px rgba(17,17,17,.16); display:none; overflow:hidden; }
+.panel { position:absolute; right:0; top:44px; width:330px; max-width:calc(100vw - 28px);
+  background:var(--paper); border:1px solid var(--line); border-radius:12px; z-index:90;
+  box-shadow:0 10px 34px rgba(26,26,26,.22); display:none; overflow:hidden; }
 .panel.on { display:block; }
 .panel .p-h { display:flex; justify-content:space-between; align-items:center;
-  padding:11px 14px; border-bottom:1px solid var(--sh-line); font-size:12.5px; font-weight:700; }
-.panel .p-h button { border:0; background:none; color:var(--sh-accent); cursor:pointer;
-  font-family:inherit; font-size:11.5px; font-weight:600; padding:2px 4px; }
+  padding:11px 14px; border-bottom:1px solid var(--line); font-size:12.5px; font-weight:700; }
+.panel .p-h button { border:0; background:none; color:#8A6A00; cursor:pointer;
+  font-family:inherit; font-size:11.5px; font-weight:700; padding:2px 4px; }
 .panel .p-b { max-height:min(60vh,420px); overflow-y:auto; }
-.nt { display:flex; gap:9px; padding:12px 14px; border-bottom:1px solid var(--sh-line);
+.nt { display:flex; gap:9px; padding:12px 14px; border-bottom:1px solid var(--line);
       cursor:pointer; }
 .nt:last-child { border-bottom:0; }
-.nt:hover { background:#f7f9fc; }
+.nt:hover { background:#faf8f3; }
 .nt .dot { width:7px; height:7px; border-radius:99px; margin-top:5px; flex:0 0 auto;
-           background:var(--sh-accent); }
-.nt.error .dot { background:#d33; } .nt.warn .dot { background:#d68000; }
-.nt.ok .dot { background:#046a04; }
-.nt.read .dot { background:#d3d3d3; }
+           background:var(--yellow); }
+.nt.error .dot { background:#C1392B; } .nt.warn .dot { background:#d68000; }
+.nt.ok .dot { background:#1F8A45; }
+.nt.read .dot { background:#d8d3c6; }
 .nt .tx { min-width:0; }
 .nt .t { font-size:12.5px; font-weight:700; line-height:1.45; }
-.nt.read .t { font-weight:500; color:var(--sh-text2); }
+.nt.read .t { font-weight:500; color:var(--ink-soft); }
 .nt .b { font-size:11.5px; color:var(--sh-muted); line-height:1.6; margin-top:3px;
          word-break:break-word; }
 .nt .w { font-size:10.5px; color:var(--sh-muted); margin-top:5px; }
 .nt-empty { padding:22px 14px; text-align:center; font-size:12px; color:var(--sh-muted); }
-/* 팝업 (버튼을 누르지 않아도 바로 뜬다) */
 .toasts { position:fixed; right:18px; top:74px; z-index:80;
           display:flex; flex-direction:column; gap:10px; width:330px;
           max-width:calc(100vw - 28px); }
-.toast { background:#fff; border:1px solid var(--sh-border); border-left:4px solid var(--sh-accent);
-  border-radius:11px; box-shadow:0 10px 30px rgba(17,17,17,.18); padding:12px 13px;
+.toast { background:var(--paper); border:1px solid var(--line); border-left:4px solid var(--yellow);
+  border-radius:11px; box-shadow:0 10px 30px rgba(26,26,26,.2); padding:12px 13px;
   animation:toast-in .28s ease-out; }
-.toast.error { border-left-color:#d33; } .toast.warn { border-left-color:#d68000; }
-.toast.ok { border-left-color:#046a04; }
+.toast.error { border-left-color:#C1392B; } .toast.warn { border-left-color:#d68000; }
+.toast.ok { border-left-color:#1F8A45; }
 @keyframes toast-in { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
 .toast .t { font-size:12.5px; font-weight:700; line-height:1.45; padding-right:18px; }
-.toast .b { font-size:11.5px; color:var(--sh-text2); line-height:1.6; margin-top:4px; }
+.toast .b { font-size:11.5px; color:var(--ink-soft); line-height:1.6; margin-top:4px; }
 .toast .r { display:flex; gap:8px; align-items:center; margin-top:10px; }
-.toast .r button, .toast .r a { border:1px solid var(--sh-border); background:#fff;
-  border-radius:7px; font-family:inherit; font-size:11.5px; font-weight:600; padding:5px 11px;
-  cursor:pointer; color:var(--sh-text2); text-decoration:none; }
-.toast .r button.on { background:var(--sh-accent); border-color:var(--sh-accent); color:#fff; }
-.toast .x { position:absolute; }
+.toast .r button, .toast .r a { border:1px solid var(--line); background:var(--paper);
+  border-radius:7px; font-family:inherit; font-size:11.5px; font-weight:650; padding:5px 11px;
+  cursor:pointer; color:var(--ink-soft); text-decoration:none; }
+.toast .r button.on { background:var(--ink); border-color:var(--ink); color:var(--yellow); }
 .toast-close { float:right; border:0; background:none; cursor:pointer; color:var(--sh-muted);
   font-size:15px; line-height:1; padding:0 0 0 6px; font-family:inherit; }
+
 @media (max-width:820px) {
+  .shell { grid-template-columns:1fr; }
+  .side { position:static; height:auto; padding:16px 14px; }
+  .brand { padding-bottom:14px; margin-bottom:12px; }
+  .menu { display:flex; flex-wrap:wrap; gap:5px; }
+  .menu a { margin:0; padding:7px 12px; border:1px solid #333; border-radius:999px; }
+  .menu a.sub { margin-left:0; }
+  .topbar { padding:0 14px; }
+  .main { padding:18px 14px 56px; }
   .toasts { right:10px; left:10px; width:auto; top:66px; }
-  .panel { width:min(330px, calc(100vw - 20px)); }
-  .cols { grid-template-columns:1fr; gap:18px; padding:18px 14px 64px; }
-  .side { position:static; flex-direction:row; gap:6px; flex-wrap:wrap;
-          border-bottom:1px solid var(--sh-line); padding-bottom:14px; }
-  .side a { border:1px solid var(--sh-border); border-radius:999px; padding:7px 14px; }
-  .side a.on { border-color:var(--sh-accent); }
-  .site-h .inner { padding:14px 14px 0; }
-  .plat { gap:18px; }
 }
 
 :root {
   color-scheme: light only;
-  --text-primary:#111111; --text-secondary:#444444; --text-muted:#6b6b6b;
-  --gridline:#e6e6e6; --border:rgba(17,17,17,0.14);
-  --series-1:#1f6fc7; --good:#046a04; --critical:#b32626;
+  --text-primary:#1A1A1A; --text-secondary:#54524B; --text-muted:#7a756a;
+  --gridline:#E7E2D6; --border:#E7E2D6;
+  --series-1:#1A1A1A; --good:#1F8A45; --critical:#C1392B;
 }
 * { box-sizing:border-box; }
-html, body { background:#ffffff; }
-body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
+html, body { background:#F4F1E8; }
+body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#1A1A1A; }
 .period { font-size:13px; color:var(--text-secondary); margin:2px 0 20px; }
 .period b { color:var(--text-primary); }
 .period-s { font-size:11.5px; color:var(--text-muted); }
 .hero-box { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin:0 0 4px; }
-.hero-box .hn { font-size:42px; font-weight:650; line-height:1; letter-spacing:-0.02em; }
+.hero-box .hn { font-size:38px; font-weight:650; line-height:1; letter-spacing:-0.02em; }
 .hero-box .hu { font-size:17px; color:var(--text-muted); font-weight:600; }
 .hero-box .hl { font-size:13px; color:var(--text-secondary); font-weight:600; }
 .hero-s { font-size:11.5px; color:var(--text-muted); margin:0 0 16px; }
-section { border:1px solid var(--border); border-radius:10px;
+section { background:#fff; border:1px solid var(--border); border-radius:10px;
           padding:18px 18px 16px; margin-bottom:20px; }
-section h2 { font-size:16px; margin:0 0 3px; font-weight:700; letter-spacing:-0.01em; }
+section h2 { font-size:17px; margin:0 0 3px; font-weight:700; letter-spacing:-0.01em; }
 section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.6; }
 .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); gap:12px; }
-.stat-tile { border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+.stat-tile { background:#fff; border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
 .stat-tile .label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; font-weight:600; }
-.stat-tile .value { font-size:26px; font-weight:650; line-height:1.1; }
+.stat-tile .value { font-size:30px; font-weight:650; line-height:1.1; }
 .stat-tile .note { font-size:11px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
 .up { color:var(--good); } .down { color:var(--critical); }
 table { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:14px; }
@@ -161,19 +183,21 @@ th { color:var(--text-muted); font-weight:500; font-size:10.5px;
 td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
 td.cap { max-width:340px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
          color:var(--text-secondary); }
-td.strong { font-weight:650; color:var(--series-1); }
-a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:underline; }
+td.strong { font-weight:650; color:var(--text-primary); }
+a { color:#8A6A00; text-decoration:none; } a:hover { text-decoration:underline; }
 .empty { color:var(--text-muted); font-size:12.5px; padding:8px 0; margin:0; }
 .foot { font-size:11.5px; color:var(--text-muted); line-height:1.8; }
 .foot b { color:var(--text-secondary); }
+section h2::before, h3::before { content:"● "; color:#FFC800; font-size:11px; vertical-align:2px; }
+
 
 .two { display:grid; grid-template-columns:236px 1fr; gap:18px; align-items:start; }
 @media (max-width:760px) { .two { grid-template-columns:1fr; } }
 .wk-list { display:flex; flex-direction:column; gap:7px; }
 .wk { border:1px solid var(--border); border-radius:9px; padding:11px 13px;
       cursor:pointer; background:#fff; }
-.wk:hover { background:#f7f9fc; }
-.wk.on { border-color:var(--series-1); background:#f2f7fe; }
+.wk:hover { background:#FAF8F3; }
+.wk.on { border-color:var(--series-1); background:#FFF9E3; }
 .wk .t { font-size:13px; font-weight:700; }
 .wk .d { font-size:11px; color:var(--text-muted); margin-top:2px; }
 .wk .s { font-size:11px; color:var(--text-secondary); margin-top:5px; }
@@ -182,7 +206,7 @@ a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:und
   font-family:inherit; font-size:11px; min-width:26px; height:26px; cursor:pointer;
   color:var(--text-secondary); }
 .pager button[aria-current="true"] { background:var(--series-1); border-color:var(--series-1);
-  color:#fff; font-weight:700; }
+  color:#FFC800; font-weight:700; }
 .pager button:disabled { opacity:.35; cursor:default; }
 .dim { color:var(--text-muted); }
 /* 지나간 주를 훑어보는 용도라 오른쪽 리포트는 작게 줄인다 */
@@ -197,9 +221,15 @@ a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:und
 #wkCard .stat-tile .note { font-size:10px; margin-top:4px; line-height:1.45; }
 </style>
 </head><body>
-<header class="site-h"><div class="inner">
-  <div class="top">
-    <div class="brand">WEVAPE SNS 운영 현황</div>
+<div class="toasts" id="toasts"></div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><b>WEVAPE SNS</b><span>운영 현황</span></div>
+    <nav class="menu"><a class="" href="./">일일 리포트</a><a class="" href="./weekly.html">주간 리포트</a><a class="sub on" href="./weekly-past.html">지난 리포트</a><a class="" href="./analysis.html">콘텐츠 분석</a></nav>
+  </aside>
+  <div class="col">
+    <header class="topbar">
+      <nav class="plat"><a class="on" href="./">인스타그램</a><a class="" href="./threads.html">스레드</a></nav>
 
   <div class="bell-wrap">
     <button class="bell" id="bell" aria-label="알림" aria-expanded="false">
@@ -212,18 +242,16 @@ a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:und
       <div class="p-b" id="panelBody"></div>
     </div>
   </div>
+    </header>
+    <main class="main">
+      <div class="page-h"><h1>지난 리포트</h1>
+        <span class="updated"></span></div>
+      <div class="stale" id="stale" data-generated=""></div>
+      <p class="scope">주차를 누르면 오른쪽에 그 주 리포트가 나옵니다 · 모두 6주</p>
+      <div class="tabslot"></div>
+<div class="two"><div><div class="wk-list" id="wkList"></div><div class="pager" id="pager"></div></div><div id="wkCard"></div></div><script id="weeks" type="application/json" data-kind="ig">[{"label": "8월 2주차", "start": "2026-08-13", "end": "2026-08-19", "ig": [{"user": "wevape.no01", "label": "위베이프", "start": "2026-08-13", "end": "2026-08-19", "followers": 719, "posted": 0, "reach": 44, "reach_prev": 105, "reach_delta": -61, "reach_pct": -58, "views": 587, "views_prev": 2502, "views_delta": -1915, "views_pct": -77, "new_followers": 2, "new_followers_prev": 2, "new_followers_delta": 0, "new_followers_pct": 0, "non_follower_pct": 78, "non_follower_days": 2, "react_rate": 3.6051026067665006, "followers_delta": 2, "followers_pct": 0, "top": []}, {"user": "wevape_japan", "label": "위베이프 재팬", "start": "2026-08-13", "end": "2026-08-19", "followers": 4, "posted": 0, "reach": 0, "reach_prev": 2, "reach_delta": -2, "reach_pct": -100, "views": 0, "views_prev": 30, "views_delta": -30, "views_pct": -100, "new_followers": null, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": null, "followers_delta": 0, "followers_pct": 0, "top": []}], "th": {"username": "wevape.no01", "start": "2026-08-13", "end": "2026-08-19", "react_rate": 16.707557275648778, "likes": 1769, "replies": 1793, "reposts": 1260, "views": 31, "views_prev": 118, "views_delta": -87, "views_pct": -74, "followers": 1072, "followers_delta": null, "posted": 0, "top": []}}, {"label": "8월 1주차", "start": "2026-08-06", "end": "2026-08-12", "ig": [{"user": "wevape.no01", "label": "위베이프", "start": "2026-08-06", "end": "2026-08-12", "followers": 717, "posted": 1, "reach": 105, "reach_prev": 126, "reach_delta": -21, "reach_pct": -17, "views": 2502, "views_prev": 1630, "views_delta": 872, "views_pct": 53, "new_followers": 2, "new_followers_prev": 4, "new_followers_delta": -2, "new_followers_pct": -50, "non_follower_pct": 40, "non_follower_days": 1, "react_rate": 3.6051026067665006, "followers_delta": 3, "followers_pct": 0, "top": [{"date": "2026-08-07", "value": 72, "text": "简约的设计，\n还有愈发深沉的存在感。\n\n握在手中的瞬间，能感受到稳定的握持感和\n更加清晰的LED显示屏。\n\n5ml大容量液体，\n最大25W输出，\n1500mAh大容量电池，\n孩子气孔调节功能，\n甚至包括C型充电。\n\n基本保持不变，\n提高了完成度。\n\n现在，\n快来体验泡泡蒙·洛利波特J吧。", "permalink": "https://www.instagram.com/p/DbuluR9ExoI/"}]}, {"user": "wevape_japan", "label": "위베이프 재팬", "start": "2026-08-06", "end": "2026-08-12", "followers": 4, "posted": 3, "reach": 2, "reach_prev": 1, "reach_delta": 1, "reach_pct": 100, "views": 30, "views_prev": 34, "views_delta": -4, "views_pct": -12, "new_followers": null, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": null, "followers_delta": 0, "followers_pct": 0, "top": [{"date": "2026-08-08", "value": 1, "text": "韓国旅行の途中に、ちょっと寄り道。🇰🇷✨\n\n仁川でVAPEショップを探すなら、\nWEVAPE 延寿店へ。\n\n仁川延寿駅から徒歩約5分。🚶‍♀️\n旅行の途中でも気軽に立ち寄れる、\nアクセスしやすいVAPE SHOPです。\n\nRELX・WAKA・BUBBLEMONをはじめ、\nGraffitiシリーズなど\nさまざまなデバイス＆アイテムをご用意しています。\n\n日本語でのご案内もOK！🇯🇵\n韓国でのVAPEショッピングを\n安心してお楽しみください。\n\n━━━━━━━━━━━━━━\n\n📍 WEVAPE 延寿店\n🚉 仁川延寿駅 1番出口から徒歩約5分\n🚗 駐車場利用可能・2時間無料\n💬 日本語対応OK\n🕥 OPEN 10:30 / CLOSE 22:00\n\n韓国旅行の途中に、\nぜひ気軽に遊びに来てください。✈️🛍️", "permalink": "https://www.instagram.com/p/DbxkYS4knXr/"}, {"date": "2026-08-07", "value": 1, "text": "Welcome to Korea. Welcome to WEVAPE. 🇰🇷\n\n旅の始まりを、\nもっと特別に。\n\n仁川空港からすぐの\nWEVAPE 仁川空港店では、\n日本のお客様にも安心してお買い物を楽しんでいただけるよう、\n日本語でご案内しています。\n\n人気ブランドから最新デバイスまで、\n豊富なラインナップをご用意。\n\n韓国でお気に入りの一台と出会うなら、\nぜひWEVAPEへ。\n\n📍仁川空港から約10〜15分\n\n皆さまのご来店を心よりお待ちしております。\n\nhttps://naver.me/F4LOjlT2", "permalink": "https://www.instagram.com/p/DbuncUrks9_/"}, {"date": "2026-08-11", "value": 0, "text": "韓国旅行の途中に、気軽にVAPEを。🇰🇷✈️\n\n仁川でVAPEショップを探すなら、\nWEVAPE 論峴店へ。\n\n仁川論峴駅 4番出口から\n徒歩わずか約3分。🚶\n\n旅行やショッピングの途中にも\n気軽に立ち寄れるVAPE SHOPです。\n\nRELX・WAKA・BUBBLEMON、\nGraffitiシリーズなど、\n人気アイテムを豊富にラインナップ。\n\n日本語でのご案内もOK！🇯🇵\n韓国でのVAPEショッピングを\nゆっくりお楽しみください。\n\n━━━━━━━━━━━━━━\n\n📍 WEVAPE 論峴店\n🚉 仁川論峴駅 4番出口から徒歩約3分\n🚗 地下駐車場利用可能・2時間無料\n💬 日本語対応OK\n🕥 OPEN 10:30 / CLOSE 22:00\n\n韓国旅行の途中に、\nお気に入りを探しに来ませんか？✨\n\n皆さまのご来店をお待ちしております。", "permalink": "https://www.instagram.com/p/Db40NIwkm8a/"}]}], "th": {"username": "wevape.no01", "start": "2026-08-06", "end": "2026-08-12", "react_rate": 16.707557275648778, "likes": 1769, "replies": 1793, "reposts": 1260, "views": 118, "views_prev": 24, "views_delta": 94, "views_pct": 392, "followers": null, "followers_delta": null, "posted": 1, "top": [{"date": "2026-08-07", "value": 10, "text": "简约的设计，\n还有愈发深沉的存在感。\n\n握在手中的瞬间，能感受到稳定的握持感和\n更加清晰的LED显示屏。\n\n5ml大容量液体，\n最大25W输出，\n1500mAh大容量电池，\n孩子气孔调节功能，\n甚至包括C型充电。\n\n基本保持不变，\n提高了完成度。\n\n现在，\n快来体验泡泡蒙·洛利波特J吧。", "permalink": "https://www.threads.com/@wevape.no01/post/DbulvDrk8o6"}]}}, {"label": "7월 5주차", "start": "2026-07-30", "end": "2026-08-05", "ig": [{"user": "wevape.no01", "label": "위베이프", "start": "2026-07-30", "end": "2026-08-05", "followers": 714, "posted": 1, "reach": 126, "reach_prev": 47, "reach_delta": 79, "reach_pct": 168, "views": 1630, "views_prev": 1758, "views_delta": -128, "views_pct": -7, "new_followers": 4, "new_followers_prev": 3, "new_followers_delta": 1, "new_followers_pct": 33, "non_follower_pct": null, "non_follower_days": 0, "react_rate": 3.6051026067665006, "followers_delta": 4, "followers_pct": 1, "top": [{"date": "2026-08-02", "value": 129, "text": "BUBBLE MON LOLLIPOT J\n\n절제된 디자인,\n그리고 깊어진 존재감.\n\n손에 쥐는 순간 느껴지는 안정적인 그립감과\n더 선명해진 LED 디스플레이.\n\n5ml 대용량 액상,\n최대 25W 출력,\n1500mAh 대용량 배터리,\n에어홀 조절 기능,\nC-TYPE 충전까지.\n\n기본은 그대로,\n완성도는 더 높였습니다.\n\n지금,\nBUBBLE MON LOLLIPOT J를 만나보세요.", "permalink": "https://www.instagram.com/p/DbiK6c5k6N1/"}]}, {"user": "wevape_japan", "label": "위베이프 재팬", "start": "2026-07-30", "end": "2026-08-05", "followers": 4, "posted": 1, "reach": 1, "reach_prev": 2, "reach_delta": -1, "reach_pct": -50, "views": 34, "views_prev": 30, "views_delta": 4, "views_pct": 13, "new_followers": null, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": null, "followers_delta": 0, "followers_pct": 0, "top": [{"date": "2026-08-03", "value": 0, "text": "UPGRADED OPEN SYSTEM DEVICE.\n\n美しさは、\nシンプルなデザインから。\n\n性能は、\n細部へのこだわりから。\n\nLOLLIPOT Jは、\n毎日のVAPE体験を、\nもっと自由に、\nもっと快適にアップデートします。\n\n━━━━━━━━━━━━━━\n\n⚡ Max 25W Output\n💧 5ml Capacity\n🔋 1500mAh Battery\n✨ LED Display\n🌬 Adjustable Airflow\n🔌 USB Type-C Fast Charging\n\nAvailable Colors\n\n⭐️Yellow\n🌸Pink\n🍀 Green\n💙 Blue\n♣️ Black\n\nあなたなら、\nどのカラーを選びますか？\n\nコメントでお気に入りのカラーを教えてください✨", "permalink": "https://www.instagram.com/p/DbklHIVkhb8/"}]}], "th": {"username": "wevape.no01", "start": "2026-07-30", "end": "2026-08-05", "react_rate": 16.707557275648778, "likes": 1769, "replies": 1793, "reposts": 1260, "views": 24, "views_prev": 14, "views_delta": 10, "views_pct": 71, "followers": null, "followers_delta": null, "posted": 1, "top": [{"date": "2026-08-02", "value": 21, "text": "BUBBLE MON LOLLIPOT J\n\n절제된 디자인,\n그리고 깊어진 존재감.\n\n손에 쥐는 순간 느껴지는 안정적인 그립감과\n더 선명해진 LED 디스플레이.\n\n5ml 대용량 액상,\n최대 25W 출력,\n1500mAh 대용량 배터리,\n에어홀 조절 기능,\nC-TYPE 충전까지.\n\n기본은 그대로,\n완성도는 더 높였습니다.\n\n지금,\nBUBBLE MON LOLLIPOT J를 만나보세요.", "permalink": "https://www.threads.com/@wevape.no01/post/DbiK7LDEylW"}]}}, {"label": "7월 4주차", "start": "2026-07-23", "end": "2026-07-29", "ig": [{"user": "wevape.no01", "label": "위베이프", "start": "2026-07-23", "end": "2026-07-29", "followers": 710, "posted": 0, "reach": 47, "reach_prev": 45, "reach_delta": 2, "reach_pct": 4, "views": 1758, "views_prev": 1661, "views_delta": 97, "views_pct": 6, "new_followers": 3, "new_followers_prev": 1, "new_followers_delta": 2, "new_followers_pct": 200, "non_follower_pct": null, "non_follower_days": 0, "react_rate": 3.6051026067665006, "followers_delta": 3, "followers_pct": 0, "top": []}, {"user": "wevape_japan", "label": "위베이프 재팬", "start": "2026-07-23", "end": "2026-07-29", "followers": 4, "posted": 4, "reach": 2, "reach_prev": 0, "reach_delta": 2, "reach_pct": null, "views": 30, "views_prev": 1, "views_delta": 29, "views_pct": 2900, "new_followers": null, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": null, "followers_delta": 0, "followers_pct": 0, "top": [{"date": "2026-07-25", "value": 3, "text": "EXCLUSIVE FOR VIP STORES.\n\n限られた場所で、\n限られた人へ。\n\nGraffiti-C\nVIP限定 3% NICシリーズ。\n\n人気のフレーバーを、\n3% NICでラインナップ。\n\nいつもの一吸いを、\nより深く、より満足感のある時間へ。\n\n━━━━━━━━━━━━━━\n\n🍃 Jasmine Tea\n🍎 Double Apple\n🍇 Green Grape\n🍓 Strawberry Yogurt\n🌿 Miami Mint\n🥭 Mango Ice\n🌊 Aqua\n❄️ Cool Mint\n🍑 Peach Ice\n🍋 Pink Lemonade\n\n📍VIP認定店舗限定販売\n\n気になるフレーバーはありますか？\nコメントで教えてください✨", "permalink": "https://www.instagram.com/p/DbNtYTHkqei/"}, {"date": "2026-07-27", "value": 2, "text": "BEYOND GLOW, BEYOND LIMITS.\n\n光は、\nただ輝くだけじゃない。\n\nGraffiti-IIIは、\nLEDディスプレイとパフォーマンスを\nさらに進化させた新しいスタイル。\n\n毎日の一吸いに、\n美しさとパワーを。\n\n━━━━━━━━━━━━━━\n\n✨ Graffiti-III\n\n🟡 Aurora Gold\n🔵 Sapphire Blue\n🟠 Gold Rush\n\nあなたなら、\nどのカラーを選びますか？\n\nコメントでぜひ教えてください。", "permalink": "https://www.instagram.com/p/DbSzPPTEm51/"}, {"date": "2026-07-24", "value": 2, "text": "Find Your Favorite Flavor. 🍃\n\n気分で選ぶ。\n季節で選ぶ。\n今日の一口で選ぶ。\n\nフルーティーな甘さから、\n爽やかなミント、\nすっきりとしたフレーバーまで。\n\nGraffiti-C PODは、\n全17種類のラインナップ。\n\nきっと、\nあなたのお気に入りが見つかります。\n\n━━━━━━━━━━━━━━\n\n🍑 Peach Ice\n🥭 Peach Mango\n🍍 Pineapple Apple\n🥥 Honey Piña Colada\n🍉 Watermelon\n🫐 Watermelon Blueberry\n🍇 Shine Muscat\n🫐 Blue Razz\n🍒 Blueberry Cherry\n🥭 Mango\n🌿 Miami Mint\n🍋 Lemonade\n🍓 Strawberry Yogurt\n…and more.\n\n💬 あなたが一番気になるフレーバーは？\nコメントでぜひ教えてください✨", "permalink": "https://www.instagram.com/p/DbKy6qkkhR6/"}]}], "th": {"username": "wevape.no01", "start": "2026-07-23", "end": "2026-07-29", "react_rate": 16.707557275648778, "likes": 1769, "replies": 1793, "reposts": 1260, "views": 14, "views_prev": 145, "views_delta": -131, "views_pct": -90, "followers": null, "followers_delta": null, "posted": 0, "top": []}}, {"label": "7월 3주차", "start": "2026-07-16", "end": "2026-07-22", "ig": [{"user": "wevape.no01", "label": "위베이프", "start": "2026-07-16", "end": "2026-07-22", "followers": 707, "posted": 0, "reach": 45, "reach_prev": null, "reach_delta": null, "reach_pct": null, "views": 1661, "views_prev": null, "views_delta": null, "views_pct": null, "new_followers": 1, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": 3.6051026067665006, "followers_delta": null, "followers_pct": null, "top": []}, {"user": "wevape_japan", "label": "위베이프 재팬", "start": "2026-07-16", "end": "2026-07-22", "followers": 4, "posted": 4, "reach": 0, "reach_prev": null, "reach_delta": null, "reach_pct": null, "views": 1, "views_prev": null, "views_delta": null, "views_pct": null, "new_followers": null, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": null, "followers_delta": null, "followers_pct": null, "top": []}], "th": {"username": "wevape.no01", "start": "2026-07-16", "end": "2026-07-22", "react_rate": 16.707557275648778, "likes": 1769, "replies": 1793, "reposts": 1260, "views": 145, "views_prev": 3, "views_delta": 142, "views_pct": 4733, "followers": null, "followers_delta": null, "posted": 0, "top": []}}, {"label": "7월 2주차", "start": "2026-07-09", "end": "2026-07-15", "ig": [{"user": "wevape.no01", "label": "위베이프", "start": "2026-07-09", "end": "2026-07-15", "followers": null, "posted": 0, "reach": null, "reach_prev": null, "reach_delta": null, "reach_pct": null, "views": null, "views_prev": null, "views_delta": null, "views_pct": null, "new_followers": null, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": 3.6051026067665006, "followers_delta": null, "followers_pct": null, "top": []}, {"user": "wevape_japan", "label": "위베이프 재팬", "start": "2026-07-09", "end": "2026-07-15", "followers": null, "posted": 0, "reach": null, "reach_prev": null, "reach_delta": null, "reach_pct": null, "views": null, "views_prev": null, "views_delta": null, "views_pct": null, "new_followers": null, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": null, "followers_delta": null, "followers_pct": null, "top": []}], "th": {"username": "wevape.no01", "start": "2026-07-09", "end": "2026-07-15", "react_rate": 16.707557275648778, "likes": 1769, "replies": 1793, "reposts": 1260, "views": 3, "views_prev": null, "views_delta": null, "views_pct": null, "followers": null, "followers_delta": null, "posted": 0, "top": []}}]</script>
+    </main>
   </div>
-  <nav class="plat"><a class="on" href="./">인스타그램</a><a class="" href="./threads.html">스레드</a></nav>
-</div></header>
-<div class="toasts" id="toasts"></div>
-<div class="cols">
-  <aside class="side"><a class="" href="./">일일 리포트</a><a class="" href="./weekly.html">주간 리포트</a><a class="sub on" href="./weekly-past.html">- 지난 리포트</a><a class="" href="./analysis.html">콘텐츠 분석</a></aside>
-  <main class="main">
-    <div class="page-h"><h1>지난 리포트</h1>
-      <span class="updated"></span></div>
-    <div class="stale" id="stale" data-generated=""></div>
-<p class="period">주차를 누르면 오른쪽에 그 주 리포트가 나옵니다 · 모두 5주</p><div class="two"><div><div class="wk-list" id="wkList"></div><div class="pager" id="pager"></div></div><div id="wkCard"></div></div><script id="weeks" type="application/json" data-kind="ig">[{"label": "8월 2주차", "start": "2026-08-12", "end": "2026-08-18", "ig": [{"user": "wevape.no01", "label": "위베이프", "start": "2026-08-12", "end": "2026-08-18", "followers": 720, "posted": 0, "reach": 66, "reach_prev": 107, "reach_delta": -41, "reach_pct": -38, "views": 984, "views_prev": 2564, "views_delta": -1580, "views_pct": -62, "new_followers": 6, "new_followers_prev": 3, "new_followers_delta": 3, "new_followers_pct": 100, "non_follower_pct": 112, "non_follower_days": 6, "react_rate": 3.555798687089715, "followers_delta": 3, "followers_pct": 0, "top": []}, {"user": "wevape_japan", "label": "위베이프 재팬", "start": "2026-08-12", "end": "2026-08-18", "followers": 4, "posted": 1, "reach": 1, "reach_prev": 2, "reach_delta": -1, "reach_pct": -50, "views": 6, "views_prev": 29, "views_delta": -23, "views_pct": -79, "new_followers": null, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": null, "followers_delta": 0, "followers_pct": 0, "top": [{"date": "2026-08-16", "value": 1, "text": "韓国旅行の途中に、ふらっと寄れる。🇰🇷✨\n\n仁川でVAPEショップを探すなら、\nWEVAPE クウォル店へ。\n\nソクチョンサゴリ駅 4番出口から徒歩約5分。🚶\n旅行やショッピングの途中にも立ち寄りやすい\nVAPE SHOPです。\n\nRELX・WAKA・BUBBLEMONをはじめ、\nGraffitiシリーズなど、\n韓国で人気のアイテムを豊富に取り揃えています。\n\n日本語でのご案内もOK！🇯🇵\n初めての方でも安心して\nお買い物をお楽しみいただけます。\n\n━━━━━━━━━━━━━━\n\n📍 WEVAPE クウォル店\n🚉 ソクチョンサゴリ駅 4番出口から徒歩約5分\n🚗 地下駐車場利用可能・1時間無料\n💬 日本語対応OK\n🕥 OPEN 10:30 / CLOSE 22:00\n\n韓国旅行の途中に、\nお気に入りのVAPEを探しに来ませんか？🛍️✨\n\n皆さまのご来店をお待ちしております。", "permalink": "https://www.instagram.com/p/DcFp1MlkpFG/"}]}], "th": {"username": "wevape.no01", "start": "2026-08-12", "end": "2026-08-18", "react_rate": 16.70293985559816, "likes": 1769, "replies": 1793, "reposts": 1260, "views": 69, "views_prev": 120, "views_delta": -51, "views_pct": -42, "followers": 1072, "followers_delta": null, "posted": 0, "top": []}}, {"label": "8월 1주차", "start": "2026-08-05", "end": "2026-08-11", "ig": [{"user": "wevape.no01", "label": "위베이프", "start": "2026-08-05", "end": "2026-08-11", "followers": 717, "posted": 1, "reach": 107, "reach_prev": 119, "reach_delta": -12, "reach_pct": -10, "views": 2564, "views_prev": 1636, "views_delta": 928, "views_pct": 57, "new_followers": 3, "new_followers_prev": 3, "new_followers_delta": 0, "new_followers_pct": 0, "non_follower_pct": null, "non_follower_days": 0, "react_rate": 3.555798687089715, "followers_delta": 4, "followers_pct": 1, "top": [{"date": "2026-08-07", "value": 90, "text": "简约的设计，\n还有愈发深沉的存在感。\n\n握在手中的瞬间，能感受到稳定的握持感和\n更加清晰的LED显示屏。\n\n5ml大容量液体，\n最大25W输出，\n1500mAh大容量电池，\n孩子气孔调节功能，\n甚至包括C型充电。\n\n基本保持不变，\n提高了完成度。\n\n现在，\n快来体验泡泡蒙·洛利波特J吧。", "permalink": "https://www.instagram.com/p/DbuluR9ExoI/"}]}, {"user": "wevape_japan", "label": "위베이프 재팬", "start": "2026-08-05", "end": "2026-08-11", "followers": 4, "posted": 3, "reach": 2, "reach_prev": 1, "reach_delta": 1, "reach_pct": 100, "views": 29, "views_prev": 34, "views_delta": -5, "views_pct": -15, "new_followers": null, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": null, "followers_delta": 0, "followers_pct": 0, "top": [{"date": "2026-08-08", "value": 1, "text": "韓国旅行の途中に、ちょっと寄り道。🇰🇷✨\n\n仁川でVAPEショップを探すなら、\nWEVAPE 延寿店へ。\n\n仁川延寿駅から徒歩約5分。🚶‍♀️\n旅行の途中でも気軽に立ち寄れる、\nアクセスしやすいVAPE SHOPです。\n\nRELX・WAKA・BUBBLEMONをはじめ、\nGraffitiシリーズなど\nさまざまなデバイス＆アイテムをご用意しています。\n\n日本語でのご案内もOK！🇯🇵\n韓国でのVAPEショッピングを\n安心してお楽しみください。\n\n━━━━━━━━━━━━━━\n\n📍 WEVAPE 延寿店\n🚉 仁川延寿駅 1番出口から徒歩約5分\n🚗 駐車場利用可能・2時間無料\n💬 日本語対応OK\n🕥 OPEN 10:30 / CLOSE 22:00\n\n韓国旅行の途中に、\nぜひ気軽に遊びに来てください。✈️🛍️", "permalink": "https://www.instagram.com/p/DbxkYS4knXr/"}, {"date": "2026-08-07", "value": 1, "text": "Welcome to Korea. Welcome to WEVAPE. 🇰🇷\n\n旅の始まりを、\nもっと特別に。\n\n仁川空港からすぐの\nWEVAPE 仁川空港店では、\n日本のお客様にも安心してお買い物を楽しんでいただけるよう、\n日本語でご案内しています。\n\n人気ブランドから最新デバイスまで、\n豊富なラインナップをご用意。\n\n韓国でお気に入りの一台と出会うなら、\nぜひWEVAPEへ。\n\n📍仁川空港から約10〜15分\n\n皆さまのご来店を心よりお待ちしております。\n\nhttps://naver.me/F4LOjlT2", "permalink": "https://www.instagram.com/p/DbuncUrks9_/"}, {"date": "2026-08-11", "value": 0, "text": "韓国旅行の途中に、気軽にVAPEを。🇰🇷✈️\n\n仁川でVAPEショップを探すなら、\nWEVAPE 論峴店へ。\n\n仁川論峴駅 4番出口から\n徒歩わずか約3分。🚶\n\n旅行やショッピングの途中にも\n気軽に立ち寄れるVAPE SHOPです。\n\nRELX・WAKA・BUBBLEMON、\nGraffitiシリーズなど、\n人気アイテムを豊富にラインナップ。\n\n日本語でのご案内もOK！🇯🇵\n韓国でのVAPEショッピングを\nゆっくりお楽しみください。\n\n━━━━━━━━━━━━━━\n\n📍 WEVAPE 論峴店\n🚉 仁川論峴駅 4番出口から徒歩約3分\n🚗 地下駐車場利用可能・2時間無料\n💬 日本語対応OK\n🕥 OPEN 10:30 / CLOSE 22:00\n\n韓国旅行の途中に、\nお気に入りを探しに来ませんか？✨\n\n皆さまのご来店をお待ちしております。", "permalink": "https://www.instagram.com/p/Db40NIwkm8a/"}]}], "th": {"username": "wevape.no01", "start": "2026-08-05", "end": "2026-08-11", "react_rate": 16.70293985559816, "likes": 1769, "replies": 1793, "reposts": 1260, "views": 120, "views_prev": 17, "views_delta": 103, "views_pct": 606, "followers": null, "followers_delta": null, "posted": 1, "top": [{"date": "2026-08-07", "value": 12, "text": "简约的设计，\n还有愈发深沉的存在感。\n\n握在手中的瞬间，能感受到稳定的握持感和\n更加清晰的LED显示屏。\n\n5ml大容量液体，\n最大25W输出，\n1500mAh大容量电池，\n孩子气孔调节功能，\n甚至包括C型充电。\n\n基本保持不变，\n提高了完成度。\n\n现在，\n快来体验泡泡蒙·洛利波特J吧。", "permalink": "https://www.threads.com/@wevape.no01/post/DbulvDrk8o6"}]}}, {"label": "7월 5주차", "start": "2026-07-29", "end": "2026-08-04", "ig": [{"user": "wevape.no01", "label": "위베이프", "start": "2026-07-29", "end": "2026-08-04", "followers": 713, "posted": 1, "reach": 119, "reach_prev": 50, "reach_delta": 69, "reach_pct": 138, "views": 1636, "views_prev": 2030, "views_delta": -394, "views_pct": -19, "new_followers": 3, "new_followers_prev": 4, "new_followers_delta": -1, "new_followers_pct": -25, "non_follower_pct": null, "non_follower_days": 0, "react_rate": 3.555798687089715, "followers_delta": 3, "followers_pct": 0, "top": [{"date": "2026-08-02", "value": 136, "text": "BUBBLE MON LOLLIPOT J\n\n절제된 디자인,\n그리고 깊어진 존재감.\n\n손에 쥐는 순간 느껴지는 안정적인 그립감과\n더 선명해진 LED 디스플레이.\n\n5ml 대용량 액상,\n최대 25W 출력,\n1500mAh 대용량 배터리,\n에어홀 조절 기능,\nC-TYPE 충전까지.\n\n기본은 그대로,\n완성도는 더 높였습니다.\n\n지금,\nBUBBLE MON LOLLIPOT J를 만나보세요.", "permalink": "https://www.instagram.com/p/DbiK6c5k6N1/"}]}, {"user": "wevape_japan", "label": "위베이프 재팬", "start": "2026-07-29", "end": "2026-08-04", "followers": 4, "posted": 1, "reach": 1, "reach_prev": 2, "reach_delta": -1, "reach_pct": -50, "views": 34, "views_prev": 30, "views_delta": 4, "views_pct": 13, "new_followers": null, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": null, "followers_delta": 0, "followers_pct": 0, "top": [{"date": "2026-08-03", "value": 0, "text": "UPGRADED OPEN SYSTEM DEVICE.\n\n美しさは、\nシンプルなデザインから。\n\n性能は、\n細部へのこだわりから。\n\nLOLLIPOT Jは、\n毎日のVAPE体験を、\nもっと自由に、\nもっと快適にアップデートします。\n\n━━━━━━━━━━━━━━\n\n⚡ Max 25W Output\n💧 5ml Capacity\n🔋 1500mAh Battery\n✨ LED Display\n🌬 Adjustable Airflow\n🔌 USB Type-C Fast Charging\n\nAvailable Colors\n\n⭐️Yellow\n🌸Pink\n🍀 Green\n💙 Blue\n♣️ Black\n\nあなたなら、\nどのカラーを選びますか？\n\nコメントでお気に入りのカラーを教えてください✨", "permalink": "https://www.instagram.com/p/DbklHIVkhb8/"}]}], "th": {"username": "wevape.no01", "start": "2026-07-29", "end": "2026-08-04", "react_rate": 16.70293985559816, "likes": 1769, "replies": 1793, "reposts": 1260, "views": 17, "views_prev": 15, "views_delta": 2, "views_pct": 13, "followers": null, "followers_delta": null, "posted": 1, "top": [{"date": "2026-08-02", "value": 27, "text": "BUBBLE MON LOLLIPOT J\n\n절제된 디자인,\n그리고 깊어진 존재감.\n\n손에 쥐는 순간 느껴지는 안정적인 그립감과\n더 선명해진 LED 디스플레이.\n\n5ml 대용량 액상,\n최대 25W 출력,\n1500mAh 대용량 배터리,\n에어홀 조절 기능,\nC-TYPE 충전까지.\n\n기본은 그대로,\n완성도는 더 높였습니다.\n\n지금,\nBUBBLE MON LOLLIPOT J를 만나보세요.", "permalink": "https://www.threads.com/@wevape.no01/post/DbiK7LDEylW"}]}}, {"label": "7월 4주차", "start": "2026-07-22", "end": "2026-07-28", "ig": [{"user": "wevape.no01", "label": "위베이프", "start": "2026-07-22", "end": "2026-07-28", "followers": 710, "posted": 0, "reach": 50, "reach_prev": 37, "reach_delta": 13, "reach_pct": 35, "views": 2030, "views_prev": 1246, "views_delta": 784, "views_pct": 63, "new_followers": 4, "new_followers_prev": 0, "new_followers_delta": 4, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": 3.555798687089715, "followers_delta": 4, "followers_pct": 1, "top": []}, {"user": "wevape_japan", "label": "위베이프 재팬", "start": "2026-07-22", "end": "2026-07-28", "followers": 4, "posted": 4, "reach": 2, "reach_prev": 0, "reach_delta": 2, "reach_pct": null, "views": 30, "views_prev": 1, "views_delta": 29, "views_pct": 2900, "new_followers": null, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": null, "followers_delta": 0, "followers_pct": 0, "top": [{"date": "2026-07-25", "value": 3, "text": "EXCLUSIVE FOR VIP STORES.\n\n限られた場所で、\n限られた人へ。\n\nGraffiti-C\nVIP限定 3% NICシリーズ。\n\n人気のフレーバーを、\n3% NICでラインナップ。\n\nいつもの一吸いを、\nより深く、より満足感のある時間へ。\n\n━━━━━━━━━━━━━━\n\n🍃 Jasmine Tea\n🍎 Double Apple\n🍇 Green Grape\n🍓 Strawberry Yogurt\n🌿 Miami Mint\n🥭 Mango Ice\n🌊 Aqua\n❄️ Cool Mint\n🍑 Peach Ice\n🍋 Pink Lemonade\n\n📍VIP認定店舗限定販売\n\n気になるフレーバーはありますか？\nコメントで教えてください✨", "permalink": "https://www.instagram.com/p/DbNtYTHkqei/"}, {"date": "2026-07-27", "value": 2, "text": "BEYOND GLOW, BEYOND LIMITS.\n\n光は、\nただ輝くだけじゃない。\n\nGraffiti-IIIは、\nLEDディスプレイとパフォーマンスを\nさらに進化させた新しいスタイル。\n\n毎日の一吸いに、\n美しさとパワーを。\n\n━━━━━━━━━━━━━━\n\n✨ Graffiti-III\n\n🟡 Aurora Gold\n🔵 Sapphire Blue\n🟠 Gold Rush\n\nあなたなら、\nどのカラーを選びますか？\n\nコメントでぜひ教えてください。", "permalink": "https://www.instagram.com/p/DbSzPPTEm51/"}, {"date": "2026-07-24", "value": 2, "text": "Find Your Favorite Flavor. 🍃\n\n気分で選ぶ。\n季節で選ぶ。\n今日の一口で選ぶ。\n\nフルーティーな甘さから、\n爽やかなミント、\nすっきりとしたフレーバーまで。\n\nGraffiti-C PODは、\n全17種類のラインナップ。\n\nきっと、\nあなたのお気に入りが見つかります。\n\n━━━━━━━━━━━━━━\n\n🍑 Peach Ice\n🥭 Peach Mango\n🍍 Pineapple Apple\n🥥 Honey Piña Colada\n🍉 Watermelon\n🫐 Watermelon Blueberry\n🍇 Shine Muscat\n🫐 Blue Razz\n🍒 Blueberry Cherry\n🥭 Mango\n🌿 Miami Mint\n🍋 Lemonade\n🍓 Strawberry Yogurt\n…and more.\n\n💬 あなたが一番気になるフレーバーは？\nコメントでぜひ教えてください✨", "permalink": "https://www.instagram.com/p/DbKy6qkkhR6/"}]}], "th": {"username": "wevape.no01", "start": "2026-07-22", "end": "2026-07-28", "react_rate": 16.70293985559816, "likes": 1769, "replies": 1793, "reposts": 1260, "views": 15, "views_prev": 147, "views_delta": -132, "views_pct": -90, "followers": null, "followers_delta": null, "posted": 0, "top": []}}, {"label": "7월 3주차", "start": "2026-07-15", "end": "2026-07-21", "ig": [{"user": "wevape.no01", "label": "위베이프", "start": "2026-07-15", "end": "2026-07-21", "followers": 706, "posted": 0, "reach": 37, "reach_prev": null, "reach_delta": null, "reach_pct": null, "views": 1246, "views_prev": null, "views_delta": null, "views_pct": null, "new_followers": 0, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": 3.555798687089715, "followers_delta": null, "followers_pct": null, "top": []}, {"user": "wevape_japan", "label": "위베이프 재팬", "start": "2026-07-15", "end": "2026-07-21", "followers": 4, "posted": 2, "reach": 0, "reach_prev": null, "reach_delta": null, "reach_pct": null, "views": 1, "views_prev": null, "views_delta": null, "views_pct": null, "new_followers": null, "new_followers_prev": null, "new_followers_delta": null, "new_followers_pct": null, "non_follower_pct": null, "non_follower_days": 0, "react_rate": null, "followers_delta": null, "followers_pct": null, "top": []}], "th": {"username": "wevape.no01", "start": "2026-07-15", "end": "2026-07-21", "react_rate": 16.70293985559816, "likes": 1769, "replies": 1793, "reposts": 1260, "views": 147, "views_prev": null, "views_delta": null, "views_pct": null, "followers": null, "followers_delta": null, "posted": 0, "top": []}}]</script>
-  </main>
 </div>
 <script>
 (function () {

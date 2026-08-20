@@ -5,131 +5,153 @@
 <meta name="color-scheme" content="light">
 <title>세부 분석 · 스레드 · WEVAPE SNS</title>
 <style>
-:root { color-scheme: light only;
-  --sh-text:#111; --sh-text2:#444; --sh-muted:#6b6b6b;
-  --sh-line:#e6e6e6; --sh-border:rgba(17,17,17,.14); --sh-accent:#1f6fc7; }
+:root {
+  color-scheme: light only;
+  --yellow:#FFC800; --yellow-dim:#FFF3C4;
+  --ink:#1A1A1A; --ink-soft:#54524B; --paper:#FFFFFF;
+  --line:#E7E2D6; --bg:#F4F1E8; --side:#1A1A1A; --side-text:#E8E2D3;
+  --sh-text:#1A1A1A; --sh-text2:#54524B; --sh-muted:#7a756a;
+  --sh-line:#E7E2D6; --sh-border:#E7E2D6; --sh-accent:#1A1A1A;
+}
 * { box-sizing:border-box; }
-html, body { background:#fff; }
-body { margin:0; color:var(--sh-text);
-       font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
-.site-h { border-bottom:1px solid var(--sh-line); background:#fff;
-          position:sticky; top:0; z-index:20; }
-.site-h .inner { max-width:1180px; margin:0 auto; padding:16px 20px 0;
-                 display:flex; flex-direction:column; gap:12px; }
-.brand { font-size:15px; font-weight:750; letter-spacing:-0.01em; }
-.brand span { color:var(--sh-muted); font-weight:400; font-size:12px; margin-left:8px; }
-.plat { display:flex; gap:24px; }
-.plat a { font-size:15px; font-weight:600; color:var(--sh-muted); text-decoration:none;
-          padding:6px 2px 11px; border-bottom:2px solid transparent; }
-.plat a:hover { color:var(--sh-text2); }
-.plat a.on { color:var(--sh-accent); border-bottom-color:var(--sh-accent); }
-.cols { max-width:1180px; margin:0 auto; padding:24px 20px 72px;
-        display:grid; grid-template-columns:172px 1fr; gap:32px; align-items:start; }
-.side { position:sticky; top:96px; display:flex; flex-direction:column; gap:3px; }
-.side a { font-size:13.5px; color:var(--sh-text2); text-decoration:none;
-          padding:9px 12px; border-radius:8px; }
-.side a:hover { background:#f4f6f9; }
-.side a.on { background:var(--sh-accent); color:#fff; font-weight:650; }
-.side a.sub { margin-left:14px; font-size:12px; color:var(--sh-muted); padding:6px 12px; }
-.side a.sub.on { background:#eaf2fd; color:var(--sh-accent); font-weight:650; }
-.main { min-width:0; }
+html, body { background:var(--bg); }
+body { margin:0; color:var(--ink); font-size:14px;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,sans-serif; }
+
+.shell { display:grid; grid-template-columns:210px 1fr; min-height:100vh; }
+
+/* ---------------- 왼쪽: 브랜드 + 페이지 메뉴 ---------------- */
+.side { background:var(--side); color:var(--side-text); position:sticky; top:0;
+        height:100vh; padding:22px 12px; }
+.brand { padding:0 6px 18px; border-bottom:1px solid #2e2e2e; margin-bottom:16px; }
+.brand b { display:block; color:var(--yellow); font-weight:800; font-size:19px;
+           letter-spacing:-.02em; line-height:1.25; }
+.brand span { display:block; color:#c4beb0; font-weight:650; font-size:13.5px;
+              margin-top:5px; letter-spacing:-.01em; }
+.menu a { display:block; font-size:13px; color:var(--side-text); text-decoration:none;
+          padding:9px 11px; border-radius:7px; margin-bottom:2px; }
+.menu a::before { content:"● "; color:#4a4a4a; font-size:9px; vertical-align:2px; }
+.menu a:hover { background:#232323; }
+.menu a.on { background:#262626; color:var(--yellow); font-weight:700; }
+.menu a.on::before { color:var(--yellow); }
+.menu a.sub { margin-left:13px; font-size:12px; color:#a9a396; padding:6px 11px; }
+.menu a.sub::before { content:"- "; color:#5a5a5a; }
+.menu a.sub.on { background:#262626; color:var(--yellow); }
+
+/* ---------------- 맨 위: 상위 메뉴(플랫폼) ---------------- */
+.topbar { background:var(--side); position:sticky; top:0; z-index:20; padding:0 30px;
+          display:flex; justify-content:space-between; align-items:center; gap:16px; }
+.plat { display:flex; gap:26px; }
+.plat a { font-size:14.5px; font-weight:650; color:#a9a396; text-decoration:none;
+          padding:16px 2px 14px; border-bottom:3px solid transparent; letter-spacing:-.01em; }
+.plat a:hover { color:var(--side-text); }
+.plat a.on { color:var(--yellow); border-bottom-color:var(--yellow); font-weight:750; }
+
+.main { padding:24px 30px 64px; max-width:1120px; min-width:0; }
 .page-h { display:flex; justify-content:space-between; align-items:baseline;
-          flex-wrap:wrap; gap:10px; margin-bottom:18px; }
-.page-h h1 { font-size:22px; margin:0; letter-spacing:-0.01em; }
-.page-h .updated { font-size:12px; color:var(--sh-muted); }
+          flex-wrap:wrap; gap:10px; border-bottom:1px solid var(--line);
+          padding-bottom:12px; margin-bottom:6px; }
+.page-h h1 { font-size:24px; font-weight:700; margin:0; letter-spacing:-.02em; }
+.page-h .updated { font-size:12px; color:var(--ink-soft); }
+/* 제목 아래 한 줄 — 내용이 없어도 자리를 지켜 첫 카드 높이가 안 바뀐다 */
+/* 제목 아래 두 줄은 내용이 없어도 자리를 지킨다. 그래야 어느 페이지를 눌러도
+   첫 카드가 같은 높이에서 시작한다. */
+.scope, .period { font-size:12px; color:var(--ink-soft); line-height:1.6;
+                  min-height:38px; margin:0 0 10px; }   /* 두 줄 자리 확보 */
+.tabslot { min-height:34px; margin-bottom:12px; display:flex; align-items:center; }
+.tabslot > * { margin:0 !important; }
 .stale { display:none; background:#fdecec; border:1px solid #f3b9b9; color:#8a1f1f;
-  border-radius:10px; padding:12px 16px; font-size:13px; line-height:1.65; margin-bottom:18px; }
+  border-radius:10px; padding:12px 16px; font-size:13px; line-height:1.65; margin-bottom:16px; }
 .stale.on { display:block; }
 .stale b { color:#6b1414; }
 .stale a { color:#8a1f1f; text-decoration:underline; }
-/* 접었다 펴는 상자 — 자주 안 보는 설명은 여기에 넣는다 */
-details.tg { border:1px solid var(--sh-border); border-radius:10px; margin-bottom:20px;
-             background:#fff; }
-details.tg > summary { cursor:pointer; padding:13px 16px; font-size:13.5px; font-weight:650;
-  color:var(--sh-text2); list-style:none; display:flex; align-items:center; gap:8px; }
+
+/* 접었다 펴는 상자 */
+details.tg { border:1px solid var(--line); border-radius:10px; margin-bottom:16px;
+             background:var(--paper); }
+details.tg > summary { cursor:pointer; padding:13px 16px; font-size:13.5px; font-weight:700;
+  color:var(--ink-soft); list-style:none; display:flex; align-items:center; gap:8px; }
 details.tg > summary::-webkit-details-marker { display:none; }
-details.tg > summary::before { content:"\25b8"; color:var(--sh-accent); font-size:11px; }
-details.tg[open] > summary::before { content:"\25be"; }
-details.tg[open] > summary { border-bottom:1px solid var(--sh-line); }
+details.tg > summary::before { content:"▸"; color:var(--yellow); font-size:11px; }
+details.tg[open] > summary::before { content:"▾"; }
+details.tg[open] > summary { border-bottom:1px solid var(--line); }
 details.tg .tg-body { padding:15px 16px 16px; }
 
 /* ---------------- 알림 (오른쪽 위 종) ---------------- */
-.site-h .top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .bell-wrap { position:relative; }
-.bell { position:relative; border:1px solid var(--sh-border); background:#fff;
+.bell { position:relative; border:1px solid #3a3a3a; background:#262626;
         border-radius:9px; width:36px; height:34px; cursor:pointer; padding:0;
         display:flex; align-items:center; justify-content:center; }
-.bell:hover { background:#f4f6f9; }
-.bell svg { width:17px; height:17px; stroke:var(--sh-text2); fill:none; stroke-width:1.7;
+.bell:hover { background:#333; }
+.bell svg { width:17px; height:17px; stroke:#c4beb0; fill:none; stroke-width:1.7;
             stroke-linecap:round; stroke-linejoin:round; }
-.bell.unread { border-color:#d33; }
-.bell.unread svg { stroke:#d33; }
+.bell.unread { border-color:var(--yellow); }
+.bell.unread svg { stroke:var(--yellow); }
 .bell .count { position:absolute; top:-6px; right:-6px; min-width:17px; height:17px;
   background:#d33; color:#fff; border-radius:99px; font-size:10.5px; font-weight:700;
   line-height:17px; text-align:center; padding:0 4px; display:none; }
 .bell.unread .count { display:block; }
-@keyframes bell-pulse { 0%,100%{ box-shadow:0 0 0 0 rgba(221,51,51,.45);} 55%{ box-shadow:0 0 0 7px rgba(221,51,51,0);} }
+@keyframes bell-pulse { 0%,100%{ box-shadow:0 0 0 0 rgba(255,200,0,.45);} 55%{ box-shadow:0 0 0 7px rgba(255,200,0,0);} }
 .bell.unread { animation:bell-pulse 2s ease-out 3; }
-.panel { position:absolute; right:0; top:42px; width:330px; max-width:calc(100vw - 28px);
-  background:#fff; border:1px solid var(--sh-border); border-radius:12px; z-index:90;
-  box-shadow:0 10px 34px rgba(17,17,17,.16); display:none; overflow:hidden; }
+.panel { position:absolute; right:0; top:44px; width:330px; max-width:calc(100vw - 28px);
+  background:var(--paper); border:1px solid var(--line); border-radius:12px; z-index:90;
+  box-shadow:0 10px 34px rgba(26,26,26,.22); display:none; overflow:hidden; }
 .panel.on { display:block; }
 .panel .p-h { display:flex; justify-content:space-between; align-items:center;
-  padding:11px 14px; border-bottom:1px solid var(--sh-line); font-size:12.5px; font-weight:700; }
-.panel .p-h button { border:0; background:none; color:var(--sh-accent); cursor:pointer;
-  font-family:inherit; font-size:11.5px; font-weight:600; padding:2px 4px; }
+  padding:11px 14px; border-bottom:1px solid var(--line); font-size:12.5px; font-weight:700; }
+.panel .p-h button { border:0; background:none; color:#8A6A00; cursor:pointer;
+  font-family:inherit; font-size:11.5px; font-weight:700; padding:2px 4px; }
 .panel .p-b { max-height:min(60vh,420px); overflow-y:auto; }
-.nt { display:flex; gap:9px; padding:12px 14px; border-bottom:1px solid var(--sh-line);
+.nt { display:flex; gap:9px; padding:12px 14px; border-bottom:1px solid var(--line);
       cursor:pointer; }
 .nt:last-child { border-bottom:0; }
-.nt:hover { background:#f7f9fc; }
+.nt:hover { background:#faf8f3; }
 .nt .dot { width:7px; height:7px; border-radius:99px; margin-top:5px; flex:0 0 auto;
-           background:var(--sh-accent); }
-.nt.error .dot { background:#d33; } .nt.warn .dot { background:#d68000; }
-.nt.ok .dot { background:#046a04; }
-.nt.read .dot { background:#d3d3d3; }
+           background:var(--yellow); }
+.nt.error .dot { background:#C1392B; } .nt.warn .dot { background:#d68000; }
+.nt.ok .dot { background:#1F8A45; }
+.nt.read .dot { background:#d8d3c6; }
 .nt .tx { min-width:0; }
 .nt .t { font-size:12.5px; font-weight:700; line-height:1.45; }
-.nt.read .t { font-weight:500; color:var(--sh-text2); }
+.nt.read .t { font-weight:500; color:var(--ink-soft); }
 .nt .b { font-size:11.5px; color:var(--sh-muted); line-height:1.6; margin-top:3px;
          word-break:break-word; }
 .nt .w { font-size:10.5px; color:var(--sh-muted); margin-top:5px; }
 .nt-empty { padding:22px 14px; text-align:center; font-size:12px; color:var(--sh-muted); }
-/* 팝업 (버튼을 누르지 않아도 바로 뜬다) */
 .toasts { position:fixed; right:18px; top:74px; z-index:80;
           display:flex; flex-direction:column; gap:10px; width:330px;
           max-width:calc(100vw - 28px); }
-.toast { background:#fff; border:1px solid var(--sh-border); border-left:4px solid var(--sh-accent);
-  border-radius:11px; box-shadow:0 10px 30px rgba(17,17,17,.18); padding:12px 13px;
+.toast { background:var(--paper); border:1px solid var(--line); border-left:4px solid var(--yellow);
+  border-radius:11px; box-shadow:0 10px 30px rgba(26,26,26,.2); padding:12px 13px;
   animation:toast-in .28s ease-out; }
-.toast.error { border-left-color:#d33; } .toast.warn { border-left-color:#d68000; }
-.toast.ok { border-left-color:#046a04; }
+.toast.error { border-left-color:#C1392B; } .toast.warn { border-left-color:#d68000; }
+.toast.ok { border-left-color:#1F8A45; }
 @keyframes toast-in { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
 .toast .t { font-size:12.5px; font-weight:700; line-height:1.45; padding-right:18px; }
-.toast .b { font-size:11.5px; color:var(--sh-text2); line-height:1.6; margin-top:4px; }
+.toast .b { font-size:11.5px; color:var(--ink-soft); line-height:1.6; margin-top:4px; }
 .toast .r { display:flex; gap:8px; align-items:center; margin-top:10px; }
-.toast .r button, .toast .r a { border:1px solid var(--sh-border); background:#fff;
-  border-radius:7px; font-family:inherit; font-size:11.5px; font-weight:600; padding:5px 11px;
-  cursor:pointer; color:var(--sh-text2); text-decoration:none; }
-.toast .r button.on { background:var(--sh-accent); border-color:var(--sh-accent); color:#fff; }
-.toast .x { position:absolute; }
+.toast .r button, .toast .r a { border:1px solid var(--line); background:var(--paper);
+  border-radius:7px; font-family:inherit; font-size:11.5px; font-weight:650; padding:5px 11px;
+  cursor:pointer; color:var(--ink-soft); text-decoration:none; }
+.toast .r button.on { background:var(--ink); border-color:var(--ink); color:var(--yellow); }
 .toast-close { float:right; border:0; background:none; cursor:pointer; color:var(--sh-muted);
   font-size:15px; line-height:1; padding:0 0 0 6px; font-family:inherit; }
+
 @media (max-width:820px) {
+  .shell { grid-template-columns:1fr; }
+  .side { position:static; height:auto; padding:16px 14px; }
+  .brand { padding-bottom:14px; margin-bottom:12px; }
+  .menu { display:flex; flex-wrap:wrap; gap:5px; }
+  .menu a { margin:0; padding:7px 12px; border:1px solid #333; border-radius:999px; }
+  .menu a.sub { margin-left:0; }
+  .topbar { padding:0 14px; }
+  .main { padding:18px 14px 56px; }
   .toasts { right:10px; left:10px; width:auto; top:66px; }
-  .panel { width:min(330px, calc(100vw - 20px)); }
-  .cols { grid-template-columns:1fr; gap:18px; padding:18px 14px 64px; }
-  .side { position:static; flex-direction:row; gap:6px; flex-wrap:wrap;
-          border-bottom:1px solid var(--sh-line); padding-bottom:14px; }
-  .side a { border:1px solid var(--sh-border); border-radius:999px; padding:7px 14px; }
-  .side a.on { border-color:var(--sh-accent); }
-  .site-h .inner { padding:14px 14px 0; }
-  .plat { gap:18px; }
 }
 
-:root { --text:#111; --text2:#444; --muted:#6b6b6b; --grid:#e6e6e6;
-  --border:rgba(17,17,17,.14); --accent:#1f6fc7; --accent-soft:#cde2fb; --gray:#c9c9c9;
-  --good:#046a04; --warnc:#8a5a00; --bad:#b32626; }
+:root { --text:#1A1A1A; --text2:#54524B; --muted:#7a756a; --grid:#E7E2D6;
+  --border:#E7E2D6; --accent:#1A1A1A; --accent-soft:#FFF3C4; --gray:#cfc9ba;
+  --good:#1F8A45; --warnc:#8a5a00; --bad:#C1392B; }
 .scope { font-size:12px; color:var(--muted); margin:-8px 0 20px; }
 section.acct { border:1px solid var(--border); border-radius:12px; padding:20px 22px; margin-bottom:26px; }
 .acct-h { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px;
@@ -139,7 +161,7 @@ h3 { font-size:15px; margin:30px 0 3px; }
 .sub { font-size:12px; color:var(--muted); margin:0 0 14px; }
 .dim { color:var(--muted); } .nw { white-space:nowrap; }
 .verdict { display:flex; align-items:baseline; gap:13px; flex-wrap:wrap; margin-bottom:4px; }
-.hero { font-size:44px; font-weight:650; line-height:1; }
+.hero { font-size:40px; font-weight:650; line-height:1; }
 .hu { font-size:16px; color:var(--muted); font-weight:400; }
 .badge { font-size:12px; font-weight:600; padding:4px 10px; border-radius:999px; }
 .badge.good { background:#e6f4e6; color:var(--good); }
@@ -208,9 +230,15 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .champ-note { font-size:13px; line-height:1.7; margin:10px 0 0; }
 </style>
 </head><body>
-<header class="site-h"><div class="inner">
-  <div class="top">
-    <div class="brand">WEVAPE SNS 운영 현황</div>
+<div class="toasts" id="toasts"></div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><b>WEVAPE SNS</b><span>운영 현황</span></div>
+    <nav class="menu"><a class="" href="./threads.html">일일 리포트</a><a class="" href="./threads-weekly.html">주간 리포트</a><a class="" href="./threads-analysis.html">콘텐츠 분석</a><a class="sub on" href="./threads-detail.html">세부 분석</a></nav>
+  </aside>
+  <div class="col">
+    <header class="topbar">
+      <nav class="plat"><a class="" href="./">인스타그램</a><a class="on" href="./threads.html">스레드</a></nav>
 
   <div class="bell-wrap">
     <button class="bell" id="bell" aria-label="알림" aria-expanded="false">
@@ -223,17 +251,13 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
       <div class="p-b" id="panelBody"></div>
     </div>
   </div>
-  </div>
-  <nav class="plat"><a class="" href="./">인스타그램</a><a class="on" href="./threads.html">스레드</a></nav>
-</div></header>
-<div class="toasts" id="toasts"></div>
-<div class="cols">
-  <aside class="side"><a class="" href="./threads.html">일일 리포트</a><a class="" href="./threads-weekly.html">주간 리포트</a><a class="" href="./threads-analysis.html">콘텐츠 분석</a><a class="sub on" href="./threads-detail.html">- 세부 분석</a></aside>
-  <main class="main">
-    <div class="page-h"><h1>세부 분석</h1>
-      <span class="updated">업데이트: 2026-08-20 07:57 (한국시간)</span></div>
-    <div class="stale" id="stale" data-generated="2026-08-19T22:57:49+00:00"></div>
-<p class="scope">자주 볼 지표는 아니지만, 방향을 정할 때 참고합니다.</p>
+    </header>
+    <main class="main">
+      <div class="page-h"><h1>세부 분석</h1>
+        <span class="updated">업데이트: 2026-08-15 11:54 (한국시간)</span></div>
+      <div class="stale" id="stale" data-generated="2026-08-15T02:54:00+00:00"></div>
+      <p class="scope">자주 볼 지표는 아니지만, 방향을 정할 때 참고합니다.</p>
+      <div class="tabslot"></div>
 <section class="acct">
   <div class="acct-h">
     <h2>@wevape.no01</h2>
@@ -242,7 +266,7 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 
   <h3>유형별 노출</h3>
   <p class="sub">글당 평균 조회수</p>
-  <svg viewBox="0 0 860 164"><text class="cat" x="0" y="24">텍스트만</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">112회<tspan class="dim2"> · 208개</tspan></text><text class="cat" x="0" y="63">이미지</text><rect class="bar muted" x="150" y="45" width="260.6" height="28" rx="4"/><text class="val" x="418.6" y="63">57회<tspan class="dim2"> · 75개</tspan></text><text class="cat" x="0" y="102">동영상</text><rect class="bar muted" x="150" y="84" width="219.4" height="28" rx="4"/><text class="val" x="377.4" y="102">48회<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="141">여러 장</text><rect class="bar muted" x="150" y="123" width="201.3" height="28" rx="4"/><text class="val" x="359.3" y="141">44회<tspan class="dim2"> · 29개</tspan></text></svg>
+  <svg viewBox="0 0 860 164"><text class="cat" x="0" y="24">텍스트만</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">112회<tspan class="dim2"> · 208개</tspan></text><text class="cat" x="0" y="63">이미지</text><rect class="bar muted" x="150" y="45" width="260.6" height="28" rx="4"/><text class="val" x="418.6" y="63">57회<tspan class="dim2"> · 75개</tspan></text><text class="cat" x="0" y="102">동영상</text><rect class="bar muted" x="150" y="84" width="219.4" height="28" rx="4"/><text class="val" x="377.4" y="102">48회<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="141">여러 장</text><rect class="bar muted" x="150" y="123" width="200.1" height="28" rx="4"/><text class="val" x="358.1" y="141">44회<tspan class="dim2"> · 29개</tspan></text></svg>
 
   <h3>해시태그별 노출</h3>
   <p class="sub">5회 이상 사용한 해시태그만 · 글당 평균 조회수</p>
@@ -251,21 +275,22 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
   <h3>본문 길이 · 해시태그 개수</h3>
   <p class="sub">글당 평균 조회수</p>
   <div class="two">
-    <div><div class="mini-t">본문 길이(해시태그 제외)</div><svg viewBox="0 0 400 152"><text class="cat" x="0" y="23">51–150자</text><rect class="bar" x="84" y="6" width="200.0" height="26" rx="4"/><text class="val" x="292.0" y="23">105회<tspan class="dim2"> · 145개</tspan></text><text class="cat" x="0" y="59">151–300자</text><rect class="bar" x="84" y="42" width="173.6" height="26" rx="4"/><text class="val" x="265.6" y="59">91회<tspan class="dim2"> · 132개</tspan></text><text class="cat" x="0" y="95">300자 초과</text><rect class="bar" x="84" y="78" width="89.1" height="26" rx="4"/><text class="val" x="181.1" y="95">47회<tspan class="dim2"> · 32개</tspan></text><text class="cat" x="0" y="131">~50자</text><rect class="bar" x="84" y="114" width="66.2" height="26" rx="4"/><text class="val" x="158.2" y="131">35회<tspan class="dim2"> · 7개</tspan></text></svg></div>
+    <div><div class="mini-t">본문 길이(해시태그 제외)</div><svg viewBox="0 0 400 152"><text class="cat" x="0" y="23">51–150자</text><rect class="bar" x="84" y="6" width="200.0" height="26" rx="4"/><text class="val" x="292.0" y="23">105회<tspan class="dim2"> · 145개</tspan></text><text class="cat" x="0" y="59">151–300자</text><rect class="bar" x="84" y="42" width="173.5" height="26" rx="4"/><text class="val" x="265.5" y="59">91회<tspan class="dim2"> · 132개</tspan></text><text class="cat" x="0" y="95">300자 초과</text><rect class="bar" x="84" y="78" width="89.2" height="26" rx="4"/><text class="val" x="181.2" y="95">47회<tspan class="dim2"> · 32개</tspan></text><text class="cat" x="0" y="131">~50자</text><rect class="bar" x="84" y="114" width="66.2" height="26" rx="4"/><text class="val" x="158.2" y="131">35회<tspan class="dim2"> · 7개</tspan></text></svg></div>
     <div><div class="mini-t">해시태그 개수</div><svg viewBox="0 0 400 116"><text class="cat" x="0" y="23">0개</text><rect class="bar" x="84" y="6" width="200.0" height="26" rx="4"/><text class="val" x="292.0" y="23">98회<tspan class="dim2"> · 283개</tspan></text><text class="cat" x="0" y="59">1–3개</text><rect class="bar" x="84" y="42" width="77.4" height="26" rx="4"/><text class="val" x="169.4" y="59">38회<tspan class="dim2"> · 27개</tspan></text><text class="cat" x="0" y="95">4–7개</text><rect class="bar" x="84" y="78" width="71.8" height="26" rx="4"/><text class="val" x="163.8" y="95">35회<tspan class="dim2"> · 6개</tspan></text></svg></div>
   </div>
 
   <h3>팔로워 구성</h3>
   <p class="sub">스레드가 추정한 값입니다</p>
-  <div class="demos"><div class="dm-box"><div class="dm-t">연령</div><div class="dm"><span class="dm-k">25-34</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">345</span></div><div class="dm"><span class="dm-k">35-44</span><span class="dm-bar"><i style="width:99%"></i></span><span class="dm-v">341</span></div><div class="dm"><span class="dm-k">45-54</span><span class="dm-bar"><i style="width:54%"></i></span><span class="dm-v">187</span></div><div class="dm"><span class="dm-k">55-64</span><span class="dm-bar"><i style="width:17%"></i></span><span class="dm-v">60</span></div><div class="dm"><span class="dm-k">18-24</span><span class="dm-bar"><i style="width:14%"></i></span><span class="dm-v">48</span></div><div class="dm"><span class="dm-k">65+</span><span class="dm-bar"><i style="width:4%"></i></span><span class="dm-v">14</span></div></div><div class="dm-box"><div class="dm-t">성별</div><div class="dm"><span class="dm-k">U</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">412</span></div><div class="dm"><span class="dm-k">M</span><span class="dm-bar"><i style="width:94%"></i></span><span class="dm-v">389</span></div><div class="dm"><span class="dm-k">F</span><span class="dm-bar"><i style="width:48%"></i></span><span class="dm-v">196</span></div></div><div class="dm-box"><div class="dm-t">도시</div><div class="dm"><span class="dm-k">Seoul, Seoul</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">250</span></div><div class="dm"><span class="dm-k">Incheon, Incheon</span><span class="dm-bar"><i style="width:33%"></i></span><span class="dm-v">82</span></div><div class="dm"><span class="dm-k">Busan, Busan</span><span class="dm-bar"><i style="width:24%"></i></span><span class="dm-v">59</span></div><div class="dm"><span class="dm-k">Daegu, Daegu</span><span class="dm-bar"><i style="width:14%"></i></span><span class="dm-v">35</span></div><div class="dm"><span class="dm-k">Daejeon, Daejeon</span><span class="dm-bar"><i style="width:10%"></i></span><span class="dm-v">24</span></div><div class="dm"><span class="dm-k">Gwangju, Gwangju</span><span class="dm-bar"><i style="width:9%"></i></span><span class="dm-v">22</span></div></div><div class="dm-box"><div class="dm-t">국가</div><div class="dm"><span class="dm-k">KR</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">953</span></div><div class="dm"><span class="dm-k">US</span><span class="dm-bar"><i style="width:1%"></i></span><span class="dm-v">9</span></div><div class="dm"><span class="dm-k">JP</span><span class="dm-bar"><i style="width:1%"></i></span><span class="dm-v">8</span></div><div class="dm"><span class="dm-k">CN</span><span class="dm-bar"><i style="width:1%"></i></span><span class="dm-v">8</span></div><div class="dm"><span class="dm-k">VN</span><span class="dm-bar"><i style="width:0%"></i></span><span class="dm-v">4</span></div><div class="dm"><span class="dm-k">GB</span><span class="dm-bar"><i style="width:0%"></i></span><span class="dm-v">3</span></div></div></div>
+  <div class="demos"><div class="dm-box"><div class="dm-t">연령</div><div class="dm"><span class="dm-k">25-34</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">346</span></div><div class="dm"><span class="dm-k">35-44</span><span class="dm-bar"><i style="width:99%"></i></span><span class="dm-v">341</span></div><div class="dm"><span class="dm-k">45-54</span><span class="dm-bar"><i style="width:54%"></i></span><span class="dm-v">187</span></div><div class="dm"><span class="dm-k">55-64</span><span class="dm-bar"><i style="width:17%"></i></span><span class="dm-v">60</span></div><div class="dm"><span class="dm-k">18-24</span><span class="dm-bar"><i style="width:14%"></i></span><span class="dm-v">48</span></div><div class="dm"><span class="dm-k">65+</span><span class="dm-bar"><i style="width:4%"></i></span><span class="dm-v">14</span></div></div><div class="dm-box"><div class="dm-t">성별</div><div class="dm"><span class="dm-k">U</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">412</span></div><div class="dm"><span class="dm-k">M</span><span class="dm-bar"><i style="width:95%"></i></span><span class="dm-v">390</span></div><div class="dm"><span class="dm-k">F</span><span class="dm-bar"><i style="width:48%"></i></span><span class="dm-v">196</span></div></div><div class="dm-box"><div class="dm-t">도시</div><div class="dm"><span class="dm-k">Seoul, Seoul</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">247</span></div><div class="dm"><span class="dm-k">Incheon, Incheon</span><span class="dm-bar"><i style="width:32%"></i></span><span class="dm-v">80</span></div><div class="dm"><span class="dm-k">Busan, Busan</span><span class="dm-bar"><i style="width:24%"></i></span><span class="dm-v">59</span></div><div class="dm"><span class="dm-k">Daegu, Daegu</span><span class="dm-bar"><i style="width:15%"></i></span><span class="dm-v">36</span></div><div class="dm"><span class="dm-k">Daejeon, Daejeon</span><span class="dm-bar"><i style="width:10%"></i></span><span class="dm-v">24</span></div><div class="dm"><span class="dm-k">Gwangju, Gwangju</span><span class="dm-bar"><i style="width:9%"></i></span><span class="dm-v">23</span></div></div><div class="dm-box"><div class="dm-t">국가</div><div class="dm"><span class="dm-k">KR</span><span class="dm-bar"><i style="width:100%"></i></span><span class="dm-v">954</span></div><div class="dm"><span class="dm-k">US</span><span class="dm-bar"><i style="width:1%"></i></span><span class="dm-v">9</span></div><div class="dm"><span class="dm-k">JP</span><span class="dm-bar"><i style="width:1%"></i></span><span class="dm-v">8</span></div><div class="dm"><span class="dm-k">CN</span><span class="dm-bar"><i style="width:1%"></i></span><span class="dm-v">8</span></div><div class="dm"><span class="dm-k">VN</span><span class="dm-bar"><i style="width:0%"></i></span><span class="dm-v">4</span></div><div class="dm"><span class="dm-k">GB</span><span class="dm-bar"><i style="width:0%"></i></span><span class="dm-v">3</span></div></div></div>
 
   <h3>참고 지표</h3>
   <p class="sub">표본이 적어 참고용입니다.</p>
-  <details class="tg"><summary>언어별 노출</summary><div class="tg-body"><div class="warn">⚠️ 언어별 표본이 2개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 203"><text class="cat" x="0" y="24">한국어</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">95회<tspan class="dim2"> · 294개</tspan></text><text class="cat" x="0" y="63">영문</text><rect class="bar" x="150" y="45" width="328.3" height="28" rx="4"/><text class="val" x="486.3" y="63">61회<tspan class="dim2"> · 13개</tspan></text><text class="cat" x="0" y="102">일본어</text><rect class="bar" x="150" y="84" width="157.5" height="28" rx="4"/><text class="val" x="315.5" y="102">29회<tspan class="dim2"> · 3개</tspan></text><text class="cat" x="0" y="141">기타</text><rect class="bar" x="150" y="123" width="145.0" height="28" rx="4"/><text class="val" x="303.0" y="141">27회<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="180">중국어</text><rect class="bar" x="150" y="162" width="108.7" height="28" rx="4"/><text class="val" x="266.7" y="180">20회<tspan class="dim2"> · 4개</tspan></text></svg></div></details>
-  <details class="tg"><summary>게시 시각별 노출</summary><div class="tg-body"><div class="warn">⚠️ 시각별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 476"><text class="cat" x="0" y="24">10시</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">980회<tspan class="dim2"> · 1개</tspan></text><text class="cat" x="0" y="63">11시</text><rect class="bar" x="150" y="45" width="145.6" height="28" rx="4"/><text class="val" x="303.6" y="63">280회<tspan class="dim2"> · 5개</tspan></text><text class="cat" x="0" y="102">15시</text><rect class="bar" x="150" y="84" width="82.6" height="28" rx="4"/><text class="val" x="240.6" y="102">159회<tspan class="dim2"> · 25개</tspan></text><text class="cat" x="0" y="141">16시</text><rect class="bar" x="150" y="123" width="59.1" height="28" rx="4"/><text class="val" x="217.1" y="141">114회<tspan class="dim2"> · 6개</tspan></text><text class="cat" x="0" y="180">12시</text><rect class="bar" x="150" y="162" width="54.0" height="28" rx="4"/><text class="val" x="212.0" y="180">104회<tspan class="dim2"> · 14개</tspan></text><text class="cat" x="0" y="219">13시</text><rect class="bar" x="150" y="201" width="53.0" height="28" rx="4"/><text class="val" x="211.0" y="219">102회<tspan class="dim2"> · 43개</tspan></text><text class="cat" x="0" y="258">14시</text><rect class="bar" x="150" y="240" width="44.5" height="28" rx="4"/><text class="val" x="202.5" y="258">86회<tspan class="dim2"> · 42개</tspan></text><text class="cat" x="0" y="297">21시</text><rect class="bar" x="150" y="279" width="40.1" height="28" rx="4"/><text class="val" x="198.1" y="297">77회<tspan class="dim2"> · 100개</tspan></text><text class="cat" x="0" y="336">20시</text><rect class="bar" x="150" y="318" width="33.4" height="28" rx="4"/><text class="val" x="191.4" y="336">64회<tspan class="dim2"> · 54개</tspan></text><text class="cat" x="0" y="375">17시</text><rect class="bar" x="150" y="357" width="30.2" height="28" rx="4"/><text class="val" x="188.2" y="375">58회<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="414">19시</text><rect class="bar" x="150" y="396" width="26.5" height="28" rx="4"/><text class="val" x="184.5" y="414">51회<tspan class="dim2"> · 14개</tspan></text><text class="cat" x="0" y="453">18시</text><rect class="bar" x="150" y="435" width="23.9" height="28" rx="4"/><text class="val" x="181.9" y="453">46회<tspan class="dim2"> · 8개</tspan></text></svg></div></details>
-  <details class="tg"><summary>요일별 노출</summary><div class="tg-body"><svg viewBox="0 0 860 281"><text class="cat" x="0" y="24">일요일</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">123회<tspan class="dim2"> · 36개</tspan></text><text class="cat" x="0" y="63">토요일</text><rect class="bar" x="150" y="45" width="467.3" height="28" rx="4"/><text class="val" x="625.3" y="63">113회<tspan class="dim2"> · 56개</tspan></text><text class="cat" x="0" y="102">월요일</text><rect class="bar" x="150" y="84" width="421.1" height="28" rx="4"/><text class="val" x="579.1" y="102">102회<tspan class="dim2"> · 39개</tspan></text><text class="cat" x="0" y="141">목요일</text><rect class="bar" x="150" y="123" width="370.3" height="28" rx="4"/><text class="val" x="528.3" y="141">90회<tspan class="dim2"> · 48개</tspan></text><text class="cat" x="0" y="180">수요일</text><rect class="bar" x="150" y="162" width="348.0" height="28" rx="4"/><text class="val" x="506.0" y="180">84회<tspan class="dim2"> · 36개</tspan></text><text class="cat" x="0" y="219">금요일</text><rect class="bar" x="150" y="201" width="320.5" height="28" rx="4"/><text class="val" x="478.5" y="219">78회<tspan class="dim2"> · 54개</tspan></text><text class="cat" x="0" y="258">화요일</text><rect class="bar" x="150" y="240" width="237.5" height="28" rx="4"/><text class="val" x="395.5" y="258">57회<tspan class="dim2"> · 47개</tspan></text></svg></div></details>
+  <details class="tg"><summary>언어별 노출</summary><div class="tg-body"><div class="warn">⚠️ 언어별 표본이 2개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 203"><text class="cat" x="0" y="24">한국어</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">95회<tspan class="dim2"> · 294개</tspan></text><text class="cat" x="0" y="63">영문</text><rect class="bar" x="150" y="45" width="328.4" height="28" rx="4"/><text class="val" x="486.4" y="63">61회<tspan class="dim2"> · 13개</tspan></text><text class="cat" x="0" y="102">일본어</text><rect class="bar" x="150" y="84" width="157.5" height="28" rx="4"/><text class="val" x="315.5" y="102">29회<tspan class="dim2"> · 3개</tspan></text><text class="cat" x="0" y="141">기타</text><rect class="bar" x="150" y="123" width="145.0" height="28" rx="4"/><text class="val" x="303.0" y="141">27회<tspan class="dim2"> · 2개</tspan></text><text class="cat" x="0" y="180">중국어</text><rect class="bar" x="150" y="162" width="106.1" height="28" rx="4"/><text class="val" x="264.1" y="180">20회<tspan class="dim2"> · 4개</tspan></text></svg></div></details>
+  <details class="tg"><summary>게시 시각별 노출</summary><div class="tg-body"><div class="warn">⚠️ 시각별 표본이 1개뿐인 항목이 있습니다. 우연일 가능성이 높아 판단 근거로 쓰기엔 부족합니다 (권장 5개 이상).</div><svg viewBox="0 0 860 476"><text class="cat" x="0" y="24">10시</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">980회<tspan class="dim2"> · 1개</tspan></text><text class="cat" x="0" y="63">11시</text><rect class="bar" x="150" y="45" width="145.6" height="28" rx="4"/><text class="val" x="303.6" y="63">280회<tspan class="dim2"> · 5개</tspan></text><text class="cat" x="0" y="102">15시</text><rect class="bar" x="150" y="84" width="82.6" height="28" rx="4"/><text class="val" x="240.6" y="102">159회<tspan class="dim2"> · 25개</tspan></text><text class="cat" x="0" y="141">16시</text><rect class="bar" x="150" y="123" width="59.1" height="28" rx="4"/><text class="val" x="217.1" y="141">114회<tspan class="dim2"> · 6개</tspan></text><text class="cat" x="0" y="180">12시</text><rect class="bar" x="150" y="162" width="54.0" height="28" rx="4"/><text class="val" x="212.0" y="180">104회<tspan class="dim2"> · 14개</tspan></text><text class="cat" x="0" y="219">13시</text><rect class="bar" x="150" y="201" width="53.0" height="28" rx="4"/><text class="val" x="211.0" y="219">102회<tspan class="dim2"> · 43개</tspan></text><text class="cat" x="0" y="258">14시</text><rect class="bar" x="150" y="240" width="44.5" height="28" rx="4"/><text class="val" x="202.5" y="258">86회<tspan class="dim2"> · 42개</tspan></text><text class="cat" x="0" y="297">21시</text><rect class="bar" x="150" y="279" width="40.1" height="28" rx="4"/><text class="val" x="198.1" y="297">77회<tspan class="dim2"> · 100개</tspan></text><text class="cat" x="0" y="336">20시</text><rect class="bar" x="150" y="318" width="33.4" height="28" rx="4"/><text class="val" x="191.4" y="336">64회<tspan class="dim2"> · 54개</tspan></text><text class="cat" x="0" y="375">17시</text><rect class="bar" x="150" y="357" width="30.2" height="28" rx="4"/><text class="val" x="188.2" y="375">58회<tspan class="dim2"> · 4개</tspan></text><text class="cat" x="0" y="414">19시</text><rect class="bar" x="150" y="396" width="26.3" height="28" rx="4"/><text class="val" x="184.3" y="414">51회<tspan class="dim2"> · 14개</tspan></text><text class="cat" x="0" y="453">18시</text><rect class="bar" x="150" y="435" width="23.9" height="28" rx="4"/><text class="val" x="181.9" y="453">46회<tspan class="dim2"> · 8개</tspan></text></svg></div></details>
+  <details class="tg"><summary>요일별 노출</summary><div class="tg-body"><svg viewBox="0 0 860 281"><text class="cat" x="0" y="24">일요일</text><rect class="bar" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">123회<tspan class="dim2"> · 36개</tspan></text><text class="cat" x="0" y="63">토요일</text><rect class="bar" x="150" y="45" width="467.9" height="28" rx="4"/><text class="val" x="625.9" y="63">113회<tspan class="dim2"> · 56개</tspan></text><text class="cat" x="0" y="102">월요일</text><rect class="bar" x="150" y="84" width="421.7" height="28" rx="4"/><text class="val" x="579.7" y="102">102회<tspan class="dim2"> · 39개</tspan></text><text class="cat" x="0" y="141">목요일</text><rect class="bar" x="150" y="123" width="370.8" height="28" rx="4"/><text class="val" x="528.8" y="141">90회<tspan class="dim2"> · 48개</tspan></text><text class="cat" x="0" y="180">수요일</text><rect class="bar" x="150" y="162" width="348.5" height="28" rx="4"/><text class="val" x="506.5" y="180">84회<tspan class="dim2"> · 36개</tspan></text><text class="cat" x="0" y="219">금요일</text><rect class="bar" x="150" y="201" width="320.8" height="28" rx="4"/><text class="val" x="478.8" y="219">77회<tspan class="dim2"> · 54개</tspan></text><text class="cat" x="0" y="258">화요일</text><rect class="bar" x="150" y="240" width="237.8" height="28" rx="4"/><text class="val" x="395.8" y="258">57회<tspan class="dim2"> · 47개</tspan></text></svg></div></details>
 </section>
-  </main>
+    </main>
+  </div>
 </div>
 
 <script>

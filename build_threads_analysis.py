@@ -7,6 +7,8 @@ threads_cache.json + threads_report.json 을 읽어 스레드 콘텐츠 분석(t
   - 반응(좋아요·답글·리포스트·인용)이 하나라도 있으면 반응 랭킹 섹션이 자동으로 켜진다
 
 실행: python3 build_threads_analysis.py
+section h2::before, h3::before { content:"● "; color:#FFC800; font-size:11px; vertical-align:2px; }
+
 """
 
 import json
@@ -246,9 +248,9 @@ def build_insights(posts, ranked, followers, has_react, types, tags, excluded_ol
 # ------------------------------------------------------------ CSS
 
 CSS = """
-:root { --text:#111; --text2:#444; --muted:#6b6b6b; --grid:#e6e6e6;
-  --border:rgba(17,17,17,.14); --accent:#1f6fc7; --accent-soft:#cde2fb; --gray:#c9c9c9;
-  --good:#046a04; --warnc:#8a5a00; --bad:#b32626; }
+:root { --text:#1A1A1A; --text2:#54524B; --muted:#7a756a; --grid:#E7E2D6;
+  --border:#E7E2D6; --accent:#1A1A1A; --accent-soft:#FFF3C4; --gray:#cfc9ba;
+  --good:#1F8A45; --warnc:#8a5a00; --bad:#C1392B; }
 .scope { font-size:12px; color:var(--muted); margin:-8px 0 20px; }
 section.acct { border:1px solid var(--border); border-radius:12px; padding:20px 22px; margin-bottom:26px; }
 .acct-h { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px;
@@ -258,7 +260,7 @@ h3 { font-size:15px; margin:30px 0 3px; }
 .sub { font-size:12px; color:var(--muted); margin:0 0 14px; }
 .dim { color:var(--muted); } .nw { white-space:nowrap; }
 .verdict { display:flex; align-items:baseline; gap:13px; flex-wrap:wrap; margin-bottom:4px; }
-.hero { font-size:44px; font-weight:650; line-height:1; }
+.hero { font-size:40px; font-weight:650; line-height:1; }
 .hu { font-size:16px; color:var(--muted); font-weight:400; }
 .badge { font-size:12px; font-weight:600; padding:4px 10px; border-radius:999px; }
 .badge.good { background:#e6f4e6; color:var(--good); }
@@ -492,8 +494,8 @@ def build():
     ex_note = (f'<div class="warn">{ANALYSIS_MONTHS}개월 이전 글 {excluded_old}개는 제외했습니다.</div>'
                if excluded_old else "")
 
-    inner = f"""<p class="scope">전체 글 {report.get("posts_total", 0)}개 중 인사이트 있는 {n}개 분석</p>
-<section class="acct">
+    lead_ig = f'전체 글 {report.get("posts_total", 0)}개 중 인사이트 있는 {n}개 분석'
+    inner = f"""<section class="acct">
   <div class="acct-h">
     <h2>@{esc(uname)}</h2>
     <span class="dim">{esc(period)} · 분석 글 {n}개 · 팔로워 {followers:,}명</span>
@@ -533,8 +535,7 @@ def build():
 
 {LIMITS_HTML}"""
 
-    detail = f"""<p class="scope">자주 볼 지표는 아니지만, 방향을 정할 때 참고합니다.</p>
-<section class="acct">
+    detail = f"""<section class="acct">
   <div class="acct-h">
     <h2>@{esc(uname)}</h2>
     <span class="dim">{esc(period)} · 분석 글 {n}개</span>
@@ -570,9 +571,11 @@ def build():
     for body, key, name, title in (
             (inner, "analysis", "threads-analysis.html", "콘텐츠 분석"),
             (detail, "detail", "threads-detail.html", "세부 분석")):
+        lead = lead_ig if key == "analysis" else "자주 볼 지표는 아니지만, 방향을 정할 때 참고합니다."
         with open(os.path.join(DIR, name), "w", encoding="utf-8") as f:
             f.write(layout.document("th", key, title, body, CSS,
-                                    updated=layout.fmt_updated(gen), generated_iso=gen))
+                                    updated=layout.fmt_updated(gen), generated_iso=gen,
+                                    lead=lead))
         print(f"저장됨: {name}")
     print(f"(@{uname} · 분석 글 {n}개 · 반응 {tot_react}건)")
 

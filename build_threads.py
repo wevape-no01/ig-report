@@ -5,6 +5,8 @@ threads_report.json + threads_history.json 을 읽어 스레드 리포트(thread
 스레드에는 "도달"이 없다. 조회수(views)만 있고, 반응은 좋아요·답글·리포스트·인용이다.
 
 실행: python3 build_threads.py
+section h2::before, h3::before { content:"● "; color:#FFC800; font-size:11px; vertical-align:2px; }
+
 """
 
 import json
@@ -31,32 +33,32 @@ CSS = """
 :root {
   color-scheme: light only;
   --surface-1:#ffffff;
-  --text-primary:#111111; --text-secondary:#444444; --text-muted:#6b6b6b;
-  --gridline:#e6e6e6; --border:rgba(17,17,17,0.14);
-  --series-1:#1f6fc7; --gray:#c9c9c9;
-  --good:#046a04; --critical:#b32626;
+  --text-primary:#1A1A1A; --text-secondary:#54524B; --text-muted:#7a756a;
+  --gridline:#E7E2D6; --border:#E7E2D6;
+  --series-1:#1A1A1A; --gray:#cfc9ba;
+  --good:#1F8A45; --critical:#C1392B;
 }
 * { box-sizing:border-box; }
-html, body { background:#ffffff; }
-body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
+html, body { background:#F4F1E8; }
+body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#1A1A1A; }
 .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
-           gap:12px; margin:20px 0 24px; }
-.stat-tile { border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+           gap:12px; margin:0 0 20px; }
+.stat-tile { background:#fff; border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
 .stat-tile .label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; font-weight:600; }
-.stat-tile .value { font-size:26px; font-weight:650; line-height:1.1; }
+.stat-tile .value { font-size:30px; font-weight:650; line-height:1.1; }
 .stat-tile .note { font-size:11px; color:var(--text-muted); margin-top:5px; line-height:1.45; }
-section { border:1px solid var(--border); border-radius:10px;
+section { background:#fff; border:1px solid var(--border); border-radius:10px;
           padding:18px 18px 16px; margin-bottom:20px; }
 .sec-h { display:flex; justify-content:space-between; align-items:flex-start;
          gap:12px; flex-wrap:wrap; margin-bottom:4px; }
-section h2 { font-size:16px; margin:0; color:var(--text-primary); font-weight:700;
+section h2 { font-size:17px; margin:0; color:var(--text-primary); font-weight:700;
              letter-spacing:-0.01em; }
 section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.55; }
 .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
 .seg button { border:0; background:#fff; color:var(--text-secondary);
               font-family:inherit; font-size:12px; padding:6px 13px; cursor:pointer; }
 .seg button + button { border-left:1px solid var(--border); }
-.seg button[aria-pressed="true"] { background:var(--series-1); color:#fff; font-weight:600; }
+.seg button[aria-pressed="true"] { background:var(--series-1); color:#FFC800; font-weight:650; }
 svg { display:block; width:100%; height:auto; overflow:visible; }
 .axis-label { fill:var(--text-muted); font-size:10.5px; }
 .val-label { fill:var(--text-primary); font-size:11px; font-weight:600; }
@@ -66,13 +68,13 @@ svg { display:block; width:100%; height:auto; overflow:visible; }
              stroke-linecap:round; stroke-linejoin:round; }
 .dot { fill:var(--series-1); }
 .big { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:2px; }
-.big .n { font-size:38px; font-weight:650; line-height:1; }
+.big .n { font-size:36px; font-weight:650; line-height:1; }
 .big .u { font-size:14px; color:var(--text-muted); }
 .up { color:var(--good); } .down { color:var(--critical); }
 .mini-s { font-size:11.5px; color:var(--text-muted); margin:2px 0 14px; line-height:1.7; }
 .dim { color:var(--text-muted); font-size:11px; }
 .note-box { border:1px solid var(--border); border-left:3px solid var(--gray);
-            border-radius:8px; padding:12px 14px; margin-top:15px; background:#fafafa;
+            border-radius:8px; padding:12px 14px; margin-top:15px; background:#FAF8F3;
             font-size:11.5px; line-height:1.75; color:var(--text-secondary); }
 .note-box b { color:var(--text-primary); }
 table { width:100%; border-collapse:collapse; font-size:12.5px; }
@@ -82,9 +84,9 @@ th { color:var(--text-muted); font-weight:500; font-size:10.5px;
 td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
 td.cap { max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
          color:var(--text-secondary); }
-td.strong { font-weight:650; color:var(--series-1); }
+td.strong { font-weight:650; color:var(--text-primary); }
 tr.extra { display:none; } tr.extra.on { display:table-row; }
-a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:underline; }
+a { color:#8A6A00; text-decoration:none; } a:hover { text-decoration:underline; }
 .more { margin-top:12px; border:1px solid var(--border); background:#fff;
         color:var(--series-1); font-family:inherit; font-size:12.5px; font-weight:600;
         padding:8px 15px; border-radius:8px; cursor:pointer; }

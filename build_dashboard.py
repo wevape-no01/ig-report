@@ -82,14 +82,14 @@ PAGE_CSS = """
   :root {
     color-scheme: light only;
     --surface-1:#ffffff;
-    --text-primary:#111111; --text-secondary:#444444; --text-muted:#6b6b6b;
-    --gridline:#e6e6e6; --border:rgba(17,17,17,0.14);
-    --series-1:#1f6fc7; --seq-100:#cde2fb; --gray:#c9c9c9;
-    --good:#046a04; --critical:#b32626;
+    --text-primary:#1A1A1A; --text-secondary:#54524B; --text-muted:#7a756a;
+    --gridline:#E7E2D6; --border:#E7E2D6;
+    --series-1:#1A1A1A; --seq-100:#FFF3C4; --gray:#cfc9ba;
+    --good:#1F8A45; --critical:#C1392B;
   }
   * { box-sizing:border-box; }
-  html, body { background:#ffffff; }
-  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
+  html, body { background:#F4F1E8; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#1A1A1A; }
   .sample-banner { background:#fff8e1; color:#6b5300; border:1px solid #f0dca0;
                    border-radius:8px; padding:10px 14px; font-size:13px; margin:12px 0 20px; }
   .tabs { display:flex; gap:6px; margin:16px 0 20px; flex-wrap:wrap; }
@@ -97,14 +97,14 @@ PAGE_CSS = """
          background:var(--surface-1); color:var(--text-secondary);
          font-size:13px; cursor:pointer; font-family:inherit; }
   .tab[aria-selected="true"] { background:var(--series-1); border-color:var(--series-1);
-                               color:#fff; font-weight:600; }
+                               color:#FFC800; font-weight:650; }
   .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
              gap:12px; margin-bottom:24px; }
   .stat-tile { background:var(--surface-1); border:1px solid var(--border);
                border-radius:10px; padding:14px 16px; }
   .stat-tile .label { font-size:12px; color:var(--text-secondary); margin-bottom:6px;
                       font-weight:600; }
-  .stat-tile .value { font-size:26px; font-weight:650; line-height:1.1; }
+  .stat-tile .value { font-size:30px; font-weight:650; line-height:1.1; }
   .stat-tile .note { font-size:11px; color:var(--text-muted); margin-top:5px; line-height:1.45; }
   .stat-tile .delta { font-size:12px; margin-top:5px; color:var(--text-muted); }
   .delta.up { color:var(--good); } .delta.down { color:var(--critical); }
@@ -112,14 +112,14 @@ PAGE_CSS = """
             border-radius:10px; padding:18px 18px 16px; margin-bottom:20px; }
   .sec-h { display:flex; justify-content:space-between; align-items:flex-start;
            gap:12px; flex-wrap:wrap; margin-bottom:4px; }
-  section h2 { font-size:16px; margin:0; color:var(--text-primary); font-weight:700;
+  section h2 { font-size:17px; margin:0; color:var(--text-primary); font-weight:700;
                letter-spacing:-0.01em; }
   section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.55; }
   .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
   .seg button { border:0; background:var(--surface-1); color:var(--text-secondary);
                 font-family:inherit; font-size:12px; padding:6px 13px; cursor:pointer; }
   .seg button + button { border-left:1px solid var(--border); }
-  .seg button[aria-pressed="true"] { background:var(--series-1); color:#fff; font-weight:600; }
+  .seg button[aria-pressed="true"] { background:var(--series-1); color:#FFC800; font-weight:650; }
   svg { display:block; width:100%; height:auto; overflow:visible; }
   .axis-label { fill:var(--text-muted); font-size:10.5px; }
   .val-label { fill:var(--text-primary); font-size:11px; font-weight:600; }
@@ -141,7 +141,7 @@ PAGE_CSS = """
   .srow-b i.g { background:var(--gray); }
   .srow-v { text-align:right; font-variant-numeric:tabular-nums; }
   .big { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:2px; }
-  .big .n { font-size:38px; font-weight:650; line-height:1; }
+  .big .n { font-size:36px; font-weight:650; line-height:1; }
   .big .u { font-size:14px; color:var(--text-muted); }
   table { width:100%; border-collapse:collapse; font-size:12.5px; }
   th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--gridline);
@@ -153,7 +153,7 @@ PAGE_CSS = """
            color:var(--text-secondary); }
   tr.extra { display:none; }
   tr.extra.on { display:table-row; }
-  a { color:var(--series-1); text-decoration:none; }
+  a { color:#8A6A00; text-decoration:none; }
   a:hover { text-decoration:underline; }
   .more { margin-top:12px; border:1px solid var(--border); background:var(--surface-1);
           color:var(--series-1); font-family:inherit; font-size:12.5px; font-weight:600;
@@ -170,7 +170,6 @@ PAGE_CSS = """
 BODY = """
   __SAMPLE_BANNER__
 
-  <div class="tabs" id="tabs" role="tablist"></div>
 
   <div class="kpi-row" id="kpis"></div>
 
@@ -580,6 +579,8 @@ BODY = """
   render();
 })();
 </script>
+section h2::before, h3::before { content:"● "; color:#FFC800; font-size:11px; vertical-align:2px; }
+
 """
 
 
@@ -595,7 +596,8 @@ def render(report, history, is_sample):
         body = body.replace(k, v)
     gen = report.get("generated_at", "")
     return layout.document("ig", "daily", "일일 리포트", body, PAGE_CSS,
-                           updated=layout.fmt_updated(gen), generated_iso=gen)
+                           updated=layout.fmt_updated(gen), generated_iso=gen,
+                           tabs='<div class="tabs" id="tabs" role="tablist"></div>')
 
 
 if __name__ == "__main__":

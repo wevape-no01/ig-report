@@ -5,157 +5,179 @@
 <meta name="color-scheme" content="light">
 <title>일일 리포트 · 스레드 · WEVAPE SNS</title>
 <style>
-:root { color-scheme: light only;
-  --sh-text:#111; --sh-text2:#444; --sh-muted:#6b6b6b;
-  --sh-line:#e6e6e6; --sh-border:rgba(17,17,17,.14); --sh-accent:#1f6fc7; }
+:root {
+  color-scheme: light only;
+  --yellow:#FFC800; --yellow-dim:#FFF3C4;
+  --ink:#1A1A1A; --ink-soft:#54524B; --paper:#FFFFFF;
+  --line:#E7E2D6; --bg:#F4F1E8; --side:#1A1A1A; --side-text:#E8E2D3;
+  --sh-text:#1A1A1A; --sh-text2:#54524B; --sh-muted:#7a756a;
+  --sh-line:#E7E2D6; --sh-border:#E7E2D6; --sh-accent:#1A1A1A;
+}
 * { box-sizing:border-box; }
-html, body { background:#fff; }
-body { margin:0; color:var(--sh-text);
-       font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
-.site-h { border-bottom:1px solid var(--sh-line); background:#fff;
-          position:sticky; top:0; z-index:20; }
-.site-h .inner { max-width:1180px; margin:0 auto; padding:16px 20px 0;
-                 display:flex; flex-direction:column; gap:12px; }
-.brand { font-size:15px; font-weight:750; letter-spacing:-0.01em; }
-.brand span { color:var(--sh-muted); font-weight:400; font-size:12px; margin-left:8px; }
-.plat { display:flex; gap:24px; }
-.plat a { font-size:15px; font-weight:600; color:var(--sh-muted); text-decoration:none;
-          padding:6px 2px 11px; border-bottom:2px solid transparent; }
-.plat a:hover { color:var(--sh-text2); }
-.plat a.on { color:var(--sh-accent); border-bottom-color:var(--sh-accent); }
-.cols { max-width:1180px; margin:0 auto; padding:24px 20px 72px;
-        display:grid; grid-template-columns:172px 1fr; gap:32px; align-items:start; }
-.side { position:sticky; top:96px; display:flex; flex-direction:column; gap:3px; }
-.side a { font-size:13.5px; color:var(--sh-text2); text-decoration:none;
-          padding:9px 12px; border-radius:8px; }
-.side a:hover { background:#f4f6f9; }
-.side a.on { background:var(--sh-accent); color:#fff; font-weight:650; }
-.side a.sub { margin-left:14px; font-size:12px; color:var(--sh-muted); padding:6px 12px; }
-.side a.sub.on { background:#eaf2fd; color:var(--sh-accent); font-weight:650; }
-.main { min-width:0; }
+html, body { background:var(--bg); }
+body { margin:0; color:var(--ink); font-size:14px;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,sans-serif; }
+
+.shell { display:grid; grid-template-columns:210px 1fr; min-height:100vh; }
+
+/* ---------------- 왼쪽: 브랜드 + 페이지 메뉴 ---------------- */
+.side { background:var(--side); color:var(--side-text); position:sticky; top:0;
+        height:100vh; padding:22px 12px; }
+.brand { padding:0 6px 18px; border-bottom:1px solid #2e2e2e; margin-bottom:16px; }
+.brand b { display:block; color:var(--yellow); font-weight:800; font-size:19px;
+           letter-spacing:-.02em; line-height:1.25; }
+.brand span { display:block; color:#c4beb0; font-weight:650; font-size:13.5px;
+              margin-top:5px; letter-spacing:-.01em; }
+.menu a { display:block; font-size:13px; color:var(--side-text); text-decoration:none;
+          padding:9px 11px; border-radius:7px; margin-bottom:2px; }
+.menu a::before { content:"● "; color:#4a4a4a; font-size:9px; vertical-align:2px; }
+.menu a:hover { background:#232323; }
+.menu a.on { background:#262626; color:var(--yellow); font-weight:700; }
+.menu a.on::before { color:var(--yellow); }
+.menu a.sub { margin-left:13px; font-size:12px; color:#a9a396; padding:6px 11px; }
+.menu a.sub::before { content:"- "; color:#5a5a5a; }
+.menu a.sub.on { background:#262626; color:var(--yellow); }
+
+/* ---------------- 맨 위: 상위 메뉴(플랫폼) ---------------- */
+.topbar { background:var(--side); position:sticky; top:0; z-index:20; padding:0 30px;
+          display:flex; justify-content:space-between; align-items:center; gap:16px; }
+.plat { display:flex; gap:26px; }
+.plat a { font-size:14.5px; font-weight:650; color:#a9a396; text-decoration:none;
+          padding:16px 2px 14px; border-bottom:3px solid transparent; letter-spacing:-.01em; }
+.plat a:hover { color:var(--side-text); }
+.plat a.on { color:var(--yellow); border-bottom-color:var(--yellow); font-weight:750; }
+
+.main { padding:24px 30px 64px; max-width:1120px; min-width:0; }
 .page-h { display:flex; justify-content:space-between; align-items:baseline;
-          flex-wrap:wrap; gap:10px; margin-bottom:18px; }
-.page-h h1 { font-size:22px; margin:0; letter-spacing:-0.01em; }
-.page-h .updated { font-size:12px; color:var(--sh-muted); }
+          flex-wrap:wrap; gap:10px; border-bottom:1px solid var(--line);
+          padding-bottom:12px; margin-bottom:6px; }
+.page-h h1 { font-size:24px; font-weight:700; margin:0; letter-spacing:-.02em; }
+.page-h .updated { font-size:12px; color:var(--ink-soft); }
+/* 제목 아래 한 줄 — 내용이 없어도 자리를 지켜 첫 카드 높이가 안 바뀐다 */
+/* 제목 아래 두 줄은 내용이 없어도 자리를 지킨다. 그래야 어느 페이지를 눌러도
+   첫 카드가 같은 높이에서 시작한다. */
+.scope, .period { font-size:12px; color:var(--ink-soft); line-height:1.6;
+                  min-height:38px; margin:0 0 10px; }   /* 두 줄 자리 확보 */
+.tabslot { min-height:34px; margin-bottom:12px; display:flex; align-items:center; }
+.tabslot > * { margin:0 !important; }
 .stale { display:none; background:#fdecec; border:1px solid #f3b9b9; color:#8a1f1f;
-  border-radius:10px; padding:12px 16px; font-size:13px; line-height:1.65; margin-bottom:18px; }
+  border-radius:10px; padding:12px 16px; font-size:13px; line-height:1.65; margin-bottom:16px; }
 .stale.on { display:block; }
 .stale b { color:#6b1414; }
 .stale a { color:#8a1f1f; text-decoration:underline; }
-/* 접었다 펴는 상자 — 자주 안 보는 설명은 여기에 넣는다 */
-details.tg { border:1px solid var(--sh-border); border-radius:10px; margin-bottom:20px;
-             background:#fff; }
-details.tg > summary { cursor:pointer; padding:13px 16px; font-size:13.5px; font-weight:650;
-  color:var(--sh-text2); list-style:none; display:flex; align-items:center; gap:8px; }
+
+/* 접었다 펴는 상자 */
+details.tg { border:1px solid var(--line); border-radius:10px; margin-bottom:16px;
+             background:var(--paper); }
+details.tg > summary { cursor:pointer; padding:13px 16px; font-size:13.5px; font-weight:700;
+  color:var(--ink-soft); list-style:none; display:flex; align-items:center; gap:8px; }
 details.tg > summary::-webkit-details-marker { display:none; }
-details.tg > summary::before { content:"\25b8"; color:var(--sh-accent); font-size:11px; }
-details.tg[open] > summary::before { content:"\25be"; }
-details.tg[open] > summary { border-bottom:1px solid var(--sh-line); }
+details.tg > summary::before { content:"▸"; color:var(--yellow); font-size:11px; }
+details.tg[open] > summary::before { content:"▾"; }
+details.tg[open] > summary { border-bottom:1px solid var(--line); }
 details.tg .tg-body { padding:15px 16px 16px; }
 
 /* ---------------- 알림 (오른쪽 위 종) ---------------- */
-.site-h .top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .bell-wrap { position:relative; }
-.bell { position:relative; border:1px solid var(--sh-border); background:#fff;
+.bell { position:relative; border:1px solid #3a3a3a; background:#262626;
         border-radius:9px; width:36px; height:34px; cursor:pointer; padding:0;
         display:flex; align-items:center; justify-content:center; }
-.bell:hover { background:#f4f6f9; }
-.bell svg { width:17px; height:17px; stroke:var(--sh-text2); fill:none; stroke-width:1.7;
+.bell:hover { background:#333; }
+.bell svg { width:17px; height:17px; stroke:#c4beb0; fill:none; stroke-width:1.7;
             stroke-linecap:round; stroke-linejoin:round; }
-.bell.unread { border-color:#d33; }
-.bell.unread svg { stroke:#d33; }
+.bell.unread { border-color:var(--yellow); }
+.bell.unread svg { stroke:var(--yellow); }
 .bell .count { position:absolute; top:-6px; right:-6px; min-width:17px; height:17px;
   background:#d33; color:#fff; border-radius:99px; font-size:10.5px; font-weight:700;
   line-height:17px; text-align:center; padding:0 4px; display:none; }
 .bell.unread .count { display:block; }
-@keyframes bell-pulse { 0%,100%{ box-shadow:0 0 0 0 rgba(221,51,51,.45);} 55%{ box-shadow:0 0 0 7px rgba(221,51,51,0);} }
+@keyframes bell-pulse { 0%,100%{ box-shadow:0 0 0 0 rgba(255,200,0,.45);} 55%{ box-shadow:0 0 0 7px rgba(255,200,0,0);} }
 .bell.unread { animation:bell-pulse 2s ease-out 3; }
-.panel { position:absolute; right:0; top:42px; width:330px; max-width:calc(100vw - 28px);
-  background:#fff; border:1px solid var(--sh-border); border-radius:12px; z-index:90;
-  box-shadow:0 10px 34px rgba(17,17,17,.16); display:none; overflow:hidden; }
+.panel { position:absolute; right:0; top:44px; width:330px; max-width:calc(100vw - 28px);
+  background:var(--paper); border:1px solid var(--line); border-radius:12px; z-index:90;
+  box-shadow:0 10px 34px rgba(26,26,26,.22); display:none; overflow:hidden; }
 .panel.on { display:block; }
 .panel .p-h { display:flex; justify-content:space-between; align-items:center;
-  padding:11px 14px; border-bottom:1px solid var(--sh-line); font-size:12.5px; font-weight:700; }
-.panel .p-h button { border:0; background:none; color:var(--sh-accent); cursor:pointer;
-  font-family:inherit; font-size:11.5px; font-weight:600; padding:2px 4px; }
+  padding:11px 14px; border-bottom:1px solid var(--line); font-size:12.5px; font-weight:700; }
+.panel .p-h button { border:0; background:none; color:#8A6A00; cursor:pointer;
+  font-family:inherit; font-size:11.5px; font-weight:700; padding:2px 4px; }
 .panel .p-b { max-height:min(60vh,420px); overflow-y:auto; }
-.nt { display:flex; gap:9px; padding:12px 14px; border-bottom:1px solid var(--sh-line);
+.nt { display:flex; gap:9px; padding:12px 14px; border-bottom:1px solid var(--line);
       cursor:pointer; }
 .nt:last-child { border-bottom:0; }
-.nt:hover { background:#f7f9fc; }
+.nt:hover { background:#faf8f3; }
 .nt .dot { width:7px; height:7px; border-radius:99px; margin-top:5px; flex:0 0 auto;
-           background:var(--sh-accent); }
-.nt.error .dot { background:#d33; } .nt.warn .dot { background:#d68000; }
-.nt.ok .dot { background:#046a04; }
-.nt.read .dot { background:#d3d3d3; }
+           background:var(--yellow); }
+.nt.error .dot { background:#C1392B; } .nt.warn .dot { background:#d68000; }
+.nt.ok .dot { background:#1F8A45; }
+.nt.read .dot { background:#d8d3c6; }
 .nt .tx { min-width:0; }
 .nt .t { font-size:12.5px; font-weight:700; line-height:1.45; }
-.nt.read .t { font-weight:500; color:var(--sh-text2); }
+.nt.read .t { font-weight:500; color:var(--ink-soft); }
 .nt .b { font-size:11.5px; color:var(--sh-muted); line-height:1.6; margin-top:3px;
          word-break:break-word; }
 .nt .w { font-size:10.5px; color:var(--sh-muted); margin-top:5px; }
 .nt-empty { padding:22px 14px; text-align:center; font-size:12px; color:var(--sh-muted); }
-/* 팝업 (버튼을 누르지 않아도 바로 뜬다) */
 .toasts { position:fixed; right:18px; top:74px; z-index:80;
           display:flex; flex-direction:column; gap:10px; width:330px;
           max-width:calc(100vw - 28px); }
-.toast { background:#fff; border:1px solid var(--sh-border); border-left:4px solid var(--sh-accent);
-  border-radius:11px; box-shadow:0 10px 30px rgba(17,17,17,.18); padding:12px 13px;
+.toast { background:var(--paper); border:1px solid var(--line); border-left:4px solid var(--yellow);
+  border-radius:11px; box-shadow:0 10px 30px rgba(26,26,26,.2); padding:12px 13px;
   animation:toast-in .28s ease-out; }
-.toast.error { border-left-color:#d33; } .toast.warn { border-left-color:#d68000; }
-.toast.ok { border-left-color:#046a04; }
+.toast.error { border-left-color:#C1392B; } .toast.warn { border-left-color:#d68000; }
+.toast.ok { border-left-color:#1F8A45; }
 @keyframes toast-in { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
 .toast .t { font-size:12.5px; font-weight:700; line-height:1.45; padding-right:18px; }
-.toast .b { font-size:11.5px; color:var(--sh-text2); line-height:1.6; margin-top:4px; }
+.toast .b { font-size:11.5px; color:var(--ink-soft); line-height:1.6; margin-top:4px; }
 .toast .r { display:flex; gap:8px; align-items:center; margin-top:10px; }
-.toast .r button, .toast .r a { border:1px solid var(--sh-border); background:#fff;
-  border-radius:7px; font-family:inherit; font-size:11.5px; font-weight:600; padding:5px 11px;
-  cursor:pointer; color:var(--sh-text2); text-decoration:none; }
-.toast .r button.on { background:var(--sh-accent); border-color:var(--sh-accent); color:#fff; }
-.toast .x { position:absolute; }
+.toast .r button, .toast .r a { border:1px solid var(--line); background:var(--paper);
+  border-radius:7px; font-family:inherit; font-size:11.5px; font-weight:650; padding:5px 11px;
+  cursor:pointer; color:var(--ink-soft); text-decoration:none; }
+.toast .r button.on { background:var(--ink); border-color:var(--ink); color:var(--yellow); }
 .toast-close { float:right; border:0; background:none; cursor:pointer; color:var(--sh-muted);
   font-size:15px; line-height:1; padding:0 0 0 6px; font-family:inherit; }
+
 @media (max-width:820px) {
+  .shell { grid-template-columns:1fr; }
+  .side { position:static; height:auto; padding:16px 14px; }
+  .brand { padding-bottom:14px; margin-bottom:12px; }
+  .menu { display:flex; flex-wrap:wrap; gap:5px; }
+  .menu a { margin:0; padding:7px 12px; border:1px solid #333; border-radius:999px; }
+  .menu a.sub { margin-left:0; }
+  .topbar { padding:0 14px; }
+  .main { padding:18px 14px 56px; }
   .toasts { right:10px; left:10px; width:auto; top:66px; }
-  .panel { width:min(330px, calc(100vw - 20px)); }
-  .cols { grid-template-columns:1fr; gap:18px; padding:18px 14px 64px; }
-  .side { position:static; flex-direction:row; gap:6px; flex-wrap:wrap;
-          border-bottom:1px solid var(--sh-line); padding-bottom:14px; }
-  .side a { border:1px solid var(--sh-border); border-radius:999px; padding:7px 14px; }
-  .side a.on { border-color:var(--sh-accent); }
-  .site-h .inner { padding:14px 14px 0; }
-  .plat { gap:18px; }
 }
 
 :root {
   color-scheme: light only;
   --surface-1:#ffffff;
-  --text-primary:#111111; --text-secondary:#444444; --text-muted:#6b6b6b;
-  --gridline:#e6e6e6; --border:rgba(17,17,17,0.14);
-  --series-1:#1f6fc7; --gray:#c9c9c9;
-  --good:#046a04; --critical:#b32626;
+  --text-primary:#1A1A1A; --text-secondary:#54524B; --text-muted:#7a756a;
+  --gridline:#E7E2D6; --border:#E7E2D6;
+  --series-1:#1A1A1A; --gray:#cfc9ba;
+  --good:#1F8A45; --critical:#C1392B;
 }
 * { box-sizing:border-box; }
-html, body { background:#ffffff; }
-body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
+html, body { background:#F4F1E8; }
+body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#1A1A1A; }
 .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
-           gap:12px; margin:20px 0 24px; }
-.stat-tile { border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+           gap:12px; margin:0 0 20px; }
+.stat-tile { background:#fff; border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
 .stat-tile .label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; font-weight:600; }
-.stat-tile .value { font-size:26px; font-weight:650; line-height:1.1; }
+.stat-tile .value { font-size:30px; font-weight:650; line-height:1.1; }
 .stat-tile .note { font-size:11px; color:var(--text-muted); margin-top:5px; line-height:1.45; }
-section { border:1px solid var(--border); border-radius:10px;
+section { background:#fff; border:1px solid var(--border); border-radius:10px;
           padding:18px 18px 16px; margin-bottom:20px; }
 .sec-h { display:flex; justify-content:space-between; align-items:flex-start;
          gap:12px; flex-wrap:wrap; margin-bottom:4px; }
-section h2 { font-size:16px; margin:0; color:var(--text-primary); font-weight:700;
+section h2 { font-size:17px; margin:0; color:var(--text-primary); font-weight:700;
              letter-spacing:-0.01em; }
 section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.55; }
 .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
 .seg button { border:0; background:#fff; color:var(--text-secondary);
               font-family:inherit; font-size:12px; padding:6px 13px; cursor:pointer; }
 .seg button + button { border-left:1px solid var(--border); }
-.seg button[aria-pressed="true"] { background:var(--series-1); color:#fff; font-weight:600; }
+.seg button[aria-pressed="true"] { background:var(--series-1); color:#FFC800; font-weight:650; }
 svg { display:block; width:100%; height:auto; overflow:visible; }
 .axis-label { fill:var(--text-muted); font-size:10.5px; }
 .val-label { fill:var(--text-primary); font-size:11px; font-weight:600; }
@@ -165,13 +187,13 @@ svg { display:block; width:100%; height:auto; overflow:visible; }
              stroke-linecap:round; stroke-linejoin:round; }
 .dot { fill:var(--series-1); }
 .big { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:2px; }
-.big .n { font-size:38px; font-weight:650; line-height:1; }
+.big .n { font-size:36px; font-weight:650; line-height:1; }
 .big .u { font-size:14px; color:var(--text-muted); }
 .up { color:var(--good); } .down { color:var(--critical); }
 .mini-s { font-size:11.5px; color:var(--text-muted); margin:2px 0 14px; line-height:1.7; }
 .dim { color:var(--text-muted); font-size:11px; }
 .note-box { border:1px solid var(--border); border-left:3px solid var(--gray);
-            border-radius:8px; padding:12px 14px; margin-top:15px; background:#fafafa;
+            border-radius:8px; padding:12px 14px; margin-top:15px; background:#FAF8F3;
             font-size:11.5px; line-height:1.75; color:var(--text-secondary); }
 .note-box b { color:var(--text-primary); }
 table { width:100%; border-collapse:collapse; font-size:12.5px; }
@@ -181,9 +203,9 @@ th { color:var(--text-muted); font-weight:500; font-size:10.5px;
 td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
 td.cap { max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
          color:var(--text-secondary); }
-td.strong { font-weight:650; color:var(--series-1); }
+td.strong { font-weight:650; color:var(--text-primary); }
 tr.extra { display:none; } tr.extra.on { display:table-row; }
-a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:underline; }
+a { color:#8A6A00; text-decoration:none; } a:hover { text-decoration:underline; }
 .more { margin-top:12px; border:1px solid var(--border); background:#fff;
         color:var(--series-1); font-family:inherit; font-size:12.5px; font-weight:600;
         padding:8px 15px; border-radius:8px; cursor:pointer; }
@@ -214,9 +236,15 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
 .setup li { margin-bottom:7px; }
 </style>
 </head><body>
-<header class="site-h"><div class="inner">
-  <div class="top">
-    <div class="brand">WEVAPE SNS 운영 현황</div>
+<div class="toasts" id="toasts"></div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><b>WEVAPE SNS</b><span>운영 현황</span></div>
+    <nav class="menu"><a class="on" href="./threads.html">일일 리포트</a><a class="" href="./threads-weekly.html">주간 리포트</a><a class="" href="./threads-analysis.html">콘텐츠 분석</a></nav>
+  </aside>
+  <div class="col">
+    <header class="topbar">
+      <nav class="plat"><a class="" href="./">인스타그램</a><a class="on" href="./threads.html">스레드</a></nav>
 
   <div class="bell-wrap">
     <button class="bell" id="bell" aria-label="알림" aria-expanded="false">
@@ -229,16 +257,13 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
       <div class="p-b" id="panelBody"></div>
     </div>
   </div>
-  </div>
-  <nav class="plat"><a class="" href="./">인스타그램</a><a class="on" href="./threads.html">스레드</a></nav>
-</div></header>
-<div class="toasts" id="toasts"></div>
-<div class="cols">
-  <aside class="side"><a class="on" href="./threads.html">일일 리포트</a><a class="" href="./threads-weekly.html">주간 리포트</a><a class="" href="./threads-analysis.html">콘텐츠 분석</a></aside>
-  <main class="main">
-    <div class="page-h"><h1>일일 리포트</h1>
-      <span class="updated">업데이트: 2026-08-20 07:57 (한국시간)</span></div>
-    <div class="stale" id="stale" data-generated="2026-08-19T22:57:49+00:00"></div>
+    </header>
+    <main class="main">
+      <div class="page-h"><h1>일일 리포트</h1>
+        <span class="updated">업데이트: 2026-08-15 11:54 (한국시간)</span></div>
+      <div class="stale" id="stale" data-generated="2026-08-15T02:54:00+00:00"></div>
+      <p class="scope"></p>
+      <div class="tabslot"></div>
 
 <div class="kpi-row" id="kpis"></div>
 
@@ -304,8 +329,8 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
   </div>
 </details>
 
-<script id="t-report" type="application/json">{"generated_at": "2026-08-19T22:57:49+00:00", "profile": {"id": "27952081351123554", "username": "wevape.no01", "name": "위베이프 전자담배 인천/경기 대표지점", "threads_profile_picture_url": "https://scontent-sjc3-1.cdninstagram.com/v/t51.75761-19/497021579_18306545473300073_4264936472795959615_n.jpg?stp=dst-jpg_s206x206_tt6&_nc_cat=105&ccb=7-5&_nc_sid=30ff31&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy5DMyJ9&_nc_ohc=nwTlMtNlCMEQ7kNvwGLXc20&_nc_oc=AdrGG-u6bnFr5acl9G6WklqDHi4k6fz5XOLcJhF-I6muOq5Yy0QBYem0J-qQAoHhLg8&_nc_zt=24&_nc_ht=scontent-sjc3-1.cdninstagram.com&edm=AP4hL3IEAAAA&_nc_gid=VYhzyA8BCp1Lb-EvNas2NQ&_nc_tpa=Q5bMBQJn48jCC_9WypmOHUuKZyLLqZA4Ig4Qt9EN-mL57G0FrKkiXP8I08adpg3gtCOeLccxNkZPogwCCQ&oh=00_AQF0XIJgs_cCwLDfrz4np0ZyoKntcZo8wtb8ascfaFNWOw&oe=6A8C1309", "threads_biography": "베이핑 유저들을 위한 전자담배 매장✨ 위베이프 인천,경기지부\n1️⃣위베이프 부천상동점\n2️⃣위베이프 부천신중동점\n3️⃣위베이프 인천논현점\n4️⃣위베이프 인천연수점\n5️⃣위베이프 구월로데오점\n6️⃣위베이프 구월길병원점\n7️⃣인천공항점 \n👇자세한 정보와 문의는? 👇"}, "account_insights": {"likes": 1769, "replies": 1793, "reposts": 1260, "quotes": 10, "followers_count": 1072}, "demographics": {"age": {"13-17": 2, "18-24": 48, "25-34": 345, "35-44": 341, "45-54": 187, "55-64": 60, "65+": 14}, "gender": {"F": 196, "M": 389, "U": 412}, "city": {"Gyeongsan, Gyeongsangbuk-do": 4, "Gwangyang, Jeollanam-do": 4, "Jeju, Jeju-do": 11, "Wonju, Gangwon-do": 4, "Jinju, Gyeongsangnam-do": 5, "Gwangju, Gwangju": 22, "Yongin, Gyeonggi-do": 14, "Daegu, Daegu": 35, "Osan, Gyeonggi-do": 6, "Suncheon, Jeollanam-do": 4, "Busan, Busan": 59, "Seoul, Seoul": 250, "Yangju, Gyeonggi-do": 9, "Goyang, Gyeonggi-do": 18, "Pocheon, Gyeonggi-do": 4, "Pohang, Gyeongsangbuk-do": 6, "Naju, Jeollanam-do": 4, "Geoje, Gyeongsangnam-do": 6, "Namyangju, Gyeonggi-do": 11, "Gimpo, Gyeonggi-do": 9, "Hanam, Gyeonggi-do": 5, "Incheon, Incheon": 82, "Icheon, Gyeonggi-do": 4, "Jeonju, Jeollabuk-do": 8, "Hwaseong, Gyeonggi-do": 21, "Yangsan, Gyeongsangnam-do": 9, "Daejeon, Daejeon": 24, "Ansan, Gyeonggi-do": 12, "Anyang, Gyeonggi-do": 15, "Changwon, Gyeongsangnam-do": 19, "Sokcho, Gangwon-do": 5, "Cheonan, Chungcheongnam-do": 14, "Cheongju, Chungcheongbuk-do": 13, "Bucheon, Gyeonggi-do": 20, "Suwon, Gyeonggi-do": 21, "Gwangju, Gyeonggi-do": 6, "Gunsan, Jeollabuk-do": 7, "Ulsan, Ulsan": 8, "Pyeongtaek, Gyeonggi-do": 16, "Uijeongbu, Gyeonggi-do": 8, "Gimhae, Gyeongsangnam-do": 10, "Seongnam, Gyeonggi-do": 12, "Gunpo, Gyeonggi-do": 8, "Siheung, Gyeonggi-do": 10, "Paju, Gyeonggi-do": 14}, "country": {"SV": 1, "IN": 2, "JP": 8, "KR": 953, "CN": 8, "FR": 1, "UA": 1, "GT": 1, "TH": 2, "AU": 2, "PH": 1, "VN": 4, "PK": 1, "GB": 3, "US": 9}}, "posts_total": 1128, "posts_analyzable": 316, "posts_recent_days": 31, "posts_recent_count": 2, "posts": [{"id": "18387219556162485", "text": "简约的设计，\n还有愈发深沉的存在感。\n\n握在手中的瞬间，能感受到稳定的握持感和\n更加清晰的LED显示屏。\n\n5ml大容量液体，\n最大25W输出，\n1500mAh大容量电池，\n孩子气孔调节功能，\n甚至包括C型充电。\n\n基本保持不变，\n提高了完成度。\n\n现在，\n快来体验泡泡蒙·洛利波特J吧。", "media_type": "CAROUSEL_ALBUM", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-08-07T05:57:08+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DbulvDrk8o6", "insights": {"views": 12, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18106135874469693", "text": "BUBBLE MON LOLLIPOT J\n\n절제된 디자인,\n그리고 깊어진 존재감.\n\n손에 쥐는 순간 느껴지는 안정적인 그립감과\n더 선명해진 LED 디스플레이.\n\n5ml 대용량 액상,\n최대 25W 출력,\n1500mAh 대용량 배터리,\n에어홀 조절 기능,\nC-TYPE 충전까지.\n\n기본은 그대로,\n완성도는 더 높였습니다.\n\n지금,\nBUBBLE MON LOLLIPOT J를 만나보세요.", "media_type": "CAROUSEL_ALBUM", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-08-02T10:11:58+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DbiK7LDEylW", "insights": {"views": 27, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18104890747821292", "text": "VIP店舗限定モデル\n\nBUBBLEMON PA-15\nNIC 3%バージョン登場\n\nさらに高まった満足感。\nそして、好みに合わせて選べる10種類のフレーバー。\n\n■ シングル / デュアル吸引の2つのMODE\n■ 好みに合わせて選べるフレーバーラインナップ\n■ VIP店舗限定販売\n\nどこでも手に入る製品ではない、\n特別な限定モデル。\n\n🏆 今すぐVIP店舗でチェック。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-06-12T11:05:16+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DZe8evvE8a1", "insights": {"views": 32, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "17929053354322336", "text": "VIP门店专属限定版\n\nBUBBLEMON PA-15\n全新 NIC 3% 强势登场\n\n更强劲的满足感，\n10 种精选风味随心选择。\n\n✓ 单吸 / 双吸双模式切换\n✓ 丰富风味自由选择\n✓ VIP 门店限定发售\n\n不是每一家门店都能买到的\n限量特别版产品。\n\n🏆 现已登陆 VIP 门店，抢先体验！", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-06-07T05:57:01+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DZRhOsiE6o4", "insights": {"views": 28, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18370223698207042", "text": "Bubblemon Graffiti-C ユーザーの皆さまへ\n\nより強い満足感を実現し、\nGraffiti-C POD NEW 3% NIC が登場。\n\nしかし、\n今回のラインアップは特別です。\n\n全国すべての店舗で購入できる商品ではありません。\n\nVIP認定店舗限定で展開される\n特別限定ラインアップ。\n\n限られた店舗でのみ、\nいち早く手に入れることができる\n\nBubblemon Graffiti-C 3% POD\n\n探しても、\nどこにでもある商品ではありません。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-29T10:35:30+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DY618k3k-eR", "insights": {"views": 29, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "17973611880048173", "text": "【NEW ARRIVAL】\n\nBubblemon Graffiti-C POD\nNEW 3% NIC ラインアップ登場\n\nより強い満足感。\nより特別な出会い。\n\nVIP認定店舗限定で購入できる\n特別限定ラインアップ。\n\n限られた場所で、\nいち早くお楽しみください。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-29T10:34:36+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DY6118ik5EB", "insights": {"views": 27, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18103981126804207", "text": "Bubblemon Graffiti-C 用户请注意\n\n以更强烈的满足感回归的\nGraffiti-C POD NEW 3% NIC\n\n但这次的系列，格外特别。\n\n这并不是一款能在全国所有门店都见到的产品，\n而是仅限 VIP 精选门店发售的限定系列。\n\n只能在限定门店率先邂逅的\nBubblemon Graffiti-C 3% POD\n\n这不是一款随处都能找到的产品。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-26T06:16:30+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYyp673E4Fk", "insights": {"views": 21, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18413228524177811", "text": "【新品上市】\n\nBubblemon Graffiti-C POD\n全新 3% NIC 系列正式公开\n\n更强烈的满足感，\n更特别的相遇。\n\n仅限 VIP 精选门店可购买的\n限定系列\n\n于限定门店，率先邂逅。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-26T06:13:26+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYypkYdExR5", "insights": {"views": 20, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18079387583534845", "text": "VIP 매장에서만 만날 수 있는 한정판\n\nBUBBLEMON PA-15\nNIC 3% 버전 출시\n\n더 강해진 만족감,\n그리고 취향대로 고르는 10가지 플레이버\n\n■ 단일 / 이중 흡입 2가지 MODE\n■ 취향별 플레이버 구성\n■ VIP 매장 한정 판매\n\n모든 곳에서 만날 수 없는\n특별한 한정판 제품.\n\n🏆 지금 VIP 매장에서 만나보세요.", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-20T09:44:22+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYjk8Jfk7Ts", "insights": {"views": 36, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "17901739311429918", "text": "버블몬 그래피티C 유저분들 주목\n\n더 강해진 만족감으로 돌아온 \nGraffiti-C POD NEW 3% NIC\n\n하지만 이번 라인업은 특별합니다.\n\n전국 모든 매장에서 만나볼 수 있는 제품이 아닌, \n오직 VIP 선정 매장에서만 구매 가능한 한정판 라인업\n\n한정된 매장에서만 가장 먼저 만나볼 수 있는 \n버블몬 그래피티C 3% POD\n\n찾는다고 어디에나 있는 제품은 아닙니다.", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-16T12:45:49+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYZmhl3E-XI", "insights": {"views": 22, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18117304813687246", "text": "[ NEW ARRIVAL ]\n\n버블몬 Graffiti-C POD \nNEW 3% NIC 라인업 공개\n\n더 강해진 만족감, \n더 특별해진 만남.\n\n오직 VIP 선정 매장에서만 구매 가능한 \n한정판 라인업\n\n한정된 곳에서 가장 먼저 만나보세요.", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-16T12:45:14+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYZmdUEk1-T", "insights": {"views": 18, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "17879001918592854", "text": "위베이프 인천/경기에서는\n#고유가지원금 도 사용가능합니다!\n캐쉬백 낭낭하게 챙겨드리니까\n오시면 액상도 채워드리겠습니다 ~~!!\n#전자담배 #위베이프 #버블몬 #택배가능", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-12T10:30:05+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYPDz7tE4Oi", "insights": {"views": 32, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}], "totals_from_posts": true}</script>
-<script id="t-hist" type="application/json">[{"date": "2026-07-15", "views": 3}, {"date": "2026-07-16", "views": 2}, {"date": "2026-07-17", "views": 1}, {"date": "2026-07-18", "views": 30}, {"date": "2026-07-19", "views": 2}, {"date": "2026-07-20", "views": 1}, {"date": "2026-07-21", "views": 108}, {"date": "2026-07-22", "views": 1}, {"date": "2026-07-23", "views": 2}, {"date": "2026-07-24", "views": 1}, {"date": "2026-07-25", "views": 6}, {"date": "2026-07-26", "views": 1}, {"date": "2026-07-27", "views": 3}, {"date": "2026-07-28", "views": 1}, {"date": "2026-07-29", "views": 0}, {"date": "2026-07-30", "views": 6}, {"date": "2026-07-31", "views": 0}, {"date": "2026-08-01", "views": 1}, {"date": "2026-08-02", "views": 5}, {"date": "2026-08-03", "views": 2}, {"date": "2026-08-04", "views": 3}, {"date": "2026-08-05", "views": 7}, {"date": "2026-08-06", "views": 9}, {"date": "2026-08-07", "views": 4}, {"date": "2026-08-08", "views": 5}, {"date": "2026-08-09", "views": 2}, {"date": "2026-08-10", "views": 92}, {"date": "2026-08-11", "views": 1}, {"date": "2026-08-12", "views": 5}, {"date": "2026-08-13", "views": 13, "followers_count": 1067, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0}, {"date": "2026-08-14", "views": 19}, {"date": "2026-08-15", "followers_count": 1072, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "views": 6}, {"date": "2026-08-16", "views": 1, "followers_count": 1072, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0}, {"date": "2026-08-17", "views": 3, "followers_count": 1072, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0}, {"date": "2026-08-18", "views": 22, "followers_count": 1072, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0}, {"date": "2026-08-19", "views": 31, "followers_count": 1072, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0}]</script>
+<script id="t-report" type="application/json">{"generated_at": "2026-08-15T02:54:00+00:00", "profile": {"id": "27952081351123554", "username": "wevape.no01", "name": "위베이프 전자담배 인천/경기 대표지점", "threads_profile_picture_url": "https://scontent-sea5-1.cdninstagram.com/v/t51.75761-19/497021579_18306545473300073_4264936472795959615_n.jpg?stp=dst-jpg_s206x206_tt6&_nc_cat=105&ccb=7-5&_nc_sid=30ff31&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy5DMyJ9&_nc_ohc=z8NukHdUUIcQ7kNvwHV8Mm7&_nc_oc=AdpZjBiPuB24JIcRAJKIltXcX0vCobZlypDN0XtO0dNXwLCKhuNopAnm71lPmVW71cs&_nc_zt=24&_nc_ht=scontent-sea5-1.cdninstagram.com&edm=AP4hL3IEAAAA&_nc_gid=ZEVtALzRKik0HpGc4KSeJw&_nc_tpa=Q5bMBQJSIauSyXQl6LYQD7IVulZ8x6g4S7C2qfRdtr8QIw4S5rzDpQ7pk2rNljJ4AqWVKEpSHsqQ_LCLQQ&oh=00_AQEvfRLspbyCR-A6vHDPxENIVUKkvOw_zq4-0NhMmiz23w&oe=6A85B3C9", "threads_biography": "베이핑 유저들을 위한 전자담배 매장✨ 위베이프 인천,경기지부\n1️⃣위베이프 부천상동점\n2️⃣위베이프 부천신중동점\n3️⃣위베이프 인천논현점\n4️⃣위베이프 인천연수점\n5️⃣위베이프 구월로데오점\n6️⃣위베이프 구월길병원점\n7️⃣인천공항점 \n👇자세한 정보와 문의는? 👇"}, "account_insights": {"likes": 1769, "replies": 1793, "reposts": 1260, "quotes": 10, "followers_count": 1072}, "demographics": {"age": {"13-17": 2, "18-24": 48, "25-34": 346, "35-44": 341, "45-54": 187, "55-64": 60, "65+": 14}, "gender": {"F": 196, "M": 390, "U": 412}, "city": {"Chuncheon, Gangwon-do": 4, "Gwangyang, Jeollanam-do": 5, "Jeju, Jeju-do": 11, "Wonju, Gangwon-do": 4, "Jinju, Gyeongsangnam-do": 5, "Gwangju, Gwangju": 23, "Yongin, Gyeonggi-do": 17, "Daegu, Daegu": 36, "Osan, Gyeonggi-do": 6, "Busan, Busan": 59, "Seoul, Seoul": 247, "Yangju, Gyeonggi-do": 9, "Goyang, Gyeonggi-do": 18, "Pocheon, Gyeonggi-do": 4, "Pohang, Gyeongsangbuk-do": 6, "Geoje, Gyeongsangnam-do": 6, "Namyangju, Gyeonggi-do": 12, "Gumi, Gyeongsangbuk-do": 4, "Gimpo, Gyeonggi-do": 10, "Hanam, Gyeonggi-do": 5, "Incheon, Incheon": 80, "Jeonju, Jeollabuk-do": 7, "Hwaseong, Gyeonggi-do": 22, "Seogwipo, Jeju-do": 4, "Yangsan, Gyeongsangnam-do": 9, "Daejeon, Daejeon": 24, "Ansan, Gyeonggi-do": 10, "Anyang, Gyeonggi-do": 14, "Changwon, Gyeongsangnam-do": 18, "Sokcho, Gangwon-do": 5, "Cheonan, Chungcheongnam-do": 14, "Cheongju, Chungcheongbuk-do": 13, "Suwon, Gyeonggi-do": 20, "Bucheon, Gyeonggi-do": 20, "Gwangju, Gyeonggi-do": 7, "Gunsan, Jeollabuk-do": 7, "Ulsan, Ulsan": 8, "Pyeongtaek, Gyeonggi-do": 16, "Uijeongbu, Gyeonggi-do": 9, "Gimhae, Gyeongsangnam-do": 10, "Seongnam, Gyeonggi-do": 12, "Gunpo, Gyeonggi-do": 8, "Siheung, Gyeonggi-do": 12, "Gwangmyeong, Gyeonggi-do": 4, "Paju, Gyeonggi-do": 14}, "country": {"SV": 1, "IN": 2, "JP": 8, "KR": 954, "CN": 8, "UA": 1, "FR": 1, "GT": 1, "AU": 2, "TH": 2, "PH": 1, "VN": 4, "PK": 1, "GB": 3, "US": 9}}, "posts_total": 1128, "posts_analyzable": 316, "posts_recent_days": 31, "posts_recent_count": 2, "posts": [{"id": "18387219556162485", "text": "简约的设计，\n还有愈发深沉的存在感。\n\n握在手中的瞬间，能感受到稳定的握持感和\n更加清晰的LED显示屏。\n\n5ml大容量液体，\n最大25W输出，\n1500mAh大容量电池，\n孩子气孔调节功能，\n甚至包括C型充电。\n\n基本保持不变，\n提高了完成度。\n\n现在，\n快来体验泡泡蒙·洛利波特J吧。", "media_type": "CAROUSEL_ALBUM", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-08-07T05:57:08+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DbulvDrk8o6", "insights": {"views": 10, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18106135874469693", "text": "BUBBLE MON LOLLIPOT J\n\n절제된 디자인,\n그리고 깊어진 존재감.\n\n손에 쥐는 순간 느껴지는 안정적인 그립감과\n더 선명해진 LED 디스플레이.\n\n5ml 대용량 액상,\n최대 25W 출력,\n1500mAh 대용량 배터리,\n에어홀 조절 기능,\nC-TYPE 충전까지.\n\n기본은 그대로,\n완성도는 더 높였습니다.\n\n지금,\nBUBBLE MON LOLLIPOT J를 만나보세요.", "media_type": "CAROUSEL_ALBUM", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-08-02T10:11:58+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DbiK7LDEylW", "insights": {"views": 21, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18104890747821292", "text": "VIP店舗限定モデル\n\nBUBBLEMON PA-15\nNIC 3%バージョン登場\n\nさらに高まった満足感。\nそして、好みに合わせて選べる10種類のフレーバー。\n\n■ シングル / デュアル吸引の2つのMODE\n■ 好みに合わせて選べるフレーバーラインナップ\n■ VIP店舗限定販売\n\nどこでも手に入る製品ではない、\n特別な限定モデル。\n\n🏆 今すぐVIP店舗でチェック。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-06-12T11:05:16+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DZe8evvE8a1", "insights": {"views": 32, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "17929053354322336", "text": "VIP门店专属限定版\n\nBUBBLEMON PA-15\n全新 NIC 3% 强势登场\n\n更强劲的满足感，\n10 种精选风味随心选择。\n\n✓ 单吸 / 双吸双模式切换\n✓ 丰富风味自由选择\n✓ VIP 门店限定发售\n\n不是每一家门店都能买到的\n限量特别版产品。\n\n🏆 现已登陆 VIP 门店，抢先体验！", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-06-07T05:57:01+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DZRhOsiE6o4", "insights": {"views": 28, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18370223698207042", "text": "Bubblemon Graffiti-C ユーザーの皆さまへ\n\nより強い満足感を実現し、\nGraffiti-C POD NEW 3% NIC が登場。\n\nしかし、\n今回のラインアップは特別です。\n\n全国すべての店舗で購入できる商品ではありません。\n\nVIP認定店舗限定で展開される\n特別限定ラインアップ。\n\n限られた店舗でのみ、\nいち早く手に入れることができる\n\nBubblemon Graffiti-C 3% POD\n\n探しても、\nどこにでもある商品ではありません。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-29T10:35:30+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DY618k3k-eR", "insights": {"views": 29, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "17973611880048173", "text": "【NEW ARRIVAL】\n\nBubblemon Graffiti-C POD\nNEW 3% NIC ラインアップ登場\n\nより強い満足感。\nより特別な出会い。\n\nVIP認定店舗限定で購入できる\n特別限定ラインアップ。\n\n限られた場所で、\nいち早くお楽しみください。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-29T10:34:36+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DY6118ik5EB", "insights": {"views": 27, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18103981126804207", "text": "Bubblemon Graffiti-C 用户请注意\n\n以更强烈的满足感回归的\nGraffiti-C POD NEW 3% NIC\n\n但这次的系列，格外特别。\n\n这并不是一款能在全国所有门店都见到的产品，\n而是仅限 VIP 精选门店发售的限定系列。\n\n只能在限定门店率先邂逅的\nBubblemon Graffiti-C 3% POD\n\n这不是一款随处都能找到的产品。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-26T06:16:30+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYyp673E4Fk", "insights": {"views": 21, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18413228524177811", "text": "【新品上市】\n\nBubblemon Graffiti-C POD\n全新 3% NIC 系列正式公开\n\n更强烈的满足感，\n更特别的相遇。\n\n仅限 VIP 精选门店可购买的\n限定系列\n\n于限定门店，率先邂逅。", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-26T06:13:26+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYypkYdExR5", "insights": {"views": 20, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18079387583534845", "text": "VIP 매장에서만 만날 수 있는 한정판\n\nBUBBLEMON PA-15\nNIC 3% 버전 출시\n\n더 강해진 만족감,\n그리고 취향대로 고르는 10가지 플레이버\n\n■ 단일 / 이중 흡입 2가지 MODE\n■ 취향별 플레이버 구성\n■ VIP 매장 한정 판매\n\n모든 곳에서 만날 수 없는\n특별한 한정판 제품.\n\n🏆 지금 VIP 매장에서 만나보세요.", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-20T09:44:22+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYjk8Jfk7Ts", "insights": {"views": 36, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "17901739311429918", "text": "버블몬 그래피티C 유저분들 주목\n\n더 강해진 만족감으로 돌아온 \nGraffiti-C POD NEW 3% NIC\n\n하지만 이번 라인업은 특별합니다.\n\n전국 모든 매장에서 만나볼 수 있는 제품이 아닌, \n오직 VIP 선정 매장에서만 구매 가능한 한정판 라인업\n\n한정된 매장에서만 가장 먼저 만나볼 수 있는 \n버블몬 그래피티C 3% POD\n\n찾는다고 어디에나 있는 제품은 아닙니다.", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-16T12:45:49+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYZmhl3E-XI", "insights": {"views": 22, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "18117304813687246", "text": "[ NEW ARRIVAL ]\n\n버블몬 Graffiti-C POD \nNEW 3% NIC 라인업 공개\n\n더 강해진 만족감, \n더 특별해진 만남.\n\n오직 VIP 선정 매장에서만 구매 가능한 \n한정판 라인업\n\n한정된 곳에서 가장 먼저 만나보세요.", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-16T12:45:14+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYZmdUEk1-T", "insights": {"views": 18, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}, {"id": "17879001918592854", "text": "위베이프 인천/경기에서는\n#고유가지원금 도 사용가능합니다!\n캐쉬백 낭낭하게 챙겨드리니까\n오시면 액상도 채워드리겠습니다 ~~!!\n#전자담배 #위베이프 #버블몬 #택배가능", "media_type": "IMAGE", "media_product_type": "THREADS", "is_quote_post": false, "timestamp": "2026-05-12T10:30:05+0000", "permalink": "https://www.threads.com/@wevape.no01/post/DYPDz7tE4Oi", "insights": {"views": 32, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0, "shares": 0}}], "totals_from_posts": true}</script>
+<script id="t-hist" type="application/json">[{"date": "2026-07-15", "views": 3}, {"date": "2026-07-16", "views": 2}, {"date": "2026-07-17", "views": 1}, {"date": "2026-07-18", "views": 30}, {"date": "2026-07-19", "views": 2}, {"date": "2026-07-20", "views": 1}, {"date": "2026-07-21", "views": 108}, {"date": "2026-07-22", "views": 1}, {"date": "2026-07-23", "views": 2}, {"date": "2026-07-24", "views": 1}, {"date": "2026-07-25", "views": 6}, {"date": "2026-07-26", "views": 1}, {"date": "2026-07-27", "views": 3}, {"date": "2026-07-28", "views": 1}, {"date": "2026-07-29", "views": 0}, {"date": "2026-07-30", "views": 6}, {"date": "2026-07-31", "views": 0}, {"date": "2026-08-01", "views": 1}, {"date": "2026-08-02", "views": 5}, {"date": "2026-08-03", "views": 2}, {"date": "2026-08-04", "views": 3}, {"date": "2026-08-05", "views": 7}, {"date": "2026-08-06", "views": 9}, {"date": "2026-08-07", "views": 4}, {"date": "2026-08-08", "views": 5}, {"date": "2026-08-09", "views": 2}, {"date": "2026-08-10", "views": 92}, {"date": "2026-08-11", "views": 1}, {"date": "2026-08-12", "views": 5}, {"date": "2026-08-13", "views": 13, "followers_count": 1067, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0}, {"date": "2026-08-14", "views": 18}, {"date": "2026-08-15", "followers_count": 1072, "likes": 0, "replies": 0, "reposts": 0, "quotes": 0}]</script>
 <script>
 (function () {
   const report = JSON.parse(document.getElementById('t-report').textContent);
@@ -596,7 +621,8 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
   render();
 })();
 </script>
-  </main>
+    </main>
+  </div>
 </div>
 
 <script>

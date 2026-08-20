@@ -17,29 +17,29 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 CSS = """
 :root {
   color-scheme: light only;
-  --text-primary:#111111; --text-secondary:#444444; --text-muted:#6b6b6b;
-  --gridline:#e6e6e6; --border:rgba(17,17,17,0.14);
-  --series-1:#1f6fc7; --good:#046a04; --critical:#b32626;
+  --text-primary:#1A1A1A; --text-secondary:#54524B; --text-muted:#7a756a;
+  --gridline:#E7E2D6; --border:#E7E2D6;
+  --series-1:#1A1A1A; --good:#1F8A45; --critical:#C1392B;
 }
 * { box-sizing:border-box; }
-html, body { background:#ffffff; }
-body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#111111; }
+html, body { background:#F4F1E8; }
+body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#1A1A1A; }
 .period { font-size:13px; color:var(--text-secondary); margin:2px 0 20px; }
 .period b { color:var(--text-primary); }
 .period-s { font-size:11.5px; color:var(--text-muted); }
 .hero-box { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin:0 0 4px; }
-.hero-box .hn { font-size:42px; font-weight:650; line-height:1; letter-spacing:-0.02em; }
+.hero-box .hn { font-size:38px; font-weight:650; line-height:1; letter-spacing:-0.02em; }
 .hero-box .hu { font-size:17px; color:var(--text-muted); font-weight:600; }
 .hero-box .hl { font-size:13px; color:var(--text-secondary); font-weight:600; }
 .hero-s { font-size:11.5px; color:var(--text-muted); margin:0 0 16px; }
-section { border:1px solid var(--border); border-radius:10px;
+section { background:#fff; border:1px solid var(--border); border-radius:10px;
           padding:18px 18px 16px; margin-bottom:20px; }
-section h2 { font-size:16px; margin:0 0 3px; font-weight:700; letter-spacing:-0.01em; }
+section h2 { font-size:17px; margin:0 0 3px; font-weight:700; letter-spacing:-0.01em; }
 section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.6; }
 .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); gap:12px; }
-.stat-tile { border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+.stat-tile { background:#fff; border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
 .stat-tile .label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; font-weight:600; }
-.stat-tile .value { font-size:26px; font-weight:650; line-height:1.1; }
+.stat-tile .value { font-size:30px; font-weight:650; line-height:1.1; }
 .stat-tile .note { font-size:11px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
 .up { color:var(--good); } .down { color:var(--critical); }
 table { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:14px; }
@@ -49,11 +49,13 @@ th { color:var(--text-muted); font-weight:500; font-size:10.5px;
 td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
 td.cap { max-width:340px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
          color:var(--text-secondary); }
-td.strong { font-weight:650; color:var(--series-1); }
-a { color:var(--series-1); text-decoration:none; } a:hover { text-decoration:underline; }
+td.strong { font-weight:650; color:var(--text-primary); }
+a { color:#8A6A00; text-decoration:none; } a:hover { text-decoration:underline; }
 .empty { color:var(--text-muted); font-size:12.5px; padding:8px 0; margin:0; }
 .foot { font-size:11.5px; color:var(--text-muted); line-height:1.8; }
 .foot b { color:var(--text-secondary); }
+section h2::before, h3::before { content:"● "; color:#FFC800; font-size:11px; vertical-align:2px; }
+
 """
 
 
@@ -121,12 +123,13 @@ ISSUE_NOTE = """
 def build_ig():
     accs = weekly.instagram()
     if not accs:
+        lead = ''
         inner = '<p class="empty">아직 주간 요약을 만들 기록이 없습니다.</p>'
     else:
         a, b = accs[0]["start"], accs[0]["end"]
-        inner = (f'<p class="period"><b>{a} ~ {b}</b> · 지난 7일을 그 앞 7일과 비교합니다.<br>'
-                 f'<span class="period-s">숫자는 매일 아침 갱신되고, 매주 월요일 아침에 '
-                 f'한 주 요약이 알림으로 옵니다.</span></p>')
+        lead = (f'<b>{a} ~ {b}</b> · 지난 7일을 그 앞 7일과 비교합니다.<br>'
+                '숫자는 매일 아침 갱신되고, 매주 월요일 아침에 한 주 요약이 알림으로 옵니다.')
+        inner = ''
         for m in accs:
             nf = delta_note(m["followers_delta"], m["followers_pct"], "명")
             inner += f"""
@@ -144,7 +147,7 @@ def build_ig():
   {top_table(m['top'], '도달', '')}
 </section>"""
         inner += ISSUE_NOTE
-    html = layout.document("ig", "weekly", "주간 리포트", inner, CSS)
+    html = layout.document("ig", "weekly", "주간 리포트", inner, CSS, lead=lead)
     with open(os.path.join(DIR, "weekly.html"), "w", encoding="utf-8") as f:
         f.write(html)
     print(f"저장됨: weekly.html (계정 {len(accs)}개)")
@@ -153,13 +156,14 @@ def build_ig():
 def build_th():
     m = weekly.threads()
     if not m:
+        lead = ''
         inner = '<p class="empty">아직 스레드 주간 요약을 만들 기록이 없습니다.</p>'
     else:
         fd = ("증감 기록을 모으는 중입니다" if m["followers_delta"] is None
               else delta_note(m["followers_delta"], None, "명"))
-        inner = f"""<p class="period"><b>{m['start']} ~ {m['end']}</b> · 지난 7일을 그 앞 7일과 비교합니다.<br>
-<span class="period-s">숫자는 매일 아침 갱신되고, 매주 월요일 아침에 한 주 요약이 알림으로 옵니다.</span></p>
-<section>
+        lead = (f"<b>{m['start']} ~ {m['end']}</b> · 지난 7일을 그 앞 7일과 비교합니다.<br>"
+                "숫자는 매일 아침 갱신되고, 매주 월요일 아침에 한 주 요약이 알림으로 옵니다.")
+        inner = f"""<section>
   <h2>스레드</h2>
   <p class="sub">@{esc(m.get('username') or '?')} · 이번 주 올린 글 {m['posted']}개</p>
   {hero(m['react_rate'], '조회 100회당 반응 수 · 스레드는 조회수보다 반응이 노출을 만듭니다')}
@@ -172,7 +176,7 @@ def build_th():
   </div>
   {top_table(m['top'], '조회', '')}
 </section>{ISSUE_NOTE}"""
-    html = layout.document("th", "weekly", "주간 리포트", inner, CSS)
+    html = layout.document("th", "weekly", "주간 리포트", inner, CSS, lead=lead)
     with open(os.path.join(DIR, "threads-weekly.html"), "w", encoding="utf-8") as f:
         f.write(html)
     print("저장됨: threads-weekly.html")
@@ -186,8 +190,8 @@ PAST_CSS = """
 .wk-list { display:flex; flex-direction:column; gap:7px; }
 .wk { border:1px solid var(--border); border-radius:9px; padding:11px 13px;
       cursor:pointer; background:#fff; }
-.wk:hover { background:#f7f9fc; }
-.wk.on { border-color:var(--series-1); background:#f2f7fe; }
+.wk:hover { background:#FAF8F3; }
+.wk.on { border-color:var(--series-1); background:#FFF9E3; }
 .wk .t { font-size:13px; font-weight:700; }
 .wk .d { font-size:11px; color:var(--text-muted); margin-top:2px; }
 .wk .s { font-size:11px; color:var(--text-secondary); margin-top:5px; }
@@ -196,7 +200,7 @@ PAST_CSS = """
   font-family:inherit; font-size:11px; min-width:26px; height:26px; cursor:pointer;
   color:var(--text-secondary); }
 .pager button[aria-current="true"] { background:var(--series-1); border-color:var(--series-1);
-  color:#fff; font-weight:700; }
+  color:#FFC800; font-weight:700; }
 .pager button:disabled { opacity:.35; cursor:default; }
 .dim { color:var(--text-muted); }
 /* 지나간 주를 훑어보는 용도라 오른쪽 리포트는 작게 줄인다 */
@@ -304,10 +308,10 @@ def build_past(platform, out_name):
     weeks = weekly.past_weeks()
     if not weeks:
         inner = '<p class="empty">아직 지난 리포트를 만들 기록이 없습니다.</p>'
-        body_end = ""
+        lead, body_end = "", ""
     else:
-        inner = (f'<p class="period">주차를 누르면 오른쪽에 그 주 리포트가 나옵니다 · '
-                 f'모두 {len(weeks)}주</p>'
+        lead = f'주차를 누르면 오른쪽에 그 주 리포트가 나옵니다 · 모두 {len(weeks)}주'
+        inner = (
                  '<div class="two">'
                  '<div><div class="wk-list" id="wkList"></div>'
                  '<div class="pager" id="pager"></div></div>'
@@ -316,7 +320,7 @@ def build_past(platform, out_name):
                  f'{json.dumps(weeks, ensure_ascii=False)}</script>')
         body_end = PAST_JS
     html = layout.document(platform, "past", "지난 리포트", inner, CSS + PAST_CSS,
-                           body_end=body_end)
+                           body_end=body_end, lead=lead)
     with open(os.path.join(DIR, out_name), "w", encoding="utf-8") as f:
         f.write(html)
     print(f"저장됨: {out_name} ({len(weeks)}주)")

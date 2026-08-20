@@ -10,6 +10,8 @@ posts_cache.json 을 읽어 콘텐츠 분석 페이지(analysis.html)를 만든�
 용어: 참여율→반응률, 참여율(팔로워)→팔로워 반응률(참고용), 도달률→노출 범위
 
 실행: python3 build_analysis.py
+section h2::before, h3::before { content:"● "; color:#FFC800; font-size:11px; vertical-align:2px; }
+
 """
 
 import json
@@ -601,9 +603,9 @@ def render_account(a):
 
 CSS = """
 :root { color-scheme: light only;
-  --text:#111; --text2:#444; --muted:#6b6b6b; --grid:#e6e6e6; --border:rgba(17,17,17,.14);
-  --accent:#1f6fc7; --accent-soft:#cde2fb; --gray:#c9c9c9;
-  --good:#046a04; --warnc:#8a5a00; --bad:#b32626; }
+  --text:#1A1A1A; --text2:#54524B; --muted:#7a756a; --grid:#E7E2D6; --border:#E7E2D6;
+  --accent:#1A1A1A; --accent-soft:#FFF3C4; --gray:#cfc9ba;
+  --good:#1F8A45; --warnc:#8a5a00; --bad:#C1392B; }
 * { box-sizing:border-box; }
 html, body { background:#fff; }
 body { margin:0; color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
@@ -615,7 +617,7 @@ h3 { font-size:15px; margin:30px 0 3px; }
 .sub { font-size:12px; color:var(--muted); margin:0 0 14px; }
 .dim { color:var(--muted); } .nw { white-space:nowrap; }
 .verdict { display:flex; align-items:baseline; gap:13px; flex-wrap:wrap; margin-bottom:4px; }
-.hero { font-size:44px; font-weight:650; line-height:1; }
+.hero { font-size:40px; font-weight:650; line-height:1; }
 .hu { font-size:16px; color:var(--muted); font-weight:400; }
 .badge { font-size:12px; font-weight:600; padding:4px 10px; border-radius:999px; }
 .badge.good { background:#e6f4e6; color:var(--good); }
@@ -760,20 +762,20 @@ def build():
         tabbar = f'<div class="tabs" role="tablist">{"".join(tabs)}</div>' if len(made) > 1 else ""
         body = "".join(panes) or ('<section class="acct"><p class="empty">분석할 데이터가 없습니다. '
                                   'instagram_api.py 를 먼저 실행하세요.</p></section>')
-        inner = f"{head}\n{tabbar}\n{body}\n{tail}"
+        inner = f"{body}\n{tail}"
         html = layout.document("ig", page_key, title, inner, CSS,
                                updated=layout.fmt_updated(gen), body_end=TAB_JS,
-                               generated_iso=gen)
+                               generated_iso=gen, lead=head, tabs=tabbar)
         out = os.path.join(DIR, out_name)
         with open(out, "w", encoding="utf-8") as f:
             f.write(html)
         print(f"저장됨: {out_name} (계정 {len(made)}개 · 분석 게시물 {anal}개)")
 
     page("core", "analysis", "analysis.html", "콘텐츠 분석",
-         f'<p class="scope">전체 게시물 {total}개 중 인사이트 있는 {anal}개 분석</p>',
+         f'전체 게시물 {total}개 중 인사이트 있는 {anal}개 분석',
          LIMITS_HTML)
     page("detail", "detail", "analysis-detail.html", "세부 분석",
-         '<p class="scope">자주 볼 지표는 아니지만, 방향을 정할 때 참고합니다.</p>')
+         '자주 볼 지표는 아니지만, 방향을 정할 때 참고합니다.')
 
 
 if __name__ == "__main__":
