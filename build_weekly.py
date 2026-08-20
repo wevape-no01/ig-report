@@ -23,7 +23,8 @@ CSS = """
 }
 * { box-sizing:border-box; }
 html, body { background:#F4F1E8; }
-body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#1A1A1A; }
+/* 글꼴은 layout.py(SHELL_CSS)에서 한 곳으로 정한다. 여기서 다시 정하지 않는다. */
+body { margin:0; color:#1A1A1A; }
 .period { font-size:13px; color:var(--text-secondary); margin:2px 0 20px; }
 .period b { color:var(--text-primary); }
 .period-s { font-size:11.5px; color:var(--text-muted); }
@@ -34,7 +35,7 @@ body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; colo
 .hero-s { font-size:11.5px; color:var(--text-muted); margin:0 0 16px; }
 section { background:#fff; border:1px solid var(--border); border-radius:10px;
           padding:18px 18px 16px; margin-bottom:20px; }
-section h2 { font-size:17px; margin:0 0 3px; font-weight:700; letter-spacing:-0.01em; }
+section h2 { font-size:20px; margin:0 0 3px; font-weight:700; letter-spacing:-0.01em; }
 section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.6; }
 .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); gap:12px; }
 .stat-tile { background:#fff; border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
@@ -206,7 +207,7 @@ PAST_CSS = """
 /* 지나간 주를 훑어보는 용도라 오른쪽 리포트는 작게 줄인다 */
 #wkCard .period { font-size:12px; margin:0 0 12px; }
 #wkCard section { padding:14px 15px 13px; margin-bottom:13px; }
-#wkCard section h2 { font-size:14px; }
+#wkCard section h2 { font-size:20px; }
 #wkCard section .sub { font-size:11px; margin:0 0 11px; }
 #wkCard .kpi-row { grid-template-columns:repeat(auto-fit,minmax(128px,1fr)); gap:9px; }
 #wkCard .stat-tile { padding:10px 12px; border-radius:9px; }

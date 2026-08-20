@@ -14,6 +14,9 @@
   --sh-line:#E7E2D6; --sh-border:#E7E2D6; --sh-accent:#1A1A1A;
 }
 * { box-sizing:border-box; }
+/* 어떤 페이지는 스크롤바가 생기고 어떤 페이지는 안 생겨서, 페이지를 옮길 때마다
+   화면이 좌우로 흔들렸다. 스크롤바 자리를 항상 비워 두어 위치를 고정한다. */
+html { scrollbar-gutter:stable; overflow-y:scroll; }
 html, body { background:var(--bg); }
 body { margin:0; color:var(--ink); font-size:14px;
        font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,sans-serif; }
@@ -176,7 +179,8 @@ details.tg .tg-body { padding:15px 16px 16px; }
 }
 * { box-sizing:border-box; }
 html, body { background:#F4F1E8; }
-body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#1A1A1A; }
+/* 글꼴은 layout.py(SHELL_CSS)에서 한 곳으로 정한다. 여기서 다시 정하지 않는다. */
+body { margin:0; color:#1A1A1A; }
 .period { font-size:13px; color:var(--text-secondary); margin:2px 0 20px; }
 .period b { color:var(--text-primary); }
 .period-s { font-size:11.5px; color:var(--text-muted); }
@@ -187,7 +191,7 @@ body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; colo
 .hero-s { font-size:11.5px; color:var(--text-muted); margin:0 0 16px; }
 section { background:#fff; border:1px solid var(--border); border-radius:10px;
           padding:18px 18px 16px; margin-bottom:20px; }
-section h2 { font-size:17px; margin:0 0 3px; font-weight:700; letter-spacing:-0.01em; }
+section h2 { font-size:20px; margin:0 0 3px; font-weight:700; letter-spacing:-0.01em; }
 section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.6; }
 .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); gap:12px; }
 .stat-tile { background:#fff; border:1px solid var(--border); border-radius:10px; padding:14px 16px; }

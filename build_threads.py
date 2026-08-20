@@ -40,7 +40,8 @@ CSS = """
 }
 * { box-sizing:border-box; }
 html, body { background:#F4F1E8; }
-body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#1A1A1A; }
+/* 글꼴은 layout.py(SHELL_CSS)에서 한 곳으로 정한다. 여기서 다시 정하지 않는다. */
+body { margin:0; color:#1A1A1A; }
 .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
            gap:12px; margin:0 0 20px; }
 .stat-tile { background:#fff; border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
@@ -51,7 +52,7 @@ section { background:#fff; border:1px solid var(--border); border-radius:10px;
           padding:18px 18px 16px; margin-bottom:20px; }
 .sec-h { display:flex; justify-content:space-between; align-items:flex-start;
          gap:12px; flex-wrap:wrap; margin-bottom:4px; }
-section h2 { font-size:17px; margin:0; color:var(--text-primary); font-weight:700;
+section h2 { font-size:18px; margin:0; color:var(--text-primary); font-weight:700;
              letter-spacing:-0.01em; }
 section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.55; }
 .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }

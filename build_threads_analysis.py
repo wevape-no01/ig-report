@@ -253,13 +253,14 @@ CSS = """
 :root { --text:#1A1A1A; --text2:#54524B; --muted:#7a756a; --grid:#E7E2D6;
   --border:#E7E2D6; --accent:#1A1A1A; --accent-soft:#FFF3C4; --gray:#cfc9ba;
   --good:#1F8A45; --warnc:#8a5a00; --bad:#C1392B; }
-.scope { font-size:12px; color:var(--muted); margin:-8px 0 20px; }
+/* .scope 여백은 layout.py 에서 한 곳으로 정한다 (페이지마다 위치가 어긋나던 원인) */
+.scope { color:var(--muted); }
 section.acct { background:#fff; border:1px solid var(--border); border-radius:12px;
                padding:20px 22px; margin-bottom:26px; }
 .acct-h { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px;
   padding-bottom:12px; border-bottom:1px solid var(--grid); }
-.acct-h h2 { font-size:19px; margin:0; }
-h3 { font-size:15px; margin:30px 0 3px; }
+.acct-h h2 { font-size:20px; margin:0; }
+h3 { font-size:18px; margin:30px 0 3px; }
 .sub { font-size:12px; color:var(--muted); margin:0 0 14px; }
 .dim { color:var(--muted); } .nw { white-space:nowrap; }
 .verdict { display:flex; align-items:baseline; gap:13px; flex-wrap:wrap; margin-bottom:4px; }

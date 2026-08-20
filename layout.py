@@ -46,6 +46,9 @@ SHELL_CSS = """
   --sh-line:#E7E2D6; --sh-border:#E7E2D6; --sh-accent:#1A1A1A;
 }
 * { box-sizing:border-box; }
+/* 어떤 페이지는 스크롤바가 생기고 어떤 페이지는 안 생겨서, 페이지를 옮길 때마다
+   화면이 좌우로 흔들렸다. 스크롤바 자리를 항상 비워 두어 위치를 고정한다. */
+html { scrollbar-gutter:stable; overflow-y:scroll; }
 html, body { background:var(--bg); }
 body { margin:0; color:var(--ink); font-size:14px;
        font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,sans-serif; }
