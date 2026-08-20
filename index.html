@@ -196,8 +196,13 @@ details.tg .tg-body { padding:15px 16px 16px; }
   .gridline { stroke:var(--gridline); stroke-width:1; }
   .line-path { fill:none; stroke:var(--series-1); stroke-width:2;
                stroke-linecap:round; stroke-linejoin:round; }
-  .dot { fill:var(--series-1); }
-  .bar { fill:var(--series-1); }
+  /* 선 아래를 연노랑으로 채워 추세가 한눈에 들어오게 한다 */
+  .area { fill:rgba(255,200,0,.20); stroke:none; }
+  .dot { fill:#B8B0A0; }
+  .dot.last { fill:#FFC800; stroke:#1A1A1A; stroke-width:1.4; }
+  /* 막대는 기본을 연한 베이지로 두고 가장 큰 것 하나만 노랑으로 강조 */
+  .bar { fill:#D9D2C2; }
+  .bar.hl { fill:#FFC800; }
   .bar-label { fill:var(--text-secondary); font-size:11px; }
   .split { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
   @media (max-width:680px) { .split { grid-template-columns:1fr; } }
@@ -207,8 +212,9 @@ details.tg .tg-body { padding:15px 16px 16px; }
           gap:9px; margin-bottom:8px; font-size:12px; }
   .srow-k { color:var(--text-secondary); }
   .srow-b { background:var(--gridline); border-radius:3px; height:9px; overflow:hidden; }
-  .srow-b i { display:block; height:100%; background:var(--series-1); border-radius:3px; }
-  .srow-b i.g { background:var(--gray); }
+  .srow-b i { display:block; height:100%; background:#D9D2C2; border-radius:3px; }
+  .srow-b i.hl { background:#FFC800; }
+  .srow-b i.g { background:#C3BCAB; }
   .srow-v { text-align:right; font-variant-numeric:tabular-nums; }
   .big { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:2px; }
   .big .n { font-size:36px; font-weight:650; line-height:1; }
@@ -484,10 +490,14 @@ details.tg .tg-body { padding:15px 16px 16px; }
       const y = T + (g/3)*plot;
       s += `<line class="gridline" x1="${L}" y1="${y.toFixed(1)}" x2="${W-R}" y2="${y.toFixed(1)}"/>`;
     }
+    // 가장 큰 막대 하나만 노랑으로 칠한다 (나머지는 연한 베이지)
+    let maxI = 0;
+    rows.forEach((r,i) => { if (r.value > rows[maxI].value) maxI = i; });
     rows.forEach((r,i) => {
       const cx = L + slot*i + slot/2;
       const h = Math.max((r.value/max)*plot, r.value > 0 ? 2 : 0);
-      s += `<rect class="bar" x="${(cx-bw/2).toFixed(1)}" y="${(T+plot-h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3"/>`;
+      const bc = (i === maxI && r.value > 0) ? 'bar hl' : 'bar';
+      s += `<rect class="${bc}" x="${(cx-bw/2).toFixed(1)}" y="${(T+plot-h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3"/>`;
       s += `<text class="val-label" x="${cx.toFixed(1)}" y="${(T+plot-h-7).toFixed(1)}" text-anchor="middle">${r.value.toLocaleString()}</text>`;
       s += `<text class="axis-label" x="${cx.toFixed(1)}" y="${H-B+20}" text-anchor="middle">${r.label}</text>`;
     });
@@ -524,10 +534,14 @@ details.tg .tg-body { padding:15px 16px 16px; }
     }
     s += `<text class="axis-label" x="${PAD-8}" y="${T+4}" text-anchor="end">${max.toLocaleString()}</text>`;
     s += `<text class="axis-label" x="${PAD-8}" y="${T+plot+4}" text-anchor="end">${min.toLocaleString()}</text>`;
-    s += `<path class="line-path" d="${pts.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ')}"/>`;
+    const dPath = pts.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+    // 선 아래 영역을 연노랑으로 채운다
+    s += `<path class="area" d="${dPath} L${pts[pts.length-1].x.toFixed(1)},${(T+plot).toFixed(1)} L${pts[0].x.toFixed(1)},${(T+plot).toFixed(1)} Z"/>`;
+    s += `<path class="line-path" d="${dPath}"/>`;
     const every = pts.length <= 8 ? 1 : Math.ceil(pts.length/7);
     pts.forEach((p,i) => {
-      s += `<circle class="dot" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" data-i="${i}"/>`;
+      const isLast = i === pts.length-1;
+      s += `<circle class="dot${isLast ? ' last' : ''}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${isLast ? 4.5 : 3.5}" data-i="${i}"/>`;
       if (i === 0 || i === pts.length-1 || i % every === 0) {
         s += `<text class="axis-label" x="${p.x.toFixed(1)}" y="${H-B+20}" text-anchor="middle">${p.label}</text>`;
       }
@@ -580,7 +594,7 @@ details.tg .tg-body { padding:15px 16px 16px; }
       const f = dayRow.reach_follower, nf = dayRow.reach_non_follower, tot = f + nf;
       const row = (k, v, gray) => `
         <div class="srow"><div class="srow-k">${k}</div>
-          <div class="srow-b"><i class="${gray?'g':''}" style="width:${(v/tot*100).toFixed(1)}%"></i></div>
+          <div class="srow-b"><i class="${gray?'g':'hl'}" style="width:${(v/tot*100).toFixed(1)}%"></i></div>
           <div class="srow-v">${n(v)} · ${Math.round(v/tot*100)}%</div></div>`;
       left = TITLE1 +
         `<p class="mini-s">${dayRow.date} 계정을 본 사람. 비팔로워가 많을수록 새 사람에게 퍼진 것입니다.</p>

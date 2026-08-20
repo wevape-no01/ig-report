@@ -168,11 +168,13 @@ def bars(rows, label, sub, emphasize_first=False, max_rows=None, narrow=False):
         BH, GAP, L, R, W = 28, 11, 150, 200, 860
     bw = W - L - R
     mx = max(r["er"] for r in rows) or 1
+    best_i = max(range(len(rows)), key=lambda i: rows[i]["er"]) if rows else -1
     out = []
     for i, r in enumerate(rows):
         y = i * (BH + GAP) + 6
         w = max(r["er"] / mx * bw, 2)
-        cls = "bar" if (not emphasize_first or i == 0) else "bar muted"
+        # 가장 큰 막대 하나만 노랑으로 강조하고 나머지는 연한 베이지로 둔다.
+        cls = "bar hl" if i == best_i else "bar"
         out.append(f'<text class="cat" x="0" y="{y+BH/2+4:.0f}">{esc(label(r))}</text>')
         out.append(f'<rect class="{cls}" x="{L}" y="{y}" width="{w:.1f}" height="{BH}" rx="4"/>')
         out.append(f'<text class="val" x="{L+w+8:.1f}" y="{y+BH/2+4:.0f}">{r["er"]:.1f}%'
@@ -629,7 +631,7 @@ h3 { font-size:15px; margin:30px 0 3px; }
 .kpi .cmp { font-size:11px; margin-top:6px; color:var(--muted); }
 .kpi .cmp.good { color:var(--good); } .kpi .cmp.bad { color:var(--bad); }
 svg { display:block; width:100%; height:auto; overflow:visible; }
-.bar { fill:var(--accent); } .bar.muted { fill:var(--gray); }
+.bar { fill:#D9D2C2; } .bar.hl { fill:#FFC800; } .bar.muted { fill:#D9D2C2; }
 .cat { fill:var(--text2); font-size:12px; }
 .val { fill:var(--text); font-size:12px; font-weight:600; }
 .dim2 { fill:var(--muted); font-weight:400; font-size:11px; }
@@ -638,8 +640,8 @@ svg { display:block; width:100%; height:auto; overflow:visible; }
 .ln { fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 .dot { fill:var(--accent); }
 .legend { display:flex; gap:16px; font-size:11.5px; color:var(--text2); margin-top:11px; }
-.sw { display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--accent); margin-right:5px; }
-.sw.g { background:var(--gray); }
+.sw { display:inline-block; width:10px; height:10px; border-radius:2px; background:#FFC800; margin-right:5px; }
+.sw.g { background:#D9D2C2; }
 table { width:100%; border-collapse:collapse; font-size:12.5px; }
 th, td { text-align:left; padding:8px 7px; border-bottom:1px solid var(--grid); }
 th { font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; font-weight:500; }
@@ -685,15 +687,17 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .tabs .tab[aria-selected="true"] { background:var(--accent); border-color:var(--accent);
   color:#fff; font-weight:600; }
 .pane[hidden] { display:none; }
-.ins-box, .chk-box { border:1px solid var(--border); border-radius:10px;
-  padding:14px 16px; margin-bottom:11px; }
-.ins-box { border-left:3px solid var(--accent); background:#fbfcfe; }
-.chk-box { border-left:3px solid #d9a520; background:#fffdf6; }
-.ins-t, .chk-t { font-size:13px; font-weight:700; margin-bottom:9px; }
-.ins-t { color:var(--accent); } .chk-t { color:#8a5a00; }
-.ins-box p, .chk-box p { font-size:13.5px; line-height:1.7; margin:0 0 9px; }
+.ins-box, .chk-box { border-radius:10px; padding:15px 17px; margin-bottom:11px; }
+.ins-box { background:#FFFBEF; border:1px solid #F2E4B4; border-left:5px solid #FFC800; }
+.chk-box { background:#FFF6F4; border:1px solid #F0D6CF; border-left:5px solid #C1392B; }
+.ins-t, .chk-t { font-size:14px; font-weight:700; margin-bottom:10px; }
+.ins-t { color:var(--accent); } .chk-t { color:#A33224; }
+.ins-box p, .chk-box p { font-size:14px; line-height:1.75; margin:0 0 10px; color:#2B2924; }
 .ins-box p:last-child, .chk-box p:last-child { margin-bottom:0; }
-.ins-box b { color:var(--accent); } .chk-box b { color:#8a5a00; }
+/* 핵심 문장은 노랑 형광펜으로 — 검은 글씨 사이에서 바로 눈에 띄게 */
+.ins-box b { font-weight:700; color:var(--accent);
+  background:linear-gradient(transparent 58%, #FFE788 58%); padding:0 2px; }
+.chk-box b { font-weight:700; color:#A33224; }
 .champ { border:1px solid var(--border); border-left:3px solid var(--accent);
   border-radius:10px; padding:14px 16px; margin-bottom:14px; background:#fbfcfe; }
 .champ-h { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; font-size:14px; }
