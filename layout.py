@@ -184,12 +184,16 @@ details.tg .tg-body { padding:15px 16px 16px; }
   .brand { padding-bottom:14px; margin-bottom:12px; }
   .menu { display:flex; flex-wrap:wrap; gap:5px; }
   .menu a { margin:0; padding:7px 12px; border:1px solid #333; border-radius:999px; }
-  .menu a.sub { margin-left:0; }
+  /* 하위 메뉴(- 지난 리포트 / - 세부 분석)는 옆에 붙지 않고 항상 아랫줄을 통째로 쓴다.
+     옆에 붙으면 다음 메뉴가 밀려나 폰·태블릿에서 찾기 어려워진다. */
+  .menu a.sub { flex:0 0 100%; margin-left:0; text-align:left;
+                border-color:#2a2a2a; background:#1f1f1f; }
   .topbar { padding:0 14px; }
   .plat { gap:18px; }
   .ext { padding:6px 11px; font-size:12px; }
   .main { padding:18px 14px 56px; }
-  .toasts { right:10px; left:10px; width:auto; top:66px; }
+  /* 폰에서는 팝업이 위쪽 메뉴를 가려서 아래쪽에 띄운다 */
+  .toasts { right:10px; left:10px; width:auto; top:auto; bottom:12px; }
   /* 폰에서 넓은 표는 표 안에서만 옆으로 밀리게 한다 (페이지 전체가 밀리지 않도록) */
   table { display:block; width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
 }
