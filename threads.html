@@ -277,12 +277,6 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
 <div class="kpi-row" id="kpis"></div>
 
 <section>
-  <div class="sec-h"><h2>누적 반응</h2></div>
-  <p class="sub" id="subTotals"></p>
-  <div class="kpi-row" id="totals" style="margin:0"></div>
-</section>
-
-<section>
   <div class="sec-h">
     <h2>조회수</h2>
     <div class="seg" id="segViews">
@@ -565,12 +559,8 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
         <div class="value">${n(avg)}</div>
         <div class="note">최근 한 달 · 글 ${rv.length}개 평균</div></div>`;
 
-    const T = [['좋아요','likes'],['답글','replies'],['리포스트','reposts'],['인용','quotes']];
-    document.getElementById('subTotals').textContent =
-      '글 ' + n(report.posts_analyzable) + '개 · 전체 기간 누적';
-    document.getElementById('totals').innerHTML = T.map(([ko,k]) =>
-      `<div class="stat-tile"><div class="label">${ko}</div>
-         <div class="value">${n(ins[k])}</div></div>`).join('');
+    // 누적 반응(좋아요·답글·리포스트·인용)은 하루 사이에 의미 있게 변하지 않아
+    // 일일 리포트에서 뺐다. [콘텐츠 분석] > [세부 분석] 아래쪽에서 볼 수 있다.
 
     document.getElementById('subViews').textContent =
       GRAN_NOTE[gran];

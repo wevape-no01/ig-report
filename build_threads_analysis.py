@@ -367,6 +367,13 @@ def build():
     a_views = avg(posts, lambda p: p["views"])
     tot_views = sum(p["views"] for p in posts)
     tot_react = sum(p["react"] for p in posts)
+    # 반응 종류별 누적 — 일일 리포트에서 옮겨 온 값 (세부 분석 아래쪽에 둔다)
+    react_kinds = [("좋아요", "likes"), ("답글", "replies"),
+                   ("리포스트", "reposts"), ("인용", "quotes"), ("공유", "shares")]
+    react_tot = {k: sum(p.get(k) or 0 for p in posts) for _, k in react_kinds}
+    react_tot_html = "".join(
+        f'<div class="kpi"><div class="lbl">{ko}</div>'
+        f'<div class="v">{react_tot[k]:,}</div></div>' for ko, k in react_kinds)
     has_react = tot_react > 0
     rr = tot_react / tot_views * 100 if tot_views else 0
     exposure = a_views / followers * 100 if followers else 0
@@ -563,6 +570,11 @@ def build():
   <h3>팔로워 구성</h3>
   <p class="sub">스레드가 추정한 값입니다</p>
   <div class="demos">{demo_html}</div>
+
+  <h3>누적 반응</h3>
+  <p class="sub">분석 글 {n}개 · 전체 기간 합계 {tot_react:,}건. 계속 쌓이기만 하는 값이라
+    그날그날의 성과보다는 계정 규모를 가늠할 때 봅니다.</p>
+  <div class="kpis">{react_tot_html}</div>
 
   <h3>참고 지표</h3>
   <p class="sub">표본이 적어 참고용입니다.</p>
