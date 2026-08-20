@@ -218,6 +218,9 @@ details.tg .tg-body { padding:15px 16px 16px; }
   .srow-v { text-align:right; font-variant-numeric:tabular-nums; }
   .big { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:2px; }
   .big .n { font-size:36px; font-weight:650; line-height:1; }
+  /* 신규 팔로워 유입 — 늘면 초록, 줄면 빨강 */
+  .big .n.up { color:var(--good); }
+  .big .n.down { color:var(--critical); }
   .big .u { font-size:14px; color:var(--text-muted); }
   table { width:100%; border-collapse:collapse; font-size:12.5px; }
   th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--gridline);
@@ -573,7 +576,7 @@ details.tg .tg-body { padding:15px 16px 16px; }
     const dl = (last && prev) ? last.new_followers - prev.new_followers : null;
 
     const head = last
-      ? `<div class="big"><span class="n">${last.new_followers > 0 ? '+' : ''}${n(last.new_followers)}</span>
+      ? `<div class="big"><span class="n ${last.new_followers > 0 ? 'up' : last.new_followers < 0 ? 'down' : ''}">${last.new_followers > 0 ? '+' : ''}${n(last.new_followers)}</span>
            <span class="u">명 · ${last.date}</span>
            <span class="u ${dl>0?'delta up':dl<0?'delta down':''}">${
              (dl === null || dl === 0) ? '' : (dl>0?'+':'') + dl + '명 (전일 대비)'}</span></div>

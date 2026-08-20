@@ -74,6 +74,9 @@ svg { display:block; width:100%; height:auto; overflow:visible; }
 .dot.last { fill:#FFC800; stroke:#1A1A1A; stroke-width:1.4; }
 .big { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:2px; }
 .big .n { font-size:36px; font-weight:650; line-height:1; }
+/* 신규 팔로워 유입 — 늘면 초록, 줄면 빨강 */
+.big .n.up { color:var(--good); }
+.big .n.down { color:var(--critical); }
 .big .u { font-size:14px; color:var(--text-muted); }
 .up { color:var(--good); } .down { color:var(--critical); }
 .mini-s { font-size:11.5px; color:var(--text-muted); margin:2px 0 14px; line-height:1.7; }
@@ -433,14 +436,8 @@ __CLICK_SEC__
       </div>
       <p class="mini-s">최근 ${span}일 <b>${sign(sum)}명</b> · 현재 총 ${n(last.total)}명</p>`;
 
-    const trs = d.slice(-14).reverse().map(r => `<tr>
-        <td>${r.date}${r.days > 1 ? ` <span class="dim">(${r.days}일치)</span>` : ''}</td>
-        <td class="num strong ${cls(r.delta)}">${sign(r.delta)}</td>
-        <td class="num">${n(r.total)}</td></tr>`).join('');
-
-    box.innerHTML = head +
-      `<table><thead><tr><th>날짜</th><th class="num">증감</th>
-        <th class="num">총 팔로워</th></tr></thead><tbody>${trs}</tbody></table>` + FOL_LIMIT;
+    // 날짜별 증감 표는 바로 아래 [팔로워 수 추이] 그래프에서 같은 내용을 볼 수 있어 뺐다.
+    box.innerHTML = head + FOL_LIMIT;
   }
 
   const iv = p => p.insights || {};
