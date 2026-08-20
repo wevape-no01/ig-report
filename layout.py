@@ -184,9 +184,11 @@ details.tg .tg-body { padding:15px 16px 16px; }
   .brand { padding-bottom:14px; margin-bottom:12px; }
   .menu { display:flex; flex-wrap:wrap; gap:5px; }
   .menu a { margin:0; padding:7px 12px; border:1px solid #333; border-radius:999px; }
-  /* 하위 메뉴(- 지난 리포트 / - 세부 분석)는 옆에 붙지 않고 항상 아랫줄을 통째로 쓴다.
-     옆에 붙으면 다음 메뉴가 밀려나 폰·태블릿에서 찾기 어려워진다. */
-  .menu a.sub { flex:0 0 100%; margin-left:0; text-align:left;
+  /* 하위 메뉴(- 지난 리포트 / - 세부 분석)는 상위 메뉴 사이에 끼지 않는다.
+     order 로 맨 뒤로 보내고 한 줄을 통째로 써서, 상위 메뉴 세 개가 첫 줄에
+     그대로 남고 하위 메뉴만 그 아랫줄에 나타나게 한다. */
+  .menu a { order:0; }
+  .menu a.sub { order:9; flex:0 0 100%; margin-left:0; text-align:left;
                 border-color:#2a2a2a; background:#1f1f1f; }
   .topbar { padding:0 14px; }
   .plat { gap:18px; }
