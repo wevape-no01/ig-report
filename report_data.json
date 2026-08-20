@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-19T22:56:27+00:00",
+ "generated_at": "2026-08-20T23:00:20+00:00",
  "accounts": [
   {
    "label": "위베이프",
@@ -12,15 +12,15 @@
     "id": "17841409002160818"
    },
    "account_insights": {
-    "reach": 14,
-    "views": 98,
-    "profile_views": 18,
+    "reach": 10,
+    "views": 107,
+    "profile_views": 13,
     "accounts_engaged": 0,
     "total_interactions": 0,
+    "reach_non_follower": 6,
     "reach_follower": 4,
-    "reach_non_follower": 10,
     "views_follower": 9,
-    "views_non_follower": 89
+    "views_non_follower": 98
    },
    "demographics": {
     "age": {
@@ -34,8 +34,8 @@
     },
     "gender": {
      "F": 99,
-     "M": 276,
-     "U": 275
+     "M": 277,
+     "U": 274
     },
     "city": {
      "Jeju, Jeju-do": 4,
@@ -44,23 +44,24 @@
      "Yongin, Gyeonggi-do": 3,
      "Daegu, Daegu": 10,
      "Osan, Gyeonggi-do": 4,
-     "Busan, Busan": 39,
-     "Seoul, Seoul": 131,
+     "Busan, Busan": 40,
+     "Seoul, Seoul": 132,
      "Yangju, Gyeonggi-do": 4,
      "Goyang, Gyeonggi-do": 11,
      "Dongducheon, Gyeonggi-do": 3,
-     "Guangzhou, Guangdong": 8,
+     "Guangzhou, Guangdong": 9,
      "Namyangju, Gyeonggi-do": 5,
      "Gimpo, Gyeonggi-do": 6,
      "Shanghai, Shanghai": 21,
      "Iksan, Jeollabuk-do": 3,
      "Beijing, Beijing": 7,
      "Hanam, Gyeonggi-do": 8,
-     "Incheon, Incheon": 82,
-     "Hwaseong, Gyeonggi-do": 5,
+     "Incheon, Incheon": 80,
+     "Jeonju, Jeollabuk-do": 2,
+     "Hwaseong, Gyeonggi-do": 4,
      "Asan, Chungcheongnam-do": 3,
      "Daejeon, Daejeon": 19,
-     "Hefei, Anhui": 3,
+     "Longjiang, Guangdong": 2,
      "Ansan, Gyeonggi-do": 4,
      "Changwon, Gyeongsangnam-do": 3,
      "Anyang, Gyeonggi-do": 4,
@@ -68,29 +69,28 @@
      "Cheongju, Chungcheongbuk-do": 9,
      "Suwon, Gyeonggi-do": 10,
      "Bucheon, Gyeonggi-do": 11,
-     "Xuzhou, Jiangsu": 2,
      "Nanning, Guangxi": 2,
+     "Dongguan, Guangdong": 2,
      "Ulsan, Ulsan": 5,
      "Pyeongtaek, Gyeonggi-do": 7,
-     "Shenzhen, Guangdong": 28,
+     "Shenzhen, Guangdong": 26,
      "Uijeongbu, Gyeonggi-do": 5,
      "Seongnam, Gyeonggi-do": 9,
+     "Torrance, California": 2,
      "Chongqing, Chongqing": 3,
-     "Siheung, Gyeonggi-do": 5,
+     "Siheung, Gyeonggi-do": 6,
      "Gwangmyeong, Gyeonggi-do": 3,
      "Osaka, Osaka Prefecture": 2,
      "Foshan, Guangdong": 2,
-     "zhengzhou, Henan": 3,
-     "Paju, Gyeonggi-do": 2,
-     "Changsha, Hunan": 2
+     "zhengzhou, Henan": 4
     },
     "country": {
      "DE": 2,
      "HK": 1,
      "TW": 2,
      "RU": 3,
-     "RW": 1,
      "JO": 1,
+     "RW": 1,
      "JP": 12,
      "FR": 4,
      "BR": 1,
@@ -110,8 +110,8 @@
      "ES": 3,
      "AT": 1,
      "AU": 1,
-     "PH": 2,
      "VN": 2,
+     "PH": 2,
      "NG": 1
     }
    },
@@ -130,8 +130,8 @@
      "like_count": 5,
      "comments_count": 1,
      "insights": {
-      "reach": 90,
-      "views": 203,
+      "reach": 92,
+      "views": 206,
       "saved": 0,
       "shares": 0,
       "total_interactions": 6,
@@ -143,7 +143,8 @@
       "2026-08-16": 0,
       "2026-08-17": 0,
       "2026-08-18": 0,
-      "2026-08-19": 0
+      "2026-08-19": 0,
+      "2026-08-20": 0
      }
     },
     {
@@ -156,8 +157,8 @@
      "like_count": 8,
      "comments_count": 2,
      "insights": {
-      "reach": 136,
-      "views": 347,
+      "reach": 138,
+      "views": 349,
       "saved": 0,
       "shares": 0,
       "total_interactions": 10,
@@ -169,7 +170,8 @@
       "2026-08-16": 0,
       "2026-08-17": 0,
       "2026-08-18": 0,
-      "2026-08-19": 0
+      "2026-08-19": 0,
+      "2026-08-20": 0
      }
     },
     {
@@ -375,13 +377,12 @@
     "id": "17841414418204375"
    },
    "account_insights": {
-    "reach": 1,
-    "views": 4,
+    "reach": 0,
+    "views": 1,
     "profile_views": 0,
-    "accounts_engaged": 1,
-    "total_interactions": 1,
-    "reach_follower": 1,
-    "views_follower": 4
+    "accounts_engaged": 0,
+    "total_interactions": 0,
+    "views_follower": 1
    },
    "demographics": {},
    "posts_total": 14,
@@ -408,7 +409,8 @@
       "follows": 0
      },
      "follows_log": {
-      "2026-08-19": 0
+      "2026-08-19": 0,
+      "2026-08-20": 0
      }
     },
     {
@@ -433,7 +435,8 @@
       "2026-08-16": 0,
       "2026-08-17": 0,
       "2026-08-18": 0,
-      "2026-08-19": 0
+      "2026-08-19": 0,
+      "2026-08-20": 0
      }
     },
     {
@@ -459,7 +462,8 @@
       "2026-08-16": 0,
       "2026-08-17": 0,
       "2026-08-18": 0,
-      "2026-08-19": 0
+      "2026-08-19": 0,
+      "2026-08-20": 0
      }
     },
     {
@@ -485,7 +489,8 @@
       "2026-08-16": 0,
       "2026-08-17": 0,
       "2026-08-18": 0,
-      "2026-08-19": 0
+      "2026-08-19": 0,
+      "2026-08-20": 0
      }
     },
     {
@@ -511,7 +516,8 @@
       "2026-08-16": 0,
       "2026-08-17": 0,
       "2026-08-18": 0,
-      "2026-08-19": 0
+      "2026-08-19": 0,
+      "2026-08-20": 0
      }
     },
     {
@@ -537,7 +543,8 @@
       "2026-08-16": 0,
       "2026-08-17": 0,
       "2026-08-18": 0,
-      "2026-08-19": 0
+      "2026-08-19": 0,
+      "2026-08-20": 0
      }
     },
     {
@@ -563,7 +570,8 @@
       "2026-08-16": 0,
       "2026-08-17": 0,
       "2026-08-18": 0,
-      "2026-08-19": 0
+      "2026-08-19": 0,
+      "2026-08-20": 0
      }
     },
     {
@@ -589,7 +597,8 @@
       "2026-08-16": 0,
       "2026-08-17": 0,
       "2026-08-18": 0,
-      "2026-08-19": 0
+      "2026-08-19": 0,
+      "2026-08-20": 0
      }
     },
     {
@@ -615,7 +624,8 @@
       "2026-08-16": 0,
       "2026-08-17": 0,
       "2026-08-18": 0,
-      "2026-08-19": 0
+      "2026-08-19": 0,
+      "2026-08-20": 0
      }
     },
     {
