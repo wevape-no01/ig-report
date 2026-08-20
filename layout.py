@@ -78,7 +78,16 @@ body { margin:0; color:var(--ink); font-size:14px;
           padding:16px 2px 14px; border-bottom:3px solid transparent; letter-spacing:-.01em; }
 .plat a:hover { color:var(--side-text); }
 .plat a.on { color:var(--yellow); border-bottom-color:var(--yellow); font-weight:750; }
+/* 오른쪽: 외부 링크 버튼 + 알림 종 */
+.top-right { display:flex; align-items:center; gap:12px; }
+.ext { display:inline-flex; align-items:center; gap:5px; font-size:13px; font-weight:650;
+       color:var(--side-text); text-decoration:none; border:1px solid #3a3a3a;
+       border-radius:999px; padding:7px 14px; white-space:nowrap; }
+.ext span { font-size:11px; color:#8f8a7e; }
+.ext:hover { border-color:var(--yellow); color:var(--yellow); }
+.ext:hover span { color:var(--yellow); }
 
+.col { min-width:0; }   /* 넓은 표·그래프가 폰에서 화면 밖으로 밀지 않게 */
 .main { padding:24px 30px 64px; max-width:1120px; min-width:0; }
 .page-h { display:flex; justify-content:space-between; align-items:baseline;
           flex-wrap:wrap; gap:10px; border-bottom:1px solid var(--line);
@@ -177,8 +186,12 @@ details.tg .tg-body { padding:15px 16px 16px; }
   .menu a { margin:0; padding:7px 12px; border:1px solid #333; border-radius:999px; }
   .menu a.sub { margin-left:0; }
   .topbar { padding:0 14px; }
+  .plat { gap:18px; }
+  .ext { padding:6px 11px; font-size:12px; }
   .main { padding:18px 14px 56px; }
   .toasts { right:10px; left:10px; width:auto; top:66px; }
+  /* 폰에서 넓은 표는 표 안에서만 옆으로 밀리게 한다 (페이지 전체가 밀리지 않도록) */
+  table { display:block; width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
 }
 """
 
@@ -224,6 +237,10 @@ STALE_JS = """<script>
 </script>"""
 
 
+# 상단 오른쪽 외부 링크 (SNS 발행 관리 페이지)
+EXT_NAME = "발행 관리"
+EXT_LINK = "https://znsl132-lang.github.io/wevape-web/"
+
 NOTICE_HTML = """
   <div class="bell-wrap">
     <button class="bell" id="bell" aria-label="알림" aria-expanded="false">
@@ -240,7 +257,9 @@ NOTICE_HTML = """
 # 읽음 여부는 이 브라우저에만 저장한다. 서버에 기록하지 않는다.
 NOTICE_JS = """<script>
 (function () {
-  var KEY = 'wevape-sns-read';
+  var KEY  = 'wevape-sns-read';   // 읽은 알림
+  var SKEY = 'wevape-sns-shown';  // 팝업으로 이미 띄운 알림 (기기별)
+  var POPUP_DAYS = 7;             // 이보다 오래된 알림은 팝업으로 띄우지 않는다
   var bell = document.getElementById('bell');
   if (!bell) return;
   var panel = document.getElementById('panel');
@@ -257,6 +276,23 @@ NOTICE_JS = """<script>
     try { localStorage.setItem(KEY, JSON.stringify(a.slice(-80))); } catch (e) {}
   }
   function isRead(id) { return readIds().indexOf(id) !== -1; }
+  function shownIds() {
+    try { return JSON.parse(localStorage.getItem(SKEY) || '[]') || []; }
+    catch (e) { return []; }
+  }
+  function markShown(id) {
+    var a = shownIds();
+    if (a.indexOf(id) === -1) {
+      a.push(id);
+      try { localStorage.setItem(SKEY, JSON.stringify(a.slice(-80))); } catch (e) {}
+    }
+  }
+  // '2026-08-17 07:50' 형태를 날짜로 읽는다. 못 읽으면 오래된 것으로 보지 않는다.
+  function tooOld(n) {
+    var t = Date.parse(String(n.at || '').replace(' ', 'T'));
+    if (isNaN(t)) return false;
+    return (Date.now() - t) > POPUP_DAYS * 86400000;
+  }
   function markRead(id) {
     var a = readIds();
     if (a.indexOf(id) === -1) { a.push(id); saveIds(a); }
@@ -288,7 +324,12 @@ NOTICE_JS = """<script>
       el.onclick = function () {
         var n = items.filter(function (x) { return x.id === el.dataset.id; })[0];
         markRead(el.dataset.id);
-        if (n && n.link) window.open(n.link, '_blank', 'noopener');
+        if (n && n.link) {
+          // 폰에서 window.open 이 막히는 경우가 있어 링크를 직접 만들어 연다
+          var a = document.createElement('a');
+          a.href = n.link; a.target = '_blank'; a.rel = 'noopener';
+          document.body.appendChild(a); a.click(); a.remove();
+        }
       };
     });
   }
@@ -296,17 +337,24 @@ NOTICE_JS = """<script>
   // 버튼을 누르지 않아도 안 읽은 알림은 팝업으로 바로 뜬다 (최대 3개)
   function popup() {
     if (!stack) return;
-    items.filter(function (n) { return !isRead(n.id); }).slice(0, 3).forEach(function (n) {
+    items.filter(function (n) {
+      // 안 읽었고, 이 기기에서 아직 안 띄웠고, 7일이 지나지 않은 것만 팝업으로 띄운다.
+      return !isRead(n.id) && shownIds().indexOf(n.id) === -1 && !tooOld(n);
+    }).slice(0, 3).forEach(function (n) {
+      markShown(n.id);
       var d = document.createElement('div');
       d.className = 'toast ' + n.level;
       d.innerHTML = '<button class="toast-close" aria-label="닫기">&times;</button>' +
         '<div class="t">' + esc(n.title) + '</div>' +
         (n.body ? '<div class="b">' + esc(n.body) + '</div>' : '') +
         '<div class="r"><button class="ok on">읽음</button>' +
-        (n.link ? '<a href="' + esc(n.link) + '">열어보기</a>' : '') + '</div>';
+        (n.link ? '<a href="' + esc(n.link) + '" target="_blank" rel="noopener">열어보기</a>' : '') + '</div>';
       // X 는 이번만 숨기기 — 안 읽은 상태는 그대로 남는다
       d.querySelector('.toast-close').onclick = function () { d.remove(); };
       d.querySelector('.ok').onclick = function () { markRead(n.id); d.remove(); };
+      // '열어보기'로 넘어갈 때도 읽음으로 처리한다 (이게 빠져 있어서 계속 안 읽음이었다)
+      var go = d.querySelector('.r a');
+      if (go) go.onclick = function () { markRead(n.id); d.remove(); };
       stack.appendChild(d);
     });
   }
@@ -378,7 +426,10 @@ def document(platform, page, page_title, inner, page_css="",
   <div class="col">
     <header class="topbar">
       <nav class="plat">{plat_links}</nav>
+      <div class="top-right">
+        <a class="ext" href="{EXT_LINK}" target="_blank" rel="noopener">{EXT_NAME}<span>↗</span></a>
 {NOTICE_HTML}
+      </div>
     </header>
     <main class="main">
       <div class="page-h"><h1>{_esc(page_title)}</h1>
