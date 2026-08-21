@@ -123,6 +123,8 @@ PAGE_CSS = """
   .seg button[aria-pressed="true"] { background:var(--series-1); color:#FFC800; font-weight:650; }
   svg { display:block; width:100%; height:auto; overflow:visible; }
   .axis-label { fill:var(--text-muted); font-size:10.5px; }
+  /* x축 오른쪽 끝 단위 표시 */
+  .unit-label { fill:var(--text-muted); font-size:10px; }
   .val-label { fill:var(--text-primary); font-size:11px; font-weight:600; }
   .gridline { stroke:var(--gridline); stroke-width:1; }
   /* 선은 검정 대신 연노랑 계열로. 너무 강조되지 않게 낮춘다. */
@@ -342,7 +344,8 @@ BODY = """
 
     drawBars(document.getElementById('viewsChart'), bucket(hist, 'views', granViews, 'sum'));
     drawNewFollowers(hist, posts, ins);
-    drawLine(document.getElementById('followerChart'), bucket(hist, 'followers_count', granFol, 'last'));
+    drawLine(document.getElementById('followerChart'),
+             bucket(hist, 'followers_count', granFol, 'last'), X_UNIT[granFol]);
     drawTable(acc, posts);
   }
 
@@ -412,9 +415,12 @@ BODY = """
   }
 
   // ---- 꺾은선 그래프 ----
-  function drawLine(svg, rows) {
+  // x축 눈금이 무엇을 뜻하는지 오른쪽 끝에 단위를 적어 준다
+  const X_UNIT = { day: '(월/일)', week: '(주 시작일)', month: '(월)' };
+
+  function drawLine(svg, rows, unit) {
     const tip = document.getElementById('tip');
-    const W = 860, H = 240, T = 30, B = 34, PAD = 44;
+    const W = 860, H = 240, T = 30, B = 46, PAD = 44;   // B: 날짜 줄 + 단위 줄 두 줄
     if (!rows.length) {
       svg.setAttribute('viewBox', '0 0 860 70');
       svg.innerHTML = `<text class="axis-label" x="430" y="40" text-anchor="middle">아직 기록이 없습니다</text>`;
@@ -456,6 +462,9 @@ BODY = """
         s += `<text class="val-label" x="${p.x.toFixed(1)}" y="${(p.y-10).toFixed(1)}" text-anchor="middle">${p.value.toLocaleString()}</text>`;
       }
     });
+    if (unit) {
+      s += `<text class="unit-label" x="${W-6}" y="${H-6}" text-anchor="end">${unit}</text>`;
+    }
     svg.innerHTML = s;
 
     svg.querySelectorAll('circle.dot').forEach(c => {

@@ -62,6 +62,8 @@ section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-
 .seg button[aria-pressed="true"] { background:var(--series-1); color:#FFC800; font-weight:650; }
 svg { display:block; width:100%; height:auto; overflow:visible; }
 .axis-label { fill:var(--text-muted); font-size:10.5px; }
+/* x축 오른쪽 끝 단위 표시 */
+.unit-label { fill:var(--text-muted); font-size:10px; }
 .val-label { fill:var(--text-primary); font-size:11px; font-weight:600; }
 .gridline { stroke:var(--gridline); stroke-width:1; }
 /* 막대는 기본을 연한 베이지로 두고 가장 큰 것 하나만 노랑으로 강조 */
@@ -347,8 +349,11 @@ __CLICK_SEC__
       ({label: (+k.slice(5)) + '월', value: m.get(k)}));
   }
 
-  function drawLine(svg, rows) {
-    const W = 860, H = 240, T = 30, B = 34, PAD = 48;
+  // x축 눈금이 무엇을 뜻하는지 오른쪽 끝에 단위를 적어 준다
+  const X_UNIT = { day: '(월/일)', week: '(주 시작일)', month: '(월)' };
+
+  function drawLine(svg, rows, unit) {
+    const W = 860, H = 240, T = 30, B = 46, PAD = 48;   // B: 날짜 줄 + 단위 줄 두 줄
     if (!rows.length) {
       svg.setAttribute('viewBox','0 0 860 70');
       svg.innerHTML = `<text class="axis-label" x="430" y="40" text-anchor="middle">아직 기록이 없습니다</text>`;
@@ -390,6 +395,9 @@ __CLICK_SEC__
       if (pts.length <= 8)
         s += `<text class="val-label" x="${p.x.toFixed(1)}" y="${(p.y-10).toFixed(1)}" text-anchor="middle">${p.value.toLocaleString()}</text>`;
     });
+    if (unit) {
+      s += `<text class="unit-label" x="${W-6}" y="${H-6}" text-anchor="end">${unit}</text>`;
+    }
     svg.innerHTML = s;
   }
 
@@ -481,7 +489,7 @@ __CLICK_SEC__
     drawNewFollowers();
     document.getElementById('subFollowers').textContent =
       FOL_NOTE[granFol];
-    drawLine(document.getElementById('followerChart'), folSeries(granFol));
+    drawLine(document.getElementById('followerChart'), folSeries(granFol), X_UNIT[granFol]);
 
     drawTable();
   }
