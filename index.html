@@ -468,7 +468,7 @@ details.tg .tg-body { padding:15px 16px 16px; }
     drawBars(document.getElementById('viewsChart'), bucket(hist, 'views', granViews, 'sum'));
     drawNewFollowers(hist, posts, ins);
     drawLine(document.getElementById('followerChart'),
-             bucket(hist, 'followers_count', granFol, 'last'), X_UNIT[granFol]);
+             bucket(hist, 'followers_count', granFol, 'last'), X_UNIT[granFol], '(명)');
     drawTable(acc, posts);
   }
 
@@ -538,10 +538,24 @@ details.tg .tg-body { padding:15px 16px 16px; }
   }
 
   // ---- 꺾은선 그래프 ----
-  // x축 눈금이 무엇을 뜻하는지 오른쪽 끝에 단위를 적어 준다
+  // 축이 무엇을 뜻하는지 x축 오른쪽 끝 / y축 왼쪽 위에 단위를 적어 준다
   const X_UNIT = { day: '(월/일)', week: '(주 시작일)', month: '(월)' };
 
-  function drawLine(svg, rows, unit) {
+  // y축 눈금을 "딱 떨어지는 숫자"로 만든다 (716·718·720·722 처럼)
+  function niceTicks(mn, mx, n) {
+    const raw = (mx - mn) / n || 1;
+    const e = Math.pow(10, Math.floor(Math.log10(raw)));
+    const f = raw / e;
+    const step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * e;
+    const lo = Math.floor(mn / step) * step;
+    let hi = Math.ceil(mx / step) * step;
+    if (hi === lo) hi = lo + step;
+    const ticks = [];
+    for (let v = lo; v <= hi + step * 1e-6; v += step) ticks.push(Math.round(v));
+    return { lo, hi, ticks };
+  }
+
+  function drawLine(svg, rows, unit, yUnit) {
     const tip = document.getElementById('tip');
     const W = 860, H = 240, T = 30, B = 46, PAD = 44;   // B: 날짜 줄 + 단위 줄 두 줄
     if (!rows.length) {
@@ -557,19 +571,25 @@ details.tg .tg-body { padding:15px 16px 16px; }
       return;
     }
     const vals = rows.map(r => r.value);
-    const min = Math.min(...vals), max = Math.max(...vals), range = (max-min) || 1;
+    const ax = niceTicks(Math.min(...vals), Math.max(...vals), 3);
+    const min = ax.lo, max = ax.hi, range = (max-min) || 1;
     const plot = H - T - B;
     const stepX = (W - PAD*2) / (rows.length - 1);
     const pts = rows.map((r,i) => ({
       x: PAD + i*stepX, y: T + plot - ((r.value-min)/range)*plot, ...r }));
+    const yOf = v => T + plot - ((v-min)/range)*plot;
 
     let s = '';
-    for (let g = 0; g <= 3; g++) {
-      const y = T + (g/3)*plot;
+    // 눈금마다 가로선 + 값을 적는다
+    ax.ticks.forEach(t => {
+      const y = yOf(t);
       s += `<line class="gridline" x1="${PAD}" y1="${y.toFixed(1)}" x2="${W-PAD}" y2="${y.toFixed(1)}"/>`;
+      s += `<text class="axis-label" x="${PAD-8}" y="${(y+3.5).toFixed(1)}" text-anchor="end">${t.toLocaleString()}</text>`;
+    });
+    // y축 단위 — x축 단위와 같은 간격(20px)만큼 눈금에서 띄운다
+    if (yUnit) {
+      s += `<text class="unit-label" x="${PAD-8}" y="${T-18.6}" text-anchor="end">${yUnit}</text>`;
     }
-    s += `<text class="axis-label" x="${PAD-8}" y="${T+4}" text-anchor="end">${max.toLocaleString()}</text>`;
-    s += `<text class="axis-label" x="${PAD-8}" y="${T+plot+4}" text-anchor="end">${min.toLocaleString()}</text>`;
     const dPath = pts.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
     // 선 아래 영역을 연노랑으로 채운다
     s += `<path class="area" d="${dPath} L${pts[pts.length-1].x.toFixed(1)},${(T+plot).toFixed(1)} L${pts[0].x.toFixed(1)},${(T+plot).toFixed(1)} Z"/>`;
