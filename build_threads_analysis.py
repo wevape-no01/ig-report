@@ -310,7 +310,9 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
       margin-bottom:6px; font-size:11.5px; }
 .dm-k { color:var(--text2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .dm-bar { background:var(--grid); border-radius:3px; height:8px; overflow:hidden; }
-.dm-bar i { display:block; height:100%; background:var(--accent); border-radius:3px; }
+/* 팔로워 구성은 참고용이라 연하게. 가장 큰 항목만 연노랑으로 표시한다. */
+.dm-bar i { display:block; height:100%; background:#D9D2C2; border-radius:3px; }
+.dm-bar i.hl { background:#FFDE7A; }
 .dm-v { text-align:right; font-variant-numeric:tabular-nums; }
 .limits { font-size:12.5px; color:var(--text2); line-height:1.75; }
 .ins-box, .chk-box { border-radius:10px; padding:15px 17px; margin-bottom:11px; }
@@ -496,8 +498,9 @@ def build():
         mx = max((v or 0) for _, v in items) or 1
         rows = "".join(
             f'<div class="dm"><span class="dm-k">{esc(k)}</span>'
-            f'<span class="dm-bar"><i style="width:{(v or 0)/mx*100:.0f}%"></i></span>'
-            f'<span class="dm-v">{v}</span></div>' for k, v in items)
+            f'<span class="dm-bar"><i class="{"hl" if i == 0 else ""}" '
+            f'style="width:{(v or 0)/mx*100:.0f}%"></i></span>'
+            f'<span class="dm-v">{v}</span></div>' for i, (k, v) in enumerate(items))
         return f'<div class="dm-box"><div class="dm-t">{esc(title)}</div>{rows}</div>'
     demo_html = ("".join([demo_block("연령", demo.get("age")), demo_block("성별", demo.get("gender")),
                           demo_block("도시", demo.get("city")), demo_block("국가", demo.get("country"))])
