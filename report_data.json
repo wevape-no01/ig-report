@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-20T23:00:20+00:00",
+ "generated_at": "2026-08-21T22:55:56+00:00",
  "accounts": [
   {
    "label": "위베이프",
@@ -7,26 +7,26 @@
     "username": "wevape.no01",
     "name": "위베이프 전자담배 인천/경기 대표지점",
     "followers_count": 721,
-    "follows_count": 1252,
+    "follows_count": 1253,
     "media_count": 240,
     "id": "17841409002160818"
    },
    "account_insights": {
-    "reach": 10,
-    "views": 107,
-    "profile_views": 13,
+    "reach": 5,
+    "views": 31,
+    "profile_views": 7,
     "accounts_engaged": 0,
     "total_interactions": 0,
-    "reach_non_follower": 6,
-    "reach_follower": 4,
-    "views_follower": 9,
-    "views_non_follower": 98
+    "reach_follower": 2,
+    "reach_non_follower": 3,
+    "views_follower": 5,
+    "views_non_follower": 26
    },
    "demographics": {
     "age": {
      "13-17": 1,
      "18-24": 37,
-     "25-34": 241,
+     "25-34": 242,
      "35-44": 215,
      "45-54": 114,
      "55-64": 37,
@@ -35,33 +35,32 @@
     "gender": {
      "F": 99,
      "M": 277,
-     "U": 274
+     "U": 275
     },
     "city": {
      "Jeju, Jeju-do": 4,
      "Jinju, Gyeongsangnam-do": 3,
      "Gwangju, Gwangju": 10,
      "Yongin, Gyeonggi-do": 3,
-     "Daegu, Daegu": 10,
+     "Daegu, Daegu": 11,
      "Osan, Gyeonggi-do": 4,
      "Busan, Busan": 40,
      "Seoul, Seoul": 132,
      "Yangju, Gyeonggi-do": 4,
      "Goyang, Gyeonggi-do": 11,
      "Dongducheon, Gyeonggi-do": 3,
-     "Guangzhou, Guangdong": 9,
+     "Guangzhou, Guangdong": 10,
      "Namyangju, Gyeonggi-do": 5,
      "Gimpo, Gyeonggi-do": 6,
      "Shanghai, Shanghai": 21,
      "Iksan, Jeollabuk-do": 3,
      "Beijing, Beijing": 7,
      "Hanam, Gyeonggi-do": 8,
-     "Incheon, Incheon": 80,
-     "Jeonju, Jeollabuk-do": 2,
+     "Incheon, Incheon": 81,
+     "Icheon, Gyeonggi-do": 2,
      "Hwaseong, Gyeonggi-do": 4,
      "Asan, Chungcheongnam-do": 3,
      "Daejeon, Daejeon": 19,
-     "Longjiang, Guangdong": 2,
      "Ansan, Gyeonggi-do": 4,
      "Changwon, Gyeongsangnam-do": 3,
      "Anyang, Gyeonggi-do": 4,
@@ -69,20 +68,21 @@
      "Cheongju, Chungcheongbuk-do": 9,
      "Suwon, Gyeonggi-do": 10,
      "Bucheon, Gyeonggi-do": 11,
-     "Nanning, Guangxi": 2,
-     "Dongguan, Guangdong": 2,
      "Ulsan, Ulsan": 5,
      "Pyeongtaek, Gyeonggi-do": 7,
-     "Shenzhen, Guangdong": 26,
+     "Shenzhen, Guangdong": 25,
      "Uijeongbu, Gyeonggi-do": 5,
      "Seongnam, Gyeonggi-do": 9,
      "Torrance, California": 2,
+     "Yangzhou, Jiangsu": 2,
      "Chongqing, Chongqing": 3,
-     "Siheung, Gyeonggi-do": 6,
+     "Shenyang, Liaoning": 2,
+     "Siheung, Gyeonggi-do": 5,
      "Gwangmyeong, Gyeonggi-do": 3,
      "Osaka, Osaka Prefecture": 2,
      "Foshan, Guangdong": 2,
-     "zhengzhou, Henan": 4
+     "zhengzhou, Henan": 5,
+     "Changsha, Hunan": 2
     },
     "country": {
      "DE": 2,
@@ -105,7 +105,7 @@
      "IR": 1,
      "GR": 1,
      "IT": 2,
-     "CN": 112,
+     "CN": 113,
      "MY": 5,
      "ES": 3,
      "AT": 1,
@@ -130,8 +130,8 @@
      "like_count": 5,
      "comments_count": 1,
      "insights": {
-      "reach": 92,
-      "views": 206,
+      "reach": 94,
+      "views": 211,
       "saved": 0,
       "shares": 0,
       "total_interactions": 6,
@@ -144,7 +144,8 @@
       "2026-08-17": 0,
       "2026-08-18": 0,
       "2026-08-19": 0,
-      "2026-08-20": 0
+      "2026-08-20": 0,
+      "2026-08-21": 0
      }
     },
     {
@@ -171,7 +172,8 @@
       "2026-08-17": 0,
       "2026-08-18": 0,
       "2026-08-19": 0,
-      "2026-08-20": 0
+      "2026-08-20": 0,
+      "2026-08-21": 0
      }
     },
     {
@@ -373,23 +375,46 @@
     "name": "wevape",
     "followers_count": 4,
     "follows_count": 9,
-    "media_count": 14,
+    "media_count": 15,
     "id": "17841414418204375"
    },
    "account_insights": {
-    "reach": 0,
-    "views": 1,
-    "profile_views": 0,
-    "accounts_engaged": 0,
-    "total_interactions": 0,
-    "views_follower": 1
+    "reach": 1,
+    "views": 3,
+    "profile_views": 1,
+    "accounts_engaged": 1,
+    "total_interactions": 2,
+    "reach_follower": 1,
+    "views_follower": 3
    },
    "demographics": {},
-   "posts_total": 14,
-   "posts_analyzable": 9,
+   "posts_total": 15,
+   "posts_analyzable": 10,
    "posts_recent_days": 31,
    "posts_recent_count": 11,
    "posts": [
+    {
+     "id": "18147865138547422",
+     "caption": "韓国旅行の途中に、ちょっと寄り道。🇰🇷✨\n\n仁川・クウォルドンでVAPEショップを探すなら、\nWEVAPE ロデオ店へ。\n\nイェスルフェグァン駅 6番出口から徒歩約5分。🚶\n旅行やショッピングの途中にも立ち寄りやすい\nVAPE SHOPです。\n\nRELX・WAKA・BUBBLEMONをはじめ、\nGraffitiシリーズなど、\n韓国で人気のアイテムを豊富に取り揃えています。\n\n日本語でのご案内もOK！🇯🇵\n初めての方でも安心して\nお買い物をお楽しみいただけます。\n\n━━━━━━━━━━━━━━\n\n📍 WEVAPE ロデオ店\n🚉 イェスルフェグァン駅 6番出口から徒歩約5分\n🚗 地下駐車場利用可能・1時間無料\n💬 日本語対応OK\n🕥 OPEN 10:30 / CLOSE 22:00\n\n韓国旅行や仁川でのショッピングの途中に、\nお気に入りのVAPEを探しに来ませんか？🛍️✨\n\n皆さまのご来店をお待ちしております。",
+     "media_type": "IMAGE",
+     "media_product_type": "FEED",
+     "timestamp": "2026-08-21T05:45:54+0000",
+     "permalink": "https://www.instagram.com/p/DcSnlDkEk_s/",
+     "like_count": 0,
+     "comments_count": 1,
+     "insights": {
+      "reach": 1,
+      "views": 2,
+      "saved": 0,
+      "shares": 0,
+      "total_interactions": 1,
+      "profile_visits": 1,
+      "follows": 0
+     },
+     "follows_log": {
+      "2026-08-21": 0
+     }
+    },
     {
      "id": "18090645815217722",
      "caption": "韓国旅行の途中に、気軽に立ち寄れる。🇰🇷✨\n\n富川でVAPEショップを探すなら、\nWEVAPE チュンドン店へ。\n\nシンジュンドン駅から徒歩約6分。🚶\n旅行やショッピングの途中にも立ち寄りやすい\nVAPE SHOPです。\n\nRELX・WAKA・BUBBLEMONをはじめ、\nGraffitiシリーズなど、\n韓国で人気のアイテムを豊富に取り揃えています。\n\n日本語でのご案内もOK！🇯🇵\n初めての方でも安心して\nお買い物をお楽しみいただけます。\n\n━━━━━━━━━━━━━━\n\n📍 WEVAPE チュンドン店\n🚉 シンジュンドン駅 3番出口から徒歩約6分\n🚗 地下駐車場利用可能・1時間無料\n💬 日本語対応OK\n🕥 OPEN 10:30 / CLOSE 22:00\n\n韓国旅行の途中に、\nお気に入りのVAPEを探してみませんか？🛍️✨\n\n皆さまのご来店をお待ちしております。",
@@ -410,7 +435,8 @@
      },
      "follows_log": {
       "2026-08-19": 0,
-      "2026-08-20": 0
+      "2026-08-20": 0,
+      "2026-08-21": 0
      }
     },
     {
@@ -424,7 +450,7 @@
      "comments_count": 1,
      "insights": {
       "reach": 1,
-      "views": 3,
+      "views": 4,
       "saved": 0,
       "shares": 0,
       "total_interactions": 1,
@@ -436,7 +462,8 @@
       "2026-08-17": 0,
       "2026-08-18": 0,
       "2026-08-19": 0,
-      "2026-08-20": 0
+      "2026-08-20": 0,
+      "2026-08-21": 0
      }
     },
     {
@@ -463,7 +490,8 @@
       "2026-08-17": 0,
       "2026-08-18": 0,
       "2026-08-19": 0,
-      "2026-08-20": 0
+      "2026-08-20": 0,
+      "2026-08-21": 0
      }
     },
     {
@@ -490,7 +518,8 @@
       "2026-08-17": 0,
       "2026-08-18": 0,
       "2026-08-19": 0,
-      "2026-08-20": 0
+      "2026-08-20": 0,
+      "2026-08-21": 0
      }
     },
     {
@@ -517,7 +546,8 @@
       "2026-08-17": 0,
       "2026-08-18": 0,
       "2026-08-19": 0,
-      "2026-08-20": 0
+      "2026-08-20": 0,
+      "2026-08-21": 0
      }
     },
     {
@@ -544,7 +574,8 @@
       "2026-08-17": 0,
       "2026-08-18": 0,
       "2026-08-19": 0,
-      "2026-08-20": 0
+      "2026-08-20": 0,
+      "2026-08-21": 0
      }
     },
     {
@@ -571,7 +602,8 @@
       "2026-08-17": 0,
       "2026-08-18": 0,
       "2026-08-19": 0,
-      "2026-08-20": 0
+      "2026-08-20": 0,
+      "2026-08-21": 0
      }
     },
     {
@@ -598,7 +630,8 @@
       "2026-08-17": 0,
       "2026-08-18": 0,
       "2026-08-19": 0,
-      "2026-08-20": 0
+      "2026-08-20": 0,
+      "2026-08-21": 0
      }
     },
     {
@@ -625,7 +658,8 @@
       "2026-08-17": 0,
       "2026-08-18": 0,
       "2026-08-19": 0,
-      "2026-08-20": 0
+      "2026-08-20": 0,
+      "2026-08-21": 0
      }
     },
     {
@@ -648,18 +682,6 @@
      "timestamp": "2026-07-21T09:07:14+0000",
      "permalink": "https://www.instagram.com/p/DbDJ-ihEhKd/",
      "like_count": 2,
-     "comments_count": 1,
-     "insights": {},
-     "no_insights": true
-    },
-    {
-     "id": "18110680414967000",
-     "caption": "CHOOSE YOUR VIBE.\n\nその日の気分に合わせて、\nカラーを選ぶ。\n\n落ち着いたブラック。\nやさしいパステル。\n存在感のあるレッド。\n\n7つのカラー、\n7つのムード。\n\nあなたらしい一台を、\nGraffiti-IIと。\n\n━━━━━━━━━━━━━━\n\n🎨 7 Color Lineup\n\n▫️Pastel White\n▫️Pastel Yellow\n▫️Pastel Pink\n▫️Pastel Blue\n▫️Pastel Green\n▫️Winter Red\n▫️Pastel Black\n\nあなたなら、どのカラーを選びますか？✨",
-     "media_type": "IMAGE",
-     "media_product_type": "FEED",
-     "timestamp": "2026-07-19T10:38:44+0000",
-     "permalink": "https://www.instagram.com/p/Da-K276kgn8/",
-     "like_count": 1,
      "comments_count": 1,
      "insights": {},
      "no_insights": true

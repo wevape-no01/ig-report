@@ -304,7 +304,7 @@
   },
   {
    "date": "2026-08-20",
-   "reach": 10,
+   "reach": 4,
    "new_followers": 0,
    "views": 107,
    "followers_count": 721,
@@ -313,6 +313,18 @@
    "reach_non_follower": 6,
    "views_follower": 9,
    "views_non_follower": 98
+  },
+  {
+   "date": "2026-08-21",
+   "reach": 5,
+   "new_followers": 0,
+   "views": 31,
+   "followers_count": 721,
+   "media_count": 240,
+   "reach_follower": 2,
+   "reach_non_follower": 3,
+   "views_follower": 5,
+   "views_non_follower": 26
   }
  ],
  "wevape_japan": [
@@ -585,13 +597,24 @@
   },
   {
    "date": "2026-08-20",
-   "reach": 0,
+   "reach": 1,
    "views": 1,
    "followers_count": 4,
    "media_count": 14,
    "reach_follower": null,
    "reach_non_follower": null,
    "views_follower": 1,
+   "views_non_follower": null
+  },
+  {
+   "date": "2026-08-21",
+   "reach": 1,
+   "views": 3,
+   "followers_count": 4,
+   "media_count": 15,
+   "reach_follower": 1,
+   "reach_non_follower": null,
+   "views_follower": 3,
    "views_non_follower": null
   }
  ]
