@@ -68,12 +68,12 @@ svg { display:block; width:100%; height:auto; overflow:visible; }
 .bar { fill:#D9D2C2; }
 .bar.hl { fill:#FFCE33; }
 /* 선 아래는 아주 옅게만 채운다 */
-.area { fill:rgba(255,206,51,.18); stroke:none; }
+.area { fill:rgba(255,222,122,.16); stroke:none; }
 /* 선은 검정 대신 연노랑 계열로. 너무 강조되지 않게 낮춘다. */
-.line-path { fill:none; stroke:#D9A700; stroke-width:2.4;
+.line-path { fill:none; stroke:#E8C24A; stroke-width:2.4;
              stroke-linecap:round; stroke-linejoin:round; }
-.dot { fill:#D9A700; }
-.dot.last { fill:#FFCE33; stroke:#C9A227; stroke-width:1.6; }
+.dot { fill:#E8C24A; }
+.dot.last { fill:#FFDE7A; stroke:#C9A227; stroke-width:1.6; }
 .big { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:2px; }
 .big .n { font-size:36px; font-weight:650; line-height:1; }
 /* 신규 팔로워 유입 — 늘면 초록, 줄면 빨강 */
