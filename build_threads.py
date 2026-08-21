@@ -66,13 +66,14 @@ svg { display:block; width:100%; height:auto; overflow:visible; }
 .gridline { stroke:var(--gridline); stroke-width:1; }
 /* 막대는 기본을 연한 베이지로 두고 가장 큰 것 하나만 노랑으로 강조 */
 .bar { fill:#D9D2C2; }
-.bar.hl { fill:#FFC800; }
-/* 선 아래를 연노랑으로 채워 추세가 한눈에 들어오게 한다 */
-.area { fill:rgba(255,200,0,.20); stroke:none; }
-.line-path { fill:none; stroke:var(--series-1); stroke-width:2;
+.bar.hl { fill:#FFDE7A; }
+/* 선 아래는 아주 옅게만 채운다 */
+.area { fill:rgba(255,222,122,.16); stroke:none; }
+/* 선은 검정 대신 연노랑 계열로. 너무 강조되지 않게 낮춘다. */
+.line-path { fill:none; stroke:#E8C24A; stroke-width:2.4;
              stroke-linecap:round; stroke-linejoin:round; }
-.dot { fill:#B8B0A0; }
-.dot.last { fill:#FFC800; stroke:#1A1A1A; stroke-width:1.4; }
+.dot { fill:#E8C24A; }
+.dot.last { fill:#FFDE7A; stroke:#C9A227; stroke-width:1.6; }
 .big { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:2px; }
 .big .n { font-size:36px; font-weight:650; line-height:1; }
 /* 신규 팔로워 유입 — 늘면 초록, 줄면 빨강 */
@@ -118,7 +119,7 @@ details.tg[open] summary { border-bottom:1px solid var(--gridline); }
 .dm-k { color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .dm-bar { background:var(--gridline); border-radius:3px; height:8px; overflow:hidden; }
 .dm-bar i { display:block; height:100%; background:#D9D2C2; border-radius:3px; }
-.dm-bar i.hl { background:#FFC800; }
+.dm-bar i.hl { background:#FFDE7A; }
 .dm-v { text-align:right; font-variant-numeric:tabular-nums; }
 .setup { border:1px solid #f0dca0; background:#fff8e1; color:#6b5300;
          border-radius:10px; padding:18px 20px; font-size:13.5px; line-height:1.75; }
