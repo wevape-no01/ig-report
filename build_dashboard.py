@@ -126,15 +126,15 @@ PAGE_CSS = """
   .val-label { fill:var(--text-primary); font-size:11px; font-weight:600; }
   .gridline { stroke:var(--gridline); stroke-width:1; }
   /* 선은 검정 대신 연노랑 계열로. 너무 강조되지 않게 낮춘다. */
-  .line-path { fill:none; stroke:#E8C24A; stroke-width:2.4;
+  .line-path { fill:none; stroke:#D9A700; stroke-width:2.4;
                stroke-linecap:round; stroke-linejoin:round; }
   /* 선 아래는 아주 옅게만 채운다 */
-  .area { fill:rgba(255,222,122,.16); stroke:none; }
-  .dot { fill:#E8C24A; }
-  .dot.last { fill:#FFDE7A; stroke:#C9A227; stroke-width:1.6; }
+  .area { fill:rgba(255,206,51,.18); stroke:none; }
+  .dot { fill:#D9A700; }
+  .dot.last { fill:#FFCE33; stroke:#C9A227; stroke-width:1.6; }
   /* 막대는 기본을 연한 베이지로 두고 가장 큰 것 하나만 노랑으로 강조 */
   .bar { fill:#D9D2C2; }
-  .bar.hl { fill:#FFDE7A; }
+  .bar.hl { fill:#FFCE33; }
   .bar-label { fill:var(--text-secondary); font-size:11px; }
   .split { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
   @media (max-width:680px) { .split { grid-template-columns:1fr; } }
@@ -145,7 +145,7 @@ PAGE_CSS = """
   .srow-k { color:var(--text-secondary); }
   .srow-b { background:var(--gridline); border-radius:3px; height:9px; overflow:hidden; }
   .srow-b i { display:block; height:100%; background:#D9D2C2; border-radius:3px; }
-  .srow-b i.hl { background:#FFDE7A; }
+  .srow-b i.hl { background:#FFCE33; }
   .srow-b i.g { background:#C3BCAB; }
   .srow-v { text-align:right; font-variant-numeric:tabular-nums; }
   .big { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:2px; }

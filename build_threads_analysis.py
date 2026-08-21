@@ -275,7 +275,7 @@ h3 { font-size:18px; margin:30px 0 3px; }
 .kpi .v { font-size:24px; font-weight:620; line-height:1; }
 .kpi .cmp { font-size:11px; margin-top:6px; color:var(--muted); }
 svg { display:block; width:100%; height:auto; overflow:visible; }
-.bar { fill:#D9D2C2; } .bar.hl { fill:#FFDE7A; } .bar.muted { fill:#D9D2C2; }
+.bar { fill:#D9D2C2; } .bar.hl { fill:#FFCE33; } .bar.muted { fill:#D9D2C2; }
 .cat { fill:var(--text2); font-size:12px; }
 .val { fill:var(--text); font-size:12px; font-weight:600; }
 .dim2 { fill:var(--muted); font-weight:400; font-size:11px; }
@@ -312,7 +312,7 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .dm-bar { background:var(--grid); border-radius:3px; height:8px; overflow:hidden; }
 /* 팔로워 구성은 참고용이라 연하게. 가장 큰 항목만 연노랑으로 표시한다. */
 .dm-bar i { display:block; height:100%; background:#D9D2C2; border-radius:3px; }
-.dm-bar i.hl { background:#FFDE7A; }
+.dm-bar i.hl { background:#FFCE33; }
 .dm-v { text-align:right; font-variant-numeric:tabular-nums; }
 .limits { font-size:12.5px; color:var(--text2); line-height:1.75; }
 .ins-box, .chk-box { border-radius:10px; padding:15px 17px; margin-bottom:11px; }

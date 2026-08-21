@@ -634,7 +634,7 @@ h3 { font-size:18px; margin:30px 0 3px; }
 .kpi .cmp { font-size:11px; margin-top:6px; color:var(--muted); }
 .kpi .cmp.good { color:var(--good); } .kpi .cmp.bad { color:var(--bad); }
 svg { display:block; width:100%; height:auto; overflow:visible; }
-.bar { fill:#D9D2C2; } .bar.hl { fill:#FFDE7A; } .bar.muted { fill:#D9D2C2; }
+.bar { fill:#D9D2C2; } .bar.hl { fill:#FFCE33; } .bar.muted { fill:#D9D2C2; }
 .cat { fill:var(--text2); font-size:12px; }
 .val { fill:var(--text); font-size:12px; font-weight:600; }
 .dim2 { fill:var(--muted); font-weight:400; font-size:11px; }
@@ -643,7 +643,7 @@ svg { display:block; width:100%; height:auto; overflow:visible; }
 .ln { fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 .dot { fill:var(--accent); }
 .legend { display:flex; gap:16px; font-size:11.5px; color:var(--text2); margin-top:11px; }
-.sw { display:inline-block; width:10px; height:10px; border-radius:2px; background:#FFDE7A; margin-right:5px; }
+.sw { display:inline-block; width:10px; height:10px; border-radius:2px; background:#FFCE33; margin-right:5px; }
 .sw.g { background:#D9D2C2; }
 table { width:100%; border-collapse:collapse; font-size:12.5px; }
 th, td { text-align:left; padding:8px 7px; border-bottom:1px solid var(--grid); }
@@ -682,7 +682,7 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .dm-bar { background:var(--grid); border-radius:3px; height:8px; overflow:hidden; }
 /* 팔로워 구성은 참고용이라 연하게. 가장 큰 항목만 연노랑으로 표시한다. */
 .dm-bar i { display:block; height:100%; background:#D9D2C2; border-radius:3px; }
-.dm-bar i.hl { background:#FFDE7A; }
+.dm-bar i.hl { background:#FFCE33; }
 .dm-v { text-align:right; font-variant-numeric:tabular-nums; color:var(--text); }
 /* .scope 여백은 layout.py 에서 한 곳으로 정한다 (페이지마다 위치가 어긋나던 원인) */
 .scope { color:var(--muted); }
