@@ -45,6 +45,9 @@ MIN_N = 5                          # 이 미만이면 "표본 부족" 경고
 # (예: 2019년 게시물 도달 27 · 좋아요 42 → 참여율 150%). 그래서 최근 기간만 분석한다.
 ANALYSIS_MONTHS = 24
 MIN_POSTS = 10          # 이보다 적으면 비율 분석이 무의미해 요약만 보여준다
+# 반응률은 팔로워로 나누므로 분모가 작으면 값이 터진다.
+# 팔로워 4명 계정에서 "업계 평균의 109배"가 나온 적이 있다. 그건 성과가 아니다.
+MIN_FOLLOWERS_FOR_BENCH = 100
 
 TYPE_KO = {"IMAGE": "단일 이미지", "CAROUSEL_ALBUM": "캐러셀",
            "VIDEO": "동영상", "REELS": "릴스"}
@@ -327,7 +330,7 @@ def build_insights(posts, ranked_all, fmt, tag_stats, er_reach, er_fol,
             f'이 태그와 같은 결의 소재를 더 밀어볼 여지가 있습니다.')
 
     # --- 확인 필요 ---
-    if er_fol_basic < BENCH_ER_FOLLOWERS:
+    if er_fol_basic < BENCH_ER_FOLLOWERS and F >= MIN_FOLLOWERS_FOR_BENCH:
         chk.append(
             f'업계 평균과 같은 식(좋아요+댓글÷팔로워)으로 재면 {er_fol_basic:.2f}%로, '
             f'업계 평균 {BENCH_ER_FOLLOWERS}%의 {er_fol_basic/BENCH_ER_FOLLOWERS*100:.0f}% 수준입니다. '
@@ -411,7 +414,22 @@ def render_account(a):
     tot_share = sum(p["shares"] for p in posts)
     save_rate = tot_save / tot_reach * 100
     share_rate = tot_share / tot_reach * 100
-    bench_x = er_fol_basic / BENCH_ER_FOLLOWERS if BENCH_ER_FOLLOWERS else 0
+    bench_ok = F >= MIN_FOLLOWERS_FOR_BENCH
+    bench_x = er_fol_basic / BENCH_ER_FOLLOWERS if (BENCH_ER_FOLLOWERS and bench_ok) else 0
+    if bench_ok:
+        bench_badge = (f'<span class="badge {"good" if bench_x >= 1 else "warn"}">'
+                       f'업계 평균의 {bench_x:.1f}배</span>')
+        bench_line = (f'업계 평균 {BENCH_ER_FOLLOWERS}%와 같은 식입니다. '
+                      f'<span class="src">출처 {BENCH_SOURCE} · {BENCH_NOTE}</span>')
+        bench_cmp = (f'<div class="cmp {"good" if er_fol_basic >= BENCH_ER_FOLLOWERS else "bad"}">'
+                     f'업계 평균 {BENCH_ER_FOLLOWERS}% 대비 '
+                     f'{(er_fol_basic - BENCH_ER_FOLLOWERS) / BENCH_ER_FOLLOWERS * 100:+.0f}%</div>')
+    else:
+        # 분모가 작으면 비율이 터진다. 숫자를 내는 대신 왜 안 내는지 밝힌다.
+        bench_badge = '<span class="badge warn">팔로워가 적어 업계 비교 없음</span>'
+        bench_line = (f'팔로워가 {MIN_FOLLOWERS_FOR_BENCH}명 미만이라 업계 평균과 비교하지 않습니다. '
+                      f'분모가 작아 비율이 크게 튑니다.')
+        bench_cmp = '<div class="cmp">팔로워가 적어 비교 생략</div>'
 
     fmt = group_stats(posts, lambda p: p["type"])
     tag_stats = [t for t in group_stats(posts, lambda p: p["tags"] or ["(태그 없음)"])
@@ -602,18 +620,17 @@ def render_account(a):
 
   <div class="verdict">
     <div class="hero">{er_fol_basic:.2f}<span class="hu">%</span></div>
-    <span class="badge {'good' if bench_x >= 1 else 'warn'}">업계 평균의 {bench_x:.1f}배</span>
+    {bench_badge}
     <span class="badge {'warn' if save_rate < 0.5 else 'good'}">저장률 {save_rate:.2f}%</span>
   </div>
   <p class="sub">반응률 · (좋아요+댓글) ÷ 팔로워 {F:,}명 × 100 · 게시물 {n}개 평균.
-    업계 평균 {BENCH_ER_FOLLOWERS}%와 같은 식입니다.
-    <span class="src">출처 {BENCH_SOURCE} · {BENCH_NOTE}</span></p>
+    {bench_line}</p>
 
   <h3>핵심 지표</h3>
   <p class="sub">기간 내 게시물 {n}개 기준</p>
   <div class="kpis">
     <div class="kpi"><div class="lbl">반응률</div><div class="v">{er_fol_basic:.2f}%</div>
-      <div class="cmp {'good' if er_fol_basic >= BENCH_ER_FOLLOWERS else 'bad'}">업계 평균 {BENCH_ER_FOLLOWERS}% 대비 {(er_fol_basic-BENCH_ER_FOLLOWERS)/BENCH_ER_FOLLOWERS*100:+.0f}%</div></div>
+      {bench_cmp}</div>
     <div class="kpi"><div class="lbl">도달 대비 반응</div><div class="v">{er_reach:.1f}%</div>
       <div class="cmp">본 사람 100명 중 {er_reach:.0f}명 · 소재의 힘</div></div>
     <div class="kpi"><div class="lbl">노출 범위</div><div class="v">{a_reach/F*100:.1f}%</div>

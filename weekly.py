@@ -104,6 +104,9 @@ def _rate_ig(posts):
 
 
 BENCH_MONTHS = 24   # build_analysis.py 의 ANALYSIS_MONTHS 와 같아야 한다
+# 팔로워로 나누는 지표라 분모가 작으면 값이 터진다.
+# 팔로워 4명 계정에서 "업계 평균의 109배" 같은 숫자가 나온 적이 있다. 그건 성과가 아니다.
+BENCH_MIN_FOLLOWERS = 100
 
 
 def _rate_ig_basic(ig_id, followers):
@@ -140,7 +143,7 @@ def _rate_ig_basic(ig_id, followers):
             continue
         cnt += 1
         inter += (p.get("like_count") or 0) + (p.get("comments_count") or 0)
-    if not cnt or not followers:
+    if not cnt or not followers or followers < BENCH_MIN_FOLLOWERS:
         return None, cnt
     return (inter / cnt) / followers * 100, cnt
 
