@@ -205,6 +205,90 @@ details.tg .tg-body { padding:15px 16px 16px; }
 """
 
 
+# 인스타 daily(index.html)와 스레드 daily(threads.html)가 함께 쓰는 카드·표·그래프 부품.
+# 두 페이지에서 반드시 같아야 하는 값이라 여기 한 곳에서만 정한다.
+# build_dashboard.py / build_threads.py 는 이 위에 자기 페이지만의 CSS를 더한다.
+# (2026-08-22 정리: 그전엔 이 규칙들이 두 파일에 각각 복사돼 있어서 값이 슬금슬금
+#  달라졌었다 — 카드 줄 아래 여백 24px/20px, 설명 캡션 11px/11.5px 같은 식으로.)
+COMPONENT_CSS = """
+:root {
+  color-scheme: light only;
+  --surface-1:#ffffff;
+  --text-primary:#1A1A1A; --text-secondary:#54524B; --text-muted:#7a756a;
+  --gridline:#E7E2D6; --border:#E7E2D6;
+  --series-1:#1A1A1A; --gray:#cfc9ba;
+  --good:#1F8A45; --critical:#C1392B;
+}
+* { box-sizing:border-box; }
+html, body { background:#F4F1E8; }
+/* 글꼴은 위 SHELL_CSS 한 곳으로 정한다. 여기서 다시 정하지 않는다. */
+body { margin:0; color:#1A1A1A; }
+section h2::before, h3::before { content:"● "; color:#FFC800; font-size:11px; vertical-align:2px; }
+.kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+           gap:12px; margin:0 0 20px; }
+.stat-tile { background:var(--surface-1); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+.stat-tile .label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; font-weight:600; }
+.stat-tile .value { font-size:30px; font-weight:650; line-height:1.1; }
+/* KPI 카드 아래 보조 한 줄. 인스타는 .delta, 스레드는 .note 로 쓰지만 값은 같아야 한다.
+   (다르면 카드 높이가 1px 어긋나 그 아래 카드들이 통째로 밀린다) */
+.stat-tile .note, .stat-tile .delta {
+  font-size:11px; color:var(--text-muted); margin-top:5px; line-height:1.45; }
+.stat-tile .note.up,   .stat-tile .delta.up   { color:var(--good); }
+.stat-tile .note.down, .stat-tile .delta.down { color:var(--critical); }
+section { background:var(--surface-1); border:1px solid var(--border); border-radius:10px;
+          padding:18px 18px 16px; margin-bottom:20px; }
+.sec-h { display:flex; justify-content:space-between; align-items:flex-start;
+         gap:12px; flex-wrap:wrap; margin-bottom:4px; }
+section h2 { font-size:18px; margin:0; color:var(--text-primary); font-weight:700;
+             letter-spacing:-0.01em; }
+section .sub { font-size:11.5px; color:var(--text-muted); margin:0 0 14px; line-height:1.55; }
+.seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.seg button { border:0; background:var(--surface-1); color:var(--text-secondary);
+              font-family:inherit; font-size:12px; padding:6px 13px; cursor:pointer; }
+.seg button + button { border-left:1px solid var(--border); }
+.seg button[aria-pressed="true"] { background:var(--series-1); color:#FFC800; font-weight:650; }
+svg { display:block; width:100%; height:auto; overflow:visible; }
+.axis-label { fill:var(--text-muted); font-size:10.5px; }
+/* x축 오른쪽 끝 단위 표시 */
+.unit-label { fill:var(--text-muted); font-size:10px; }
+.val-label { fill:var(--text-primary); font-size:11px; font-weight:600; }
+.gridline { stroke:var(--gridline); stroke-width:1; }
+/* 막대는 기본을 연한 베이지로 두고 가장 큰 것 하나만 노랑으로 강조 */
+.bar { fill:#D9D2C2; }
+.bar.hl { fill:#FFCE33; }
+/* 선 아래는 아주 옅게만 채운다 */
+.area { fill:rgba(255,222,122,.16); stroke:none; }
+/* 선은 검정 대신 연노랑 계열로. 너무 강조되지 않게 낮춘다. */
+.line-path { fill:none; stroke:#E8C24A; stroke-width:2.4;
+             stroke-linecap:round; stroke-linejoin:round; }
+.dot { fill:#E8C24A; }
+.dot.last { fill:#FFDE7A; stroke:#C9A227; stroke-width:1.6; }
+.big { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:2px; }
+.big .n { font-size:36px; font-weight:650; line-height:1; }
+/* 신규 팔로워 유입 — 늘면 초록, 줄면 빨강 */
+.big .n.up { color:var(--good); }
+.big .n.down { color:var(--critical); }
+.big .u { font-size:14px; color:var(--text-muted); }
+.mini-t { font-size:12.5px; font-weight:700; color:var(--text-primary); margin-bottom:4px; }
+.mini-s { font-size:11.5px; color:var(--text-muted); margin:2px 0 14px; line-height:1.7; }
+table { width:100%; border-collapse:collapse; font-size:12.5px; }
+th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--gridline); vertical-align:top; }
+th { color:var(--text-muted); font-weight:500; font-size:10.5px;
+     text-transform:uppercase; letter-spacing:.02em; white-space:nowrap; }
+td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+td.cap { max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+         color:var(--text-secondary); }
+tr.extra { display:none; } tr.extra.on { display:table-row; }
+a { color:#8A6A00; text-decoration:none; } a:hover { text-decoration:underline; }
+.more { margin-top:12px; border:1px solid var(--border); background:var(--surface-1);
+        color:var(--series-1); font-family:inherit; font-size:12.5px; font-weight:600;
+        padding:8px 15px; border-radius:8px; cursor:pointer; }
+.empty { color:var(--text-muted); font-size:12.5px; padding:10px 0; }
+.foot { font-size:11.5px; color:var(--text-muted); line-height:1.8; }
+.foot b { color:var(--text-secondary); }
+"""
+
+
 def fmt_updated(iso):
     """2026-08-13T09:19:56+00:00 → "업데이트: 2026-08-13 18:19 (한국시간)" """
     if not iso:
