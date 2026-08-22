@@ -267,6 +267,11 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .ins-box p, .chk-box p { font-size:14px; line-height:1.75; margin:0 0 10px; color:#2B2924; }
 .ins-box p:last-child, .chk-box p:last-child { margin-bottom:0; }
 /* 핵심 문장은 노랑 형광펜으로 — 검은 글씨 사이에서 바로 눈에 띄게 */
+/* 근거·출처 표기 — 본문보다 작고 흐리게 */
+.basis { margin-top:12px; padding-top:10px; border-top:1px solid #EEE0B8;
+  font-size:12px; color:var(--muted); line-height:1.6; }
+.src { display:block; margin-top:5px; font-size:11.5px; color:var(--muted); line-height:1.55; }
+.src b { color:var(--text2); font-weight:600; background:none; padding:0; }
 .ins-box b { font-weight:700; color:var(--accent);
   background:linear-gradient(transparent 58%, #FFE788 58%); padding:0 2px; }
 .chk-box b { font-weight:700; color:#A33224; }
@@ -323,10 +328,12 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 
   <div class="verdict">
     <div class="hero">0.90<span class="hu">%</span></div>
-    <span class="badge good">업계 평균의 1.9배</span>
+    <span class="badge good">같은 식으로는 업계 평균의 1.7배</span>
     <span class="badge warn">저장률 0.13%</span>
   </div>
-  <p class="sub">팔로워 반응률(참고용) · 2026년 인스타그램 평균은 0.48%입니다.</p>
+  <p class="sub">팔로워 반응률(참고용) · (좋아요+댓글+저장+공유)÷팔로워 721명 · 게시물 115개 평균.<br>
+    업계 평균 0.48%는 저장·공유를 빼고 재므로, 같은 식으로 다시 계산한
+    <b>0.83%</b>와 비교해야 합니다.</p>
 
   <h3>핵심 지표</h3>
   <p class="sub">기간 내 게시물 115개 기준</p>
@@ -334,7 +341,9 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
     <div class="kpi"><div class="lbl">반응률</div><div class="v">3.1%</div>
       <div class="cmp">100명 중 3명</div></div>
     <div class="kpi"><div class="lbl">팔로워 반응률(참고용)</div><div class="v">0.90%</div>
-      <div class="cmp good">업계 평균 대비 +88%</div></div>
+      <div class="cmp">저장·공유 포함</div></div>
+    <div class="kpi"><div class="lbl">업계 비교용</div><div class="v">0.83%</div>
+      <div class="cmp good">업계 평균 0.48% 대비 +74%</div></div>
     <div class="kpi"><div class="lbl">노출 범위</div><div class="v">29.1%</div>
       <div class="cmp">평균 210명에게 도달</div></div>
     <div class="kpi"><div class="lbl">저장률</div><div class="v">0.13%</div>
@@ -344,7 +353,7 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
   </div>
 
   <h3>분석</h3>
-  <div class="ins-box"><div class="ins-t">💡 오늘의 인사이트</div><p><b>캐러셀가 가장 잘 먹힙니다.</b> 단일 이미지보다 반응률이 1.4배 높습니다(각각 60개 / 45개 기준). 다음에 올릴 소재부터 이 포맷으로 맞추는 게 안전합니다.</p><p><b>팔로워를 실제로 데려온 건 11-01 단일 이미지입니다.</b> 이 게시물 하나가 전체 신규 팔로우 55건 중 22건(40%)을 만들었는데, 반응률로는 112위입니다. 좋아요가 많은 게시물과 팔로워를 만드는 게시물은 다릅니다 — 이 게시물의 소재와 구성을 다시 쓰세요.</p><p><b>가장 널리 퍼진 게시물(11-01 단일 이미지, 도달 2,434명)은 반응률로는 112위입니다.</b> 많이 노출됐지만 본 사람 대비 반응은 평균 이하였습니다. 노출은 알고리즘이 밀어준 결과이고, 반응률은 소재의 힘입니다. 둘을 같이 봐야 합니다.</p></div>
+  <div class="ins-box"><div class="ins-t">💡 오늘의 인사이트</div><p><b>캐러셀가 가장 잘 먹힙니다.</b> 단일 이미지보다 반응률이 1.4배 높습니다(각각 60개 / 45개 기준). 다음에 올릴 소재부터 이 포맷으로 맞추는 게 안전합니다.</p><p><b>팔로워를 실제로 데려온 건 11-01 단일 이미지입니다.</b> 이 게시물 하나가 전체 신규 팔로우 55건 중 22건(40%)을 만들었는데, 반응률로는 112위입니다. 좋아요가 많은 게시물과 팔로워를 만드는 게시물은 다릅니다 — 이 게시물의 소재와 구성을 다시 쓰세요.</p><p><b>가장 널리 퍼진 게시물(11-01 단일 이미지, 도달 2,434명)은 반응률로는 112위입니다.</b> 많이 노출됐지만 본 사람 대비 반응은 평균 이하였습니다. 노출은 알고리즘이 밀어준 결과이고, 반응률은 소재의 힘입니다. 둘을 같이 봐야 합니다.</p><div class="basis">근거 · 최근 24개월 게시물 115개 (2025-10-27 ~ 2026-08-07) · 팔로워 721명 기준. 반응률은 (좋아요+댓글+저장+공유)÷도달, 팔로워 반응률은 ÷팔로워로 계산했습니다.</div></div>
   <div class="chk-box"><div class="chk-t">⚠️ 확인 필요</div><p>저장률 0.13%는 낮습니다. 지금 게시물이 "보고 지나가는" 콘텐츠에 가깝다는 신호입니다.</p><p>공유율 0.11%도 낮습니다. 공유는 새 사람에게 닿는 가장 싼 경로인데 거의 발생하지 않고 있습니다.</p></div>
 
   <h3>게시물 랭킹</h3>

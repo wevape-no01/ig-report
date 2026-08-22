@@ -24,7 +24,16 @@ import layout
 DIR = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(DIR, "analysis.html")
 
-BENCH_ER_FOLLOWERS = 0.48          # 2026 업계 평균 참여율(팔로워 기준), Socialinsider
+# 업계 벤치마크 — Socialinsider "Instagram Benchmarks 2026"
+#   실제 기간: 2025-01 ~ 2025-12 (연초라 데이터가 부족해 2025년 값을 2026으로 표기했다고 원문이 밝힘)
+#   표본: 활성 계정 447,613개 · 게시물 3,500만 개 · 전 세계 전 산업
+#   계산식: (좋아요 + 댓글) / 팔로워 x 100      ← 저장·공유는 포함하지 않는다
+# 그래서 비교할 때는 같은 식으로 계산한 er_fol_basic 을 쓴다.
+# 화면의 '팔로워 반응률'(er_fol)은 저장·공유까지 더하므로 이 값과 직접 비교하면 안 된다.
+BENCH_SOURCE = "Socialinsider 2026 벤치마크"
+BENCH_NOTE = ("실제로는 2025년 1~12월 값 · 계정 447,613개 · 게시물 3,500만 개 · "
+              "전 세계 전 산업 · (좋아요+댓글)÷팔로워 기준")
+BENCH_ER_FOLLOWERS = 0.48
 BENCH_FORMAT = {"CAROUSEL_ALBUM": 0.55, "IMAGE": 0.37, "VIDEO": 0.52, "REELS": 0.52}
 RANK_LIMIT = 5                     # 전체 랭킹은 5위까지만
 MINI_RANK = 5                      # 도달·저장·공유 랭킹은 5위까지만
@@ -218,7 +227,7 @@ def rank_of(ranked_all, p):
 
 
 def build_insights(posts, ranked_all, fmt, tag_stats, er_reach, er_fol,
-                   save_rate, share_rate, F, n):
+                   save_rate, share_rate, F, n, er_fol_basic=0.0):
     """마케팅 담당자가 읽고 바로 움직일 수 있는 문장으로 뽑는다.
     반환: (인사이트 문장 리스트, 확인 필요 문장 리스트)"""
     ins, chk = [], []
@@ -270,11 +279,13 @@ def build_insights(posts, ranked_all, fmt, tag_stats, er_reach, er_fol,
             f'이 태그와 같은 결의 소재를 더 밀어볼 여지가 있습니다.')
 
     # --- 확인 필요 ---
-    if er_fol < BENCH_ER_FOLLOWERS:
+    if er_fol_basic < BENCH_ER_FOLLOWERS:
         chk.append(
-            f'팔로워 반응률이 {er_fol:.2f}%로 업계 평균 {BENCH_ER_FOLLOWERS}%의 '
-            f'{er_fol/BENCH_ER_FOLLOWERS:.1f}배 수준입니다. 팔로워 {F:,}명 중 실제로 반응하는 사람이 적다는 뜻이라, '
-            f'게시물 자체보다 팔로워 구성(오래 전 유입·비활성 계정)을 먼저 의심해야 합니다.')
+            f'업계 평균과 같은 식(좋아요+댓글÷팔로워)으로 재면 {er_fol_basic:.2f}%로, '
+            f'업계 평균 {BENCH_ER_FOLLOWERS}%의 {er_fol_basic/BENCH_ER_FOLLOWERS*100:.0f}% 수준입니다. '
+            f'팔로워 {F:,}명 중 실제로 반응하는 사람이 적다는 뜻이라, '
+            f'게시물 자체보다 팔로워 구성(오래 전 유입·비활성 계정)을 먼저 의심해야 합니다. '
+            f'<span class="src">근거: 게시물 {n}개 평균 · 비교 기준 {BENCH_SOURCE}({BENCH_NOTE})</span>')
 
     if save_rate < 0.5:
         chk.append(
@@ -344,12 +355,15 @@ def render_account(a):
     a_inter = avg(posts, lambda p: p["inter"])
     er_reach = a_inter / a_reach * 100 if a_reach else 0
     er_fol = a_inter / F * 100
+    # 업계 평균과 나란히 놓으려면 계산식이 같아야 한다 (좋아요+댓글만, 저장·공유 제외)
+    a_basic = avg(posts, lambda p: p["likes"] + p["comments"])
+    er_fol_basic = a_basic / F * 100
     tot_reach = sum(p["reach"] for p in posts) or 1
     tot_save = sum(p["saved"] for p in posts)
     tot_share = sum(p["shares"] for p in posts)
     save_rate = tot_save / tot_reach * 100
     share_rate = tot_share / tot_reach * 100
-    bench_x = er_fol / BENCH_ER_FOLLOWERS if BENCH_ER_FOLLOWERS else 0
+    bench_x = er_fol_basic / BENCH_ER_FOLLOWERS if BENCH_ER_FOLLOWERS else 0
 
     fmt = group_stats(posts, lambda p: p["type"])
     tag_stats = [t for t in group_stats(posts, lambda p: p["tags"] or ["(태그 없음)"])
@@ -360,9 +374,14 @@ def render_account(a):
 
     # ---- 분석 (인사이트 / 확인 필요)
     ins_list, chk_list = build_insights(posts, ranked_all, fmt, tag_stats,
-                                        er_reach, er_fol, save_rate, share_rate, F, n)
+                                        er_reach, er_fol, save_rate, share_rate, F, n,
+                                        er_fol_basic)
+    # 어떤 데이터에서 나온 말인지 상자 아래에 한 줄로 밝힌다
+    basis = (f'<div class="basis">근거 · 최근 {ANALYSIS_MONTHS}개월 게시물 {n}개 '
+             f'({posts[-1]["date"]} ~ {posts[0]["date"]}) · 팔로워 {F:,}명 기준. '
+             f'반응률은 (좋아요+댓글+저장+공유)÷도달, 팔로워 반응률은 ÷팔로워로 계산했습니다.</div>')
     ins_html = ('<div class="ins-box"><div class="ins-t">💡 오늘의 인사이트</div>'
-                + "".join(f"<p>{t}</p>" for t in ins_list) + '</div>') if ins_list else ""
+                + "".join(f"<p>{t}</p>" for t in ins_list) + basis + '</div>') if ins_list else ""
     chk_html = ('<div class="chk-box"><div class="chk-t">⚠️ 확인 필요</div>'
                 + "".join(f"<p>{t}</p>" for t in chk_list) + '</div>') if chk_list else ""
 
@@ -464,8 +483,10 @@ def render_account(a):
                     f'{TYPE_KO.get(snd["key"],snd["key"])}보다 반응률 '
                     f'{top["er"]/snd["er"]:.1f}배 높습니다.</b> '
                     f'각각 게시물 {top["n"]}개 / {snd["n"]}개 기준입니다. '
-                    f'업계 벤치마크도 캐러셀 {BENCH_FORMAT["CAROUSEL_ALBUM"]}% / '
-                    f'이미지 {BENCH_FORMAT["IMAGE"]}%로 같은 방향입니다.</p>')
+                    f'업계 벤치마크도 캐러셀 {BENCH_FORMAT["CAROUSEL_ALBUM"]}% &gt; '
+                    f'릴스 {BENCH_FORMAT["VIDEO"]}% &gt; 이미지 {BENCH_FORMAT["IMAGE"]}% 순서라 방향은 같습니다. '
+                    f'<span class="src">다만 이 표는 <b>도달</b> 기준이고 벤치마크는 <b>팔로워</b> 기준이라 '
+                    f'숫자끼리는 비교할 수 없고, 순서만 참고합니다. 출처 {BENCH_SOURCE}</span></p>')
 
     # ---- 해시태그
     tag_html = bars(tag_stats, lambda r: "#" + r["key"],
@@ -535,10 +556,12 @@ def render_account(a):
 
   <div class="verdict">
     <div class="hero">{er_fol:.2f}<span class="hu">%</span></div>
-    <span class="badge {'good' if bench_x >= 1 else 'warn'}">업계 평균의 {bench_x:.1f}배</span>
+    <span class="badge {'good' if bench_x >= 1 else 'warn'}">같은 식으로는 업계 평균의 {bench_x:.1f}배</span>
     <span class="badge {'warn' if save_rate < 0.5 else 'good'}">저장률 {save_rate:.2f}%</span>
   </div>
-  <p class="sub">팔로워 반응률(참고용) · 2026년 인스타그램 평균은 {BENCH_ER_FOLLOWERS}%입니다.</p>
+  <p class="sub">팔로워 반응률(참고용) · (좋아요+댓글+저장+공유)÷팔로워 {F:,}명 · 게시물 {n}개 평균.<br>
+    업계 평균 {BENCH_ER_FOLLOWERS}%는 저장·공유를 빼고 재므로, 같은 식으로 다시 계산한
+    <b>{er_fol_basic:.2f}%</b>와 비교해야 합니다.</p>
 
   <h3>핵심 지표</h3>
   <p class="sub">기간 내 게시물 {n}개 기준</p>
@@ -546,7 +569,9 @@ def render_account(a):
     <div class="kpi"><div class="lbl">반응률</div><div class="v">{er_reach:.1f}%</div>
       <div class="cmp">100명 중 {er_reach:.0f}명</div></div>
     <div class="kpi"><div class="lbl">팔로워 반응률(참고용)</div><div class="v">{er_fol:.2f}%</div>
-      <div class="cmp {'good' if er_fol >= BENCH_ER_FOLLOWERS else 'bad'}">업계 평균 대비 {(er_fol-BENCH_ER_FOLLOWERS)/BENCH_ER_FOLLOWERS*100:+.0f}%</div></div>
+      <div class="cmp">저장·공유 포함</div></div>
+    <div class="kpi"><div class="lbl">업계 비교용</div><div class="v">{er_fol_basic:.2f}%</div>
+      <div class="cmp {'good' if er_fol_basic >= BENCH_ER_FOLLOWERS else 'bad'}">업계 평균 {BENCH_ER_FOLLOWERS}% 대비 {(er_fol_basic-BENCH_ER_FOLLOWERS)/BENCH_ER_FOLLOWERS*100:+.0f}%</div></div>
     <div class="kpi"><div class="lbl">노출 범위</div><div class="v">{a_reach/F*100:.1f}%</div>
       <div class="cmp">평균 {a_reach:.0f}명에게 도달</div></div>
     <div class="kpi"><div class="lbl">저장률</div><div class="v">{save_rate:.2f}%</div>
@@ -701,6 +726,11 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .ins-box p, .chk-box p { font-size:14px; line-height:1.75; margin:0 0 10px; color:#2B2924; }
 .ins-box p:last-child, .chk-box p:last-child { margin-bottom:0; }
 /* 핵심 문장은 노랑 형광펜으로 — 검은 글씨 사이에서 바로 눈에 띄게 */
+/* 근거·출처 표기 — 본문보다 작고 흐리게 */
+.basis { margin-top:12px; padding-top:10px; border-top:1px solid #EEE0B8;
+  font-size:12px; color:var(--muted); line-height:1.6; }
+.src { display:block; margin-top:5px; font-size:11.5px; color:var(--muted); line-height:1.55; }
+.src b { color:var(--text2); font-weight:600; background:none; padding:0; }
 .ins-box b { font-weight:700; color:var(--accent);
   background:linear-gradient(transparent 58%, #FFE788 58%); padding:0 2px; }
 .chk-box b { font-weight:700; color:#A33224; }

@@ -267,6 +267,11 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .ins-box p, .chk-box p { font-size:14px; line-height:1.75; margin:0 0 10px; color:#2B2924; }
 .ins-box p:last-child, .chk-box p:last-child { margin-bottom:0; }
 /* 핵심 문장은 노랑 형광펜으로 — 검은 글씨 사이에서 바로 눈에 띄게 */
+/* 근거·출처 표기 — 본문보다 작고 흐리게 */
+.basis { margin-top:12px; padding-top:10px; border-top:1px solid #EEE0B8;
+  font-size:12px; color:var(--muted); line-height:1.6; }
+.src { display:block; margin-top:5px; font-size:11.5px; color:var(--muted); line-height:1.55; }
+.src b { color:var(--text2); font-weight:600; background:none; padding:0; }
 .ins-box b { font-weight:700; color:var(--accent);
   background:linear-gradient(transparent 58%, #FFE788 58%); padding:0 2px; }
 .chk-box b { font-weight:700; color:#A33224; }
@@ -324,7 +329,7 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
   <svg viewBox="0 0 860 125"><text class="cat" x="0" y="24">캐러셀</text><rect class="bar hl" x="150" y="6" width="510.0" height="28" rx="4"/><text class="val" x="668.0" y="24">3.8%<tspan class="dim2"> · 60개 · 도달 180</tspan></text><text class="cat" x="0" y="63">단일 이미지</text><rect class="bar" x="150" y="45" width="369.7" height="28" rx="4"/><text class="val" x="527.7" y="63">2.8%<tspan class="dim2"> · 45개 · 도달 220</tspan></text><text class="cat" x="0" y="102">동영상</text><rect class="bar" x="150" y="84" width="260.0" height="28" rx="4"/><text class="val" x="418.0" y="102">1.9%<tspan class="dim2"> · 10개 · 도달 345</tspan></text></svg>
   <div class="legend"><span><i class="sw"></i>가장 성과가 좋은 포맷</span>
     <span><i class="sw g"></i>비교군</span></div>
-  <div class="reads"><p><b>캐러셀가 단일 이미지보다 반응률 1.4배 높습니다.</b> 각각 게시물 60개 / 45개 기준입니다. 업계 벤치마크도 캐러셀 0.55% / 이미지 0.37%로 같은 방향입니다.</p></div>
+  <div class="reads"><p><b>캐러셀가 단일 이미지보다 반응률 1.4배 높습니다.</b> 각각 게시물 60개 / 45개 기준입니다. 업계 벤치마크도 캐러셀 0.55% &gt; 릴스 0.52% &gt; 이미지 0.37% 순서라 방향은 같습니다. <span class="src">다만 이 표는 <b>도달</b> 기준이고 벤치마크는 <b>팔로워</b> 기준이라 숫자끼리는 비교할 수 없고, 순서만 참고합니다. 출처 Socialinsider 2026 벤치마크</span></p></div>
 
   <h3>해시태그별 성과</h3>
   <p class="sub">5회 이상 사용한 해시태그만 · 반응률 순</p>
