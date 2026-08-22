@@ -108,32 +108,28 @@ def hero(rate, note):
 
 
 def basis_ig(m):
-    """반응률 바로 아래 붙는 근거 한 칸 — 어떤 식으로 뭘 나눴는지, 업계 평균과 어떻게 다른지.
+    """반응률 바로 아래 붙는 근거 한 칸 — 어떤 식으로 냈고 업계 평균의 몇 배인지.
 
-    반응률이 없으면 아무것도 안 그린다. 업계 비교값은 팔로워 수가 있어야 낼 수 있으므로
-    낼 수 없으면 그 줄만 뺀다 (없는 값을 0으로 채우지 않는다).
+    반응률 자체를 업계 벤치마크와 같은 식으로 내므로, "그대로 견줄 수 없다"는 설명은
+    필요 없다. 식 한 줄과 배수만 남긴다.
+    도달 대비 반응은 성격이 다른 지표(소재의 힘)라 보조로만 덧붙인다.
     """
-    if m.get("react_rate") is None:
-        return ""
-    cnt = m.get("react_n") or 0
-    out = ('<div class="basis">'
-           f'근거 · <span class="eq">(좋아요+댓글+저장+공유) ÷ 도달 × 100</span> 으로 냈습니다. '
-           f'수치가 있는 게시물 {cnt}개, 팔로워 {n(m.get("followers"), "명")} 기준입니다.')
     br = m.get("bench_rate")
-    if br is not None:
-        x = br / BENCH_ER_FOLLOWERS
-        cls = "good" if br >= BENCH_ER_FOLLOWERS else "bad"
-        out += ('<br>업계 평균은 저장·공유를 빼고 재기 때문에 그대로 견줄 수 없습니다. '
-                f'같은 식 <span class="eq">(좋아요+댓글) ÷ 팔로워 × 100</span> 으로 다시 재면 '
-                f'<b>{br:.2f}%</b>로, '
-                f'<span class="cmp {cls}">업계 평균 {BENCH_ER_FOLLOWERS}%의 {x:.1f}배</span>입니다 '
-                f'(최근 {m.get("bench_n") or 0}개 게시물 평균 · 콘텐츠 분석 페이지와 같은 값).'
-                f'<span class="src">출처 {BENCH_SOURCE} · {BENCH_NOTE}. '
-                '전 세계 전 산업 평균이라 인천 지역 소형 계정과는 조건이 달라 '
-                '방향만 참고합니다.</span>')
-    else:
-        out += ('<span class="src">팔로워 수가 아직 안 모여 업계 평균 비교는 '
-                '내지 않았습니다.</span>')
+    if br is None:
+        return ""
+    x = br / BENCH_ER_FOLLOWERS if BENCH_ER_FOLLOWERS else 0
+    cls = "good" if br >= BENCH_ER_FOLLOWERS else "bad"
+    out = ('<div class="basis">'
+           f'근거 · <span class="eq">(좋아요+댓글) ÷ 팔로워 × 100</span> 으로 냈습니다. '
+           f'최근 {m.get("bench_n") or 0}개 게시물 평균, 팔로워 {n(m.get("followers"), "명")} 기준 '
+           f'(콘텐츠 분석 페이지와 같은 값). '
+           f'<span class="cmp {cls}">업계 평균 {BENCH_ER_FOLLOWERS}%의 {x:.1f}배</span>입니다.')
+    if m.get("react_rate") is not None:
+        out += (f'<br>참고 · 도달 대비 반응은 <b>{m["react_rate"]:.2f}%</b>입니다 '
+                f'<span class="eq">((좋아요+댓글+저장+공유) ÷ 도달 × 100)</span>. '
+                f'본 사람이 얼마나 움직였는지를 보는 값이라 업계 평균과는 비교하지 않습니다.')
+    out += (f'<span class="src">출처 {BENCH_SOURCE} · {BENCH_NOTE}. '
+            '전 세계 전 산업 평균이라 인천 지역 소형 계정과는 조건이 달라 방향만 참고합니다.</span>')
     return out + "</div>"
 
 
@@ -184,7 +180,8 @@ def build_ig():
 <section>
   <h2>{esc(m['label'])}</h2>
   <p class="sub">@{esc(m['user'])} · 이번 주 올린 게시물 {m['posted']}개</p>
-  {hero(m['react_rate'], '본 사람 100명 중 반응한 수 · 최근 게시물 기준')}
+  {hero(m['bench_rate'] if m.get('bench_rate') is not None else m['react_rate'],
+        '업계 평균과 같은 식으로 낸 값 · 최근 게시물 기준')}
   {basis_ig(m)}
   <div class="kpi-row">
     {tile('신규 팔로워', n(m['new_followers'], '명'),

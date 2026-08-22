@@ -268,6 +268,25 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .ins-box p:last-child, .chk-box p:last-child { margin-bottom:0; }
 /* 핵심 문장은 노랑 형광펜으로 — 검은 글씨 사이에서 바로 눈에 띄게 */
 /* 근거·출처 표기 — 본문보다 작고 흐리게 */
+/* 진단 한 덩어리 — 근거/해석/실행 세 줄을 눈으로 구분되게 */
+.dg { border-left:3px solid var(--accent); padding:2px 0 2px 12px; margin:0 0 14px; }
+.dg:last-of-type { margin-bottom:4px; }
+.dg-h { font-size:14.5px; font-weight:700; color:#2B2924; margin:0 0 7px; line-height:1.5; }
+.dg-r { font-size:13px; line-height:1.75; color:#3A3833; margin:0 0 5px; }
+.dg-r:last-child { margin-bottom:0; }
+.dg-k { display:inline-block; min-width:30px; margin-right:8px; padding:1px 7px;
+  border-radius:5px; font-size:11px; font-weight:700; vertical-align:1.5px;
+  background:#EFE7CE; color:#7A6516; }
+.dg-k.read { background:#E6EDF4; color:#3A5A7A; }
+.dg-k.do   { background:#E3F1E6; color:#1F6B37; }
+/* 실행 지침표 */
+.plan { border:1px solid var(--border); border-radius:10px; padding:15px 16px 13px;
+  background:#fbfcfe; }
+.plan .sub { margin:0 0 12px; }
+.plan-t { font-size:13px; font-weight:700; color:#2B2924; margin:14px 0 2px; }
+.plan-t:first-of-type { margin-top:0; }
+.plan table { margin-top:8px; }
+.plan td.dim { color:var(--muted); font-size:12px; line-height:1.6; }
 .basis { margin-top:12px; padding-top:10px; border-top:1px solid #EEE0B8;
   font-size:12px; color:var(--muted); line-height:1.6; }
 .src { display:block; margin-top:5px; font-size:11.5px; color:var(--muted); line-height:1.55; }
@@ -327,23 +346,21 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
   
 
   <div class="verdict">
-    <div class="hero">0.90<span class="hu">%</span></div>
-    <span class="badge good">같은 식으로는 업계 평균의 1.7배</span>
+    <div class="hero">0.83<span class="hu">%</span></div>
+    <span class="badge good">업계 평균의 1.7배</span>
     <span class="badge warn">저장률 0.13%</span>
   </div>
-  <p class="sub">팔로워 반응률(참고용) · (좋아요+댓글+저장+공유)÷팔로워 721명 · 게시물 115개 평균.<br>
-    업계 평균 0.48%는 저장·공유를 빼고 재므로, 같은 식으로 다시 계산한
-    <b>0.83%</b>와 비교해야 합니다.</p>
+  <p class="sub">반응률 · (좋아요+댓글) ÷ 팔로워 721명 × 100 · 게시물 115개 평균.
+    업계 평균 0.48%와 같은 식입니다.
+    <span class="src">출처 Socialinsider 2026 벤치마크 · 실제로는 2025년 1~12월 값 · 계정 447,613개 · 게시물 3,500만 개 · 전 세계 전 산업 · (좋아요+댓글)÷팔로워 기준</span></p>
 
   <h3>핵심 지표</h3>
   <p class="sub">기간 내 게시물 115개 기준</p>
   <div class="kpis">
-    <div class="kpi"><div class="lbl">반응률</div><div class="v">3.1%</div>
-      <div class="cmp">100명 중 3명</div></div>
-    <div class="kpi"><div class="lbl">팔로워 반응률(참고용)</div><div class="v">0.90%</div>
-      <div class="cmp">저장·공유 포함</div></div>
-    <div class="kpi"><div class="lbl">업계 비교용</div><div class="v">0.83%</div>
+    <div class="kpi"><div class="lbl">반응률</div><div class="v">0.83%</div>
       <div class="cmp good">업계 평균 0.48% 대비 +74%</div></div>
+    <div class="kpi"><div class="lbl">도달 대비 반응</div><div class="v">3.1%</div>
+      <div class="cmp">본 사람 100명 중 3명 · 소재의 힘</div></div>
     <div class="kpi"><div class="lbl">노출 범위</div><div class="v">29.1%</div>
       <div class="cmp">평균 210명에게 도달</div></div>
     <div class="kpi"><div class="lbl">저장률</div><div class="v">0.13%</div>
@@ -353,8 +370,20 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
   </div>
 
   <h3>분석</h3>
-  <div class="ins-box"><div class="ins-t">💡 오늘의 인사이트</div><p><b>캐러셀가 가장 잘 먹힙니다.</b> 단일 이미지보다 반응률이 1.4배 높습니다(각각 60개 / 45개 기준). 다음에 올릴 소재부터 이 포맷으로 맞추는 게 안전합니다.</p><p><b>팔로워를 실제로 데려온 건 11-01 단일 이미지입니다.</b> 이 게시물 하나가 전체 신규 팔로우 55건 중 22건(40%)을 만들었는데, 반응률로는 112위입니다. 좋아요가 많은 게시물과 팔로워를 만드는 게시물은 다릅니다 — 이 게시물의 소재와 구성을 다시 쓰세요.</p><p><b>가장 널리 퍼진 게시물(11-01 단일 이미지, 도달 2,434명)은 반응률로는 112위입니다.</b> 많이 노출됐지만 본 사람 대비 반응은 평균 이하였습니다. 노출은 알고리즘이 밀어준 결과이고, 반응률은 소재의 힘입니다. 둘을 같이 봐야 합니다.</p><div class="basis">근거 · 최근 24개월 게시물 115개 (2025-10-27 ~ 2026-08-07) · 팔로워 721명 기준. 반응률은 (좋아요+댓글+저장+공유)÷도달, 팔로워 반응률은 ÷팔로워로 계산했습니다.</div></div>
+  <div class="ins-box"><div class="ins-t">💡 진단 · 근거와 해야 할 일</div><div class="dg"><div class="dg-h">발행이 멈춘 것이 지금 가장 큰 문제입니다</div><div class="dg-r"><span class="dg-k">근거</span>최근 3개월은 월 평균 2.3개를 올렸습니다. 분석 시작 무렵 3개월은 월 19.7개였습니다. 성과가 가장 좋았던 2025-11에는 23개를 올려 신규 팔로우 35건, 도달 중앙값 203명이 나왔습니다. 최근 3개월 합계 신규 팔로우는 1건입니다.</div><div class="dg-r"><span class="dg-k read">해석</span>인스타그램은 최근 게시 빈도를 계정 활성도로 봅니다. 글이 끊기면 기존 팔로워에게 노출되는 양부터 줄고, 그다음에 새 사람에게 닿는 양이 줍니다. 지금 반응률이 낮은 것은 소재 문제이기 이전에 발행량 문제입니다. 소재를 아무리 다듬어도 월 1~2개로는 회복되지 않습니다.</div><div class="dg-r"><span class="dg-k do">실행</span>자동 발행의 첫 목표를 "품질"이 아니라 "빈도"로 잡으세요. 주 3회(월 12~13개)를 4주간 유지하는 것이 1순위입니다. 이 계정은 2025-12에 29개까지 올린 적이 있으므로 무리한 목표가 아닙니다.</div></div><div class="dg"><div class="dg-h">릴스가 피드보다 2.5배 더 퍼집니다</div><div class="dg-r"><span class="dg-k">근거</span>2025-10-27 ~ 2026-01-29 같은 기간 안에서 릴스 10개와 피드 69개를 비교했습니다. 도달 중앙값이 378명 대 152명입니다. 공유는 글당 0.80건 대 0.19건, 저장은 0.60건 대 0.32건입니다.</div><div class="dg-r"><span class="dg-k read">해석</span>릴스는 팔로워 밖으로 배포되는 통로가 따로 있습니다. 평균값 대신 중앙값으로 잰 것은 한두 개가 크게 터진 착시를 걸러내기 위해서입니다. 중앙값에서도 차이가 나므로 "운이 좋았던 몇 개" 때문이 아닙니다. 다만 인스타그램 API 는 릴스에 대해 팔로우·프로필 방문 수를 주지 않습니다. 릴스가 팔로워를 데려왔는지 못 데려왔는지는 이 데이터로는 알 수 없습니다 (0 이 아니라 값이 없는 것입니다).</div><div class="dg-r"><span class="dg-k do">실행</span>자동 발행에서 릴스 비중을 최소 3분의 1로 잡으세요. 사진 소재를 그대로 쓰더라도 6~10초짜리 세로 영상으로 감싸면 릴스로 나갑니다. 릴스의 팔로우 기여는 측정이 안 되니, 릴스를 늘린 주와 그렇지 않은 주의 계정 전체 신규 팔로워 수를 비교해서 판단하세요.</div></div><div class="dg"><div class="dg-h">해시태그를 다듬는 데 시간을 쓸 이유가 없습니다</div><div class="dg-r"><span class="dg-k">근거</span>2025-12-29 이후 글만 놓고 보면, 해시태그를 붙인 31개의 반응률은 0.78%, 붙이지 않은 27개는 0.81% 입니다. 도달 중앙값은 181명 대 155명입니다.</div><div class="dg-r"><span class="dg-k read">해석</span>전체 기간으로 재면 해시태그가 있는 쪽이 좋아 보이는데, 이건 착시입니다. 해시태그를 많이 붙이던 시기가 마침 글을 활발히 올리던 시기였습니다. 같은 기간 안에서 비교하면 차이가 사라집니다.</div><div class="dg-r"><span class="dg-k do">실행</span>해시태그는 지역·업종 5개 안쪽으로 고정해 두고 더 손대지 마세요. 그 시간을 발행 빈도와 릴스 제작에 쓰는 편이 효과가 큽니다.</div></div><div class="dg"><div class="dg-h">신규 팔로워의 62%를 상위 21개 글이 만들었습니다</div><div class="dg-r"><span class="dg-k">근거</span>팔로우 수를 알 수 있는 글 105개에서 신규 팔로우가 모두 55건 나왔습니다. 도달 상위 20%인 21개가 그중 62%를 만들었습니다.</div><div class="dg-r"><span class="dg-k read">해석</span>성과가 소수의 글에 몰려 있습니다. 모든 글을 고르게 잘 만드는 것보다, 크게 터질 글이 나올 기회를 늘리는 편이 기대값이 높습니다. 기회를 늘리는 방법은 발행 수를 늘리는 것과, 팔로워 밖으로 나가는 포맷을 쓰는 것입니다.</div><div class="dg-r"><span class="dg-k do">실행</span>자동 발행에서 한 편에 오래 공들이기보다 주 3회를 지키세요. 도달이 평소의 2배를 넘긴 글은 따로 표시해 두고, 그 소재를 한 달 뒤 각도만 바꿔 다시 쓰세요.</div></div><div class="dg"><div class="dg-h">도달 100명당 팔로우 0.27건입니다</div><div class="dg-r"><span class="dg-k">근거</span>팔로우 수를 알 수 있는 글 105개 기준, 누적 도달 20,664명에 신규 팔로우 55건입니다.</div><div class="dg-r"><span class="dg-k read">해석</span>노출이 사람으로 바뀌는 비율입니다. 이 비율이 낮으면 도달을 늘려도 팔로워는 잘 늘지 않습니다. 글을 본 사람이 프로필로 넘어올 이유가 캡션에 없을 때 이렇게 됩니다.</div><div class="dg-r"><span class="dg-k do">실행</span>캡션 마지막 줄을 고정 문구로 만드세요 — 무엇을 파는 곳인지, 어디에 있는지, 팔로우하면 무엇을 받는지 한 줄씩. 자동 발행 템플릿의 마지막 3줄로 넣으면 됩니다. 4주 뒤 이 숫자가 올라갔는지로 효과를 판정하세요.</div></div><div class="basis">게시물 115개 · 2025-10-27 ~ 2026-08-07 · 팔로워 721명 · 반응률은 (좋아요+댓글)÷팔로워</div></div>
   <div class="chk-box"><div class="chk-t">⚠️ 확인 필요</div><p>저장률 0.13%는 낮습니다. 지금 게시물이 "보고 지나가는" 콘텐츠에 가깝다는 신호입니다.</p><p>공유율 0.11%도 낮습니다. 공유는 새 사람에게 닿는 가장 싼 경로인데 거의 발생하지 않고 있습니다.</p></div>
+
+  <h3>다음 4주 실행 지침</h3>
+  
+<div class="plan">
+  <p class="sub">아래 규칙은 위 진단에서 근거가 확인된 것만 담았습니다. 4주 뒤 같은 화면에서 다시 재고, 오르지 않은 규칙은 버리세요.</p>
+  <div class="plan-t">발행 규칙 — 자동 작성에 그대로 넣으세요</div>
+  <table><thead><tr><th>항목</th><th>값</th><th>왜 이 값인가</th></tr></thead>
+    <tbody><tr><td class="strong nw">발행 빈도</td><td class="strong">주 3회 (화·목·토)</td><td class="dim">발행이 끊긴 것이 지금 가장 큰 하락 요인이라 1순위입니다.</td></tr><tr><td class="strong nw">포맷 비율</td><td class="strong">릴스 1 : 피드 2</td><td class="dim">같은 기간 비교에서 릴스 도달 중앙값이 피드보다 높았습니다.</td></tr><tr><td class="strong nw">해시태그</td><td class="strong">지역·업종 고정 5개, 매번 바꾸지 않음</td><td class="dim">같은 기간 비교에서 효과 차이가 확인되지 않았습니다.</td></tr><tr><td class="strong nw">캡션 마지막 3줄</td><td class="strong">무엇을 파는 곳인지 / 어디인지 / 팔로우할 이유</td><td class="dim">도달이 팔로우로 바뀌는 비율을 올리기 위한 것입니다.</td></tr></tbody></table>
+  <div class="plan-t">4주 뒤 판정 기준</div>
+  <table><thead><tr><th>볼 것</th><th>지금 → 목표</th><th>이유</th></tr></thead>
+    <tbody><tr><td class="strong nw">발행 수</td><td class="strong">주 3개</td><td class="dim">가장 먼저 무너지는 지표라 매주 봅니다.</td></tr><tr><td class="strong nw">반응률</td><td class="strong">0.83% → 1.00%</td><td class="dim">지금 값의 1.2배와 업계 평균 0.48% 중 높은 쪽입니다.</td></tr><tr><td class="strong nw">도달 100당 팔로우</td><td class="strong">0.27건 → 0.40건</td><td class="dim">캡션 마지막 3줄이 먹히는지 보는 지표입니다.</td></tr><tr><td class="strong nw">릴스 주 1개</td><td class="strong">4주간 4개</td><td class="dim">릴스는 팔로우 기여가 측정되지 않아 주 단위 팔로워 증감으로 판정합니다.</td></tr></tbody></table>
+</div>
 
   <h3>게시물 랭킹</h3>
   <p class="sub">반응률 순 · 상위 5위까지</p>

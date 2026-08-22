@@ -19,6 +19,7 @@ import os
 import re
 from datetime import datetime, timedelta, timezone
 
+import advice
 import layout
 
 DIR = os.path.dirname(os.path.abspath(__file__))
@@ -128,6 +129,11 @@ def prep(cache, report):
                 "views": ins.get("views") or 0,
                 "profile_visits": ins.get("profile_visits") or 0,
                 "follows": ins.get("follows") or 0,
+                # 릴스는 인스타그램이 follows·profile_visits 를 아예 주지 않는다.
+                # 이걸 0 으로 읽으면 "릴스는 팔로워를 못 데려온다"는 틀린 결론이 나온다.
+                # 값이 없는 것과 0 인 것을 여기서 구분해 둔다.
+                "follows_known": ins.get("follows") is not None,
+                "is_reel": (p.get("media_product_type") or p.get("media_type")) == "REELS",
                 "reach": reach, "inter": inter,
                 "er": inter / reach * 100 if reach else 0,
             })
@@ -224,6 +230,48 @@ def rank_of(ranked_all, p):
         if q is p:
             return i + 1
     return len(ranked_all)
+
+
+def render_diagnoses(diags):
+    """진단을 근거 / 해석 / 실행 세 줄로 그린다.
+
+    한 덩어리에 세 가지를 섞어 쓰면 "그래서 뭘 하라는 건지"가 묻힌다.
+    숫자(근거)와 판단(해석)을 눈으로 구분할 수 있게 라벨을 붙인다.
+    """
+    if not diags:
+        return ('<div class="ins-box"><div class="ins-t">💡 진단</div>'
+                '<p>판단 근거로 쓸 만한 차이가 아직 없습니다. 표본이 쌓이면 여기에 나옵니다.</p></div>')
+    body = ""
+    for d in diags:
+        body += (f'<div class="dg">'
+                 f'<div class="dg-h">{d["title"]}</div>'
+                 f'<div class="dg-r"><span class="dg-k">근거</span>{d["why"]}</div>'
+                 f'<div class="dg-r"><span class="dg-k read">해석</span>{d["read"]}</div>'
+                 f'<div class="dg-r"><span class="dg-k do">실행</span>{d["do"]}</div>'
+                 f'</div>')
+    scope = diags[0].get("scope", "")
+    return ('<div class="ins-box"><div class="ins-t">💡 진단 · 근거와 해야 할 일</div>'
+            + body + f'<div class="basis">{scope}</div></div>')
+
+
+def render_plan(pl):
+    """자동 발행에 그대로 옮길 수 있는 규칙표 + 4주 뒤 판정 기준."""
+    if not pl or not pl["rules"]:
+        return ""
+    rules = "".join(f'<tr><td class="strong nw">{esc(k)}</td><td class="strong">{esc(v)}</td>'
+                    f'<td class="dim">{esc(why)}</td></tr>' for k, v, why in pl["rules"])
+    checks = "".join(f'<tr><td class="strong nw">{esc(k)}</td><td class="strong">{esc(v)}</td>'
+                     f'<td class="dim">{esc(why)}</td></tr>' for k, v, why in pl["checks"])
+    return f"""
+<div class="plan">
+  <p class="sub">{esc(pl["note"])}</p>
+  <div class="plan-t">발행 규칙 — 자동 작성에 그대로 넣으세요</div>
+  <table><thead><tr><th>항목</th><th>값</th><th>왜 이 값인가</th></tr></thead>
+    <tbody>{rules}</tbody></table>
+  <div class="plan-t">4주 뒤 판정 기준</div>
+  <table><thead><tr><th>볼 것</th><th>지금 → 목표</th><th>이유</th></tr></thead>
+    <tbody>{checks}</tbody></table>
+</div>"""
 
 
 def build_insights(posts, ranked_all, fmt, tag_stats, er_reach, er_fol,
@@ -372,16 +420,14 @@ def render_account(a):
     ranked_all = sorted(posts, key=lambda p: -p["er"])
     ranked = ranked_all[:RANK_LIMIT]
 
-    # ---- 분석 (인사이트 / 확인 필요)
-    ins_list, chk_list = build_insights(posts, ranked_all, fmt, tag_stats,
-                                        er_reach, er_fol, save_rate, share_rate, F, n,
-                                        er_fol_basic)
-    # 어떤 데이터에서 나온 말인지 상자 아래에 한 줄로 밝힌다
-    basis = (f'<div class="basis">근거 · 최근 {ANALYSIS_MONTHS}개월 게시물 {n}개 '
-             f'({posts[-1]["date"]} ~ {posts[0]["date"]}) · 팔로워 {F:,}명 기준. '
-             f'반응률은 (좋아요+댓글+저장+공유)÷도달, 팔로워 반응률은 ÷팔로워로 계산했습니다.</div>')
-    ins_html = ('<div class="ins-box"><div class="ins-t">💡 오늘의 인사이트</div>'
-                + "".join(f"<p>{t}</p>" for t in ins_list) + basis + '</div>') if ins_list else ""
+    # ---- 분석 (진단 / 확인 필요 / 실행 지침)
+    diags = advice.diagnose(posts, F, BENCH_ER_FOLLOWERS)
+    ins_html = render_diagnoses(diags)
+    plan_html = render_plan(advice.plan(posts, F, BENCH_ER_FOLLOWERS, diags))
+
+    _, chk_list = build_insights(posts, ranked_all, fmt, tag_stats,
+                                 er_reach, er_fol, save_rate, share_rate, F, n,
+                                 er_fol_basic)
     chk_html = ('<div class="chk-box"><div class="chk-t">⚠️ 확인 필요</div>'
                 + "".join(f"<p>{t}</p>" for t in chk_list) + '</div>') if chk_list else ""
 
@@ -555,23 +601,21 @@ def render_account(a):
   {ex_note}
 
   <div class="verdict">
-    <div class="hero">{er_fol:.2f}<span class="hu">%</span></div>
-    <span class="badge {'good' if bench_x >= 1 else 'warn'}">같은 식으로는 업계 평균의 {bench_x:.1f}배</span>
+    <div class="hero">{er_fol_basic:.2f}<span class="hu">%</span></div>
+    <span class="badge {'good' if bench_x >= 1 else 'warn'}">업계 평균의 {bench_x:.1f}배</span>
     <span class="badge {'warn' if save_rate < 0.5 else 'good'}">저장률 {save_rate:.2f}%</span>
   </div>
-  <p class="sub">팔로워 반응률(참고용) · (좋아요+댓글+저장+공유)÷팔로워 {F:,}명 · 게시물 {n}개 평균.<br>
-    업계 평균 {BENCH_ER_FOLLOWERS}%는 저장·공유를 빼고 재므로, 같은 식으로 다시 계산한
-    <b>{er_fol_basic:.2f}%</b>와 비교해야 합니다.</p>
+  <p class="sub">반응률 · (좋아요+댓글) ÷ 팔로워 {F:,}명 × 100 · 게시물 {n}개 평균.
+    업계 평균 {BENCH_ER_FOLLOWERS}%와 같은 식입니다.
+    <span class="src">출처 {BENCH_SOURCE} · {BENCH_NOTE}</span></p>
 
   <h3>핵심 지표</h3>
   <p class="sub">기간 내 게시물 {n}개 기준</p>
   <div class="kpis">
-    <div class="kpi"><div class="lbl">반응률</div><div class="v">{er_reach:.1f}%</div>
-      <div class="cmp">100명 중 {er_reach:.0f}명</div></div>
-    <div class="kpi"><div class="lbl">팔로워 반응률(참고용)</div><div class="v">{er_fol:.2f}%</div>
-      <div class="cmp">저장·공유 포함</div></div>
-    <div class="kpi"><div class="lbl">업계 비교용</div><div class="v">{er_fol_basic:.2f}%</div>
+    <div class="kpi"><div class="lbl">반응률</div><div class="v">{er_fol_basic:.2f}%</div>
       <div class="cmp {'good' if er_fol_basic >= BENCH_ER_FOLLOWERS else 'bad'}">업계 평균 {BENCH_ER_FOLLOWERS}% 대비 {(er_fol_basic-BENCH_ER_FOLLOWERS)/BENCH_ER_FOLLOWERS*100:+.0f}%</div></div>
+    <div class="kpi"><div class="lbl">도달 대비 반응</div><div class="v">{er_reach:.1f}%</div>
+      <div class="cmp">본 사람 100명 중 {er_reach:.0f}명 · 소재의 힘</div></div>
     <div class="kpi"><div class="lbl">노출 범위</div><div class="v">{a_reach/F*100:.1f}%</div>
       <div class="cmp">평균 {a_reach:.0f}명에게 도달</div></div>
     <div class="kpi"><div class="lbl">저장률</div><div class="v">{save_rate:.2f}%</div>
@@ -583,6 +627,9 @@ def render_account(a):
   <h3>분석</h3>
   {ins_html}
   {chk_html}
+
+  <h3>다음 4주 실행 지침</h3>
+  {plan_html}
 
   <h3>게시물 랭킹</h3>
   <p class="sub">반응률 순 · 상위 {RANK_LIMIT}위까지</p>
@@ -727,6 +774,25 @@ details.tg[open] summary { border-bottom:1px solid var(--grid); }
 .ins-box p:last-child, .chk-box p:last-child { margin-bottom:0; }
 /* 핵심 문장은 노랑 형광펜으로 — 검은 글씨 사이에서 바로 눈에 띄게 */
 /* 근거·출처 표기 — 본문보다 작고 흐리게 */
+/* 진단 한 덩어리 — 근거/해석/실행 세 줄을 눈으로 구분되게 */
+.dg { border-left:3px solid var(--accent); padding:2px 0 2px 12px; margin:0 0 14px; }
+.dg:last-of-type { margin-bottom:4px; }
+.dg-h { font-size:14.5px; font-weight:700; color:#2B2924; margin:0 0 7px; line-height:1.5; }
+.dg-r { font-size:13px; line-height:1.75; color:#3A3833; margin:0 0 5px; }
+.dg-r:last-child { margin-bottom:0; }
+.dg-k { display:inline-block; min-width:30px; margin-right:8px; padding:1px 7px;
+  border-radius:5px; font-size:11px; font-weight:700; vertical-align:1.5px;
+  background:#EFE7CE; color:#7A6516; }
+.dg-k.read { background:#E6EDF4; color:#3A5A7A; }
+.dg-k.do   { background:#E3F1E6; color:#1F6B37; }
+/* 실행 지침표 */
+.plan { border:1px solid var(--border); border-radius:10px; padding:15px 16px 13px;
+  background:#fbfcfe; }
+.plan .sub { margin:0 0 12px; }
+.plan-t { font-size:13px; font-weight:700; color:#2B2924; margin:14px 0 2px; }
+.plan-t:first-of-type { margin-top:0; }
+.plan table { margin-top:8px; }
+.plan td.dim { color:var(--muted); font-size:12px; line-height:1.6; }
 .basis { margin-top:12px; padding-top:10px; border-top:1px solid #EEE0B8;
   font-size:12px; color:var(--muted); line-height:1.6; }
 .src { display:block; margin-top:5px; font-size:11.5px; color:var(--muted); line-height:1.55; }
