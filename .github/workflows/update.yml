@@ -95,6 +95,20 @@ jobs:
             echo "월요일(한국시간)이 아니라 주간 리포트는 건너뜁니다."
           fi
 
+      # 콘텐츠 분석 진단도 같은 요일에 사이트 알림 + 이슈(휴대폰)로 내보낸다.
+      # 확인 필요 항목이나 지난주 대비 하락이 있으면 제목에 ⚠️ 가 붙고 알림 등급이 올라간다.
+      - name: 콘텐츠 분석 보고 발행
+        if: github.event_name == 'schedule'
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "$(date -u +%u)" = "7" ]; then
+            python analysis_issue.py
+          else
+            echo "월요일(한국시간)이 아니라 콘텐츠 분석 보고는 건너뜁니다."
+          fi
+
       - name: 변경사항 커밋
         run: |
           git config user.name "github-actions[bot]"
