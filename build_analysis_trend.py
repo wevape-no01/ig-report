@@ -62,8 +62,9 @@ table.trend th { color:var(--text-muted); font-weight:500; font-size:10.5px;
 table.trend td { font-variant-numeric:tabular-nums; }
 table.trend tr.now td { font-weight:700; background:#FFFBEE; }
 .wrap-x { overflow-x:auto; }
-/* 10줄 고정 높이. 마지막 쪽이 짧아도 페이지가 위아래로 흔들리지 않게 한다. */
-.tbl-box { min-height:352px; }
+/* 10줄 높이로 고정. 마지막 쪽이 한 줄뿐이어도 아래 쪽 번호가 올라오면 안 된다.
+   머리줄 27 + 10줄 × 32.8 = 355 → 여유 1px 더 준다. */
+.tbl-box { min-height:356px; }
 /* 쪽 번호 — 지난 리포트(weekly-past)와 같은 모양을 쓴다 */
 .pager { display:flex; justify-content:center; gap:5px; margin-top:11px; }
 .pager button { border:1px solid var(--border); background:var(--surface-1); border-radius:7px;
