@@ -8,7 +8,7 @@ on:
 
 permissions:
   contents: write           # 갱신된 html / json 을 저장소에 다시 커밋
-  issues: write             # 주간 리포트 · 수집 실패를 이슈로 발행
+  issues: write             # 매주 월요일 주간 리포트를 이슈로 발행
 
 concurrency:
   group: ig-report
@@ -60,10 +60,16 @@ jobs:
             "인스타그램 리포트는 정상 갱신됐습니다. 스레드 숫자는 마지막으로 성공한 시점의 값입니다." \
             "$RUN_URL"
 
+      # 콘텐츠 분석 수치를 주 단위로 적어 둔다 (analysis_history.json).
+      # 같은 주에 여러 번 돌아도 한 줄만 남는다. API 호출 없음.
+      - name: 콘텐츠 분석 스냅샷 기록
+        run: python analysis_history.py
+
       - name: 인스타그램 페이지 생성
         run: |
           python build_dashboard.py
           python build_analysis.py
+          python build_analysis_trend.py
 
       - name: 스레드 페이지 생성
         run: |
@@ -93,13 +99,16 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html analysis.html analysis-detail.html \
+          # 만들어지는 페이지는 빠짐없이 올린다. 여기서 빠지면 그 페이지만
+          # 옛날 것으로 남아 다른 페이지와 숫자가 어긋난다 (실제로 세부 분석·
+          # 지난 리포트가 그렇게 방치돼 있었다).
+          git add index.html analysis.html analysis-detail.html analysis-trend.html \
                   threads.html threads-analysis.html threads-detail.html \
                   weekly.html weekly-past.html \
                   threads-weekly.html threads-weekly-past.html \
                   history.json report_data.json posts_cache.json
           for f in notices.json threads_history.json threads_report.json \
-                   threads_cache.json threads_token_meta.json; do
+                   threads_cache.json threads_token_meta.json analysis_history.json; do
             [ -f "$f" ] && git add "$f"
           done
           if git diff --staged --quiet; then
@@ -109,7 +118,7 @@ jobs:
             git push
           fi
 
-      # 실패했다가 정상으로 돌아오면 열려 있던 실패 이슈를 닫는다 (복구 알림도 간다).
+      # 실패했다가 정상으로 돌아오면 열려 있던 실패 이슈를 닫는다.
       - name: 복구 확인
         continue-on-error: true
         env:
