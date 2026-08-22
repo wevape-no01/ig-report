@@ -36,12 +36,17 @@ DATA_FILES = [
     "notices.json",
 ]
 
+# 저장소에 아직 없을 수도 있는 파일. 못 받아도 멈추지 않는다.
+# analysis_history.json 은 첫 실행 때 만들어지므로 처음에는 없는 게 정상이다.
+OPTIONAL_FILES = ["analysis_history.json"]
+
 BUILDERS = [
     "build_dashboard.py",
     "build_analysis.py",
     "build_threads.py",
     "build_threads_analysis.py",
     "build_weekly.py",
+    "build_analysis_trend.py",
 ]
 
 PAGES = [
@@ -49,6 +54,7 @@ PAGES = [
     "threads.html", "threads-analysis.html", "threads-detail.html",
     "weekly.html", "weekly-past.html",
     "threads-weekly.html", "threads-weekly-past.html",
+    "analysis-trend.html",
 ]
 
 
@@ -68,7 +74,7 @@ def pull():
     """저장소의 최신 데이터 파일을 받아온다. 하나라도 실패하면 중단."""
     print("· 저장소에서 최신 데이터를 받아옵니다")
     before = stamp("report_data.json")
-    for name in DATA_FILES:
+    for name in DATA_FILES + OPTIONAL_FILES:
         url = RAW + name
         tmp = os.path.join(DIR, name + ".tmp")
         try:
@@ -79,6 +85,9 @@ def pull():
         except Exception as e:                      # noqa: BLE001
             if os.path.exists(tmp):
                 os.remove(tmp)
+            if name in OPTIONAL_FILES:
+                print(f"  · {name} 없음 — 건너뜁니다 (아직 안 만들어졌을 수 있음)")
+                continue
             print(f"  ✗ {name} 받기 실패: {e}")
             print("    → 옛 데이터로 페이지를 만들면 안 되므로 여기서 멈춥니다.")
             sys.exit(1)
