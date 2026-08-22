@@ -396,10 +396,12 @@ table.trend tr.now td { font-weight:700; background:#FFFBEE; }
     const every = pts.length <= 8 ? 1 : Math.ceil(pts.length / 7);
     pts.forEach((p, i) => {
       const last = i === pts.length - 1;
-      // 소급 계산분은 속을 비운 점으로 그린다 — 실측과 눈으로 구분되게
+      // 소급 계산분은 속을 비운 점으로 그린다 — 실측과 눈으로 구분되게.
+      // fill 은 속성이 아니라 style 로 줘야 한다 (.dot 의 CSS 가 속성을 이긴다).
       const est = p.est && !last;
       s += `<circle class="dot${last ? ' last' : ''}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}"`
-         + ` r="${last ? 4.5 : 3.5}"${est ? ' fill="#FFFFFF" stroke="#E8C24A" stroke-width="1.6"' : ''}/>`;
+         + ` r="${last ? 4.5 : 3.5}"`
+         + (est ? ' style="fill:#FFFDF6;stroke:#E8C24A;stroke-width:1.6"' : '') + '/>';
       if (i === 0 || last || i % every === 0) {
         s += `<text class="axis-label" x="${p.x.toFixed(1)}" y="${H - B + 20}" text-anchor="middle">${md(p.d)}</text>`;
       }
