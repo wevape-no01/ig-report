@@ -212,6 +212,14 @@ a { color:#8A6A00; text-decoration:none; } a:hover { text-decoration:underline; 
 .foot { font-size:11.5px; color:var(--text-muted); line-height:1.8; }
 .foot b { color:var(--text-secondary); }
 section h2::before, h3::before { content:"● "; color:#FFC800; font-size:11px; vertical-align:2px; }
+/* 반응률 근거·계산식 — 본문보다 작고 흐리게. 콘텐츠 분석의 .basis 와 같은 모양 */
+.basis { margin:0 0 16px; padding:10px 12px; border:1px solid #EEE0B8; border-radius:8px;
+  background:#FDFBF4; font-size:12px; color:var(--text-secondary); line-height:1.65; }
+.basis .eq { font-variant-numeric:tabular-nums; color:var(--text-primary); font-weight:600; }
+.basis .src { display:block; margin-top:5px; font-size:11px; color:var(--text-muted);
+  line-height:1.55; }
+.basis .cmp { font-weight:700; }
+.basis .cmp.good { color:var(--good); } .basis .cmp.bad { color:var(--critical); }
 
 </style>
 </head><body>
@@ -251,6 +259,7 @@ section h2::before, h3::before { content:"● "; color:#FFC800; font-size:11px; 
   <h2>위베이프</h2>
   <p class="sub">@wevape.no01 · 이번 주 올린 게시물 0개</p>
   <div class="hero-box"><span class="hn">3.54</span><span class="hu">%</span><span class="hl">반응률</span></div><p class="hero-s">본 사람 100명 중 반응한 수 · 최근 게시물 기준</p>
+  <div class="basis">근거 · <span class="eq">(좋아요+댓글+저장+공유) ÷ 도달 × 100</span> 으로 냈습니다. 수치가 있는 게시물 12개, 팔로워 721명 기준입니다.<br>업계 평균은 저장·공유를 빼고 재기 때문에 그대로 견줄 수 없습니다. 같은 식 <span class="eq">(좋아요+댓글) ÷ 팔로워 × 100</span> 으로 다시 재면 <b>0.83%</b>로, <span class="cmp good">업계 평균 0.48%의 1.7배</span>입니다 (최근 115개 게시물 평균 · 콘텐츠 분석 페이지와 같은 값).<span class="src">출처 Socialinsider 2026 벤치마크 · 실제로는 2025년 1~12월 값 · 계정 447,613개 · 게시물 3,500만 개 · 전 세계 전 산업 기준. 전 세계 전 산업 평균이라 인천 지역 소형 계정과는 조건이 달라 방향만 참고합니다.</span></div>
   <div class="kpi-row">
     <div class="stat-tile"><div class="label">신규 팔로워</div><div class="value">4명</div><div class="note"><span class="down">-1명 · -20%</span> (지난주 대비)</div></div>
     <div class="stat-tile"><div class="label">도달</div><div class="value">49</div><div class="note"><span class="down">-46 · -48%</span> (지난주 대비)</div></div>
@@ -262,6 +271,7 @@ section h2::before, h3::before { content:"● "; color:#FFC800; font-size:11px; 
 <section>
   <h2>위베이프 재팬</h2>
   <p class="sub">@wevape_japan · 이번 주 올린 게시물 3개</p>
+  
   
   <div class="kpi-row">
     <div class="stat-tile"><div class="label">신규 팔로워</div><div class="value">기록 없음</div><div class="note">지난주 비교값 없음</div></div>

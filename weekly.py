@@ -103,6 +103,48 @@ def _rate_ig(posts):
     return (r / v * 100) if v >= 100 else None
 
 
+BENCH_MONTHS = 24   # build_analysis.py 의 ANALYSIS_MONTHS 와 같아야 한다
+
+
+def _rate_ig_basic(ig_id, followers):
+    """업계 평균과 견주기 위한 반응률 — (좋아요+댓글) ÷ 팔로워.
+
+    업계 벤치마크는 저장·공유를 넣지 않고 재기 때문에, 같은 식으로 다시 계산해야
+    나란히 놓을 수 있다.
+    글 묶음도 콘텐츠 분석 페이지와 똑같이 잡는다 (posts_cache.json · 최근 24개월 ·
+    도달이 기록된 글). report_data 의 posts 만 쓰면 최근 몇 개만 잡혀 같은 지표인데
+    두 페이지 숫자가 어긋난다.
+    돌려주는 값: (비율 %, 계산에 쓴 게시물 수). 낼 수 없으면 (None, 0).
+    """
+    cache = load("posts_cache.json", {})
+    if not isinstance(cache, dict):
+        return None, 0
+    slot = cache.get(str(ig_id or ""))
+    if slot is None:
+        slot = list(cache.values())[0] if len(cache) == 1 else {}
+    if not isinstance(slot, dict):
+        return None, 0
+    cutoff = (datetime.now(timezone.utc) + timedelta(hours=9)
+              - timedelta(days=int(BENCH_MONTHS * 30.44)))
+    inter = cnt = 0
+    for p in slot.values():
+        ins = p.get("insights") or {}
+        if not isinstance(ins.get("reach"), (int, float)):
+            continue
+        try:
+            dt = datetime.strptime(p.get("timestamp", ""), "%Y-%m-%dT%H:%M:%S%z") \
+                 + timedelta(hours=9)
+        except ValueError:
+            continue
+        if dt < cutoff:
+            continue
+        cnt += 1
+        inter += (p.get("like_count") or 0) + (p.get("comments_count") or 0)
+    if not cnt or not followers:
+        return None, cnt
+    return (inter / cnt) / followers * 100, cnt
+
+
 def instagram(today=None):
     """계정별 주간 요약 리스트. 데이터가 없으면 빈 리스트."""
     a, b, pa, pb = periods(today)
@@ -142,6 +184,12 @@ def instagram(today=None):
         # 반응률은 콘텐츠 분석과 같은 기준(인사이트 있는 글 전체)으로 낸다.
         # 주 단위로 쪼개면 그 주에 올린 글이 없을 때 값이 사라진다.
         m["react_rate"] = _rate_ig(posts)
+        m["react_n"] = len([p for p in posts
+                            if isinstance((p.get("insights") or {}).get("reach"), (int, float))
+                            and ((p.get("insights") or {}).get("reach") or 0) > 0])
+        # 업계 평균은 (좋아요+댓글)÷팔로워 로 재므로 같은 식으로 한 번 더 계산해 둔다
+        m["bench_rate"], m["bench_n"] = _rate_ig_basic(
+            (acc.get("profile") or {}).get("id"), m["followers"])
         # 현재 팔로워도 지난주 끝 시점과 비교해 증감을 보여준다
         f_prev = _last(rows, "followers_count", pb)
         m["followers_delta"], m["followers_pct"] = _chg(m["followers"], f_prev)

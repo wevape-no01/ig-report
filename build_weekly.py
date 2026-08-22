@@ -14,6 +14,15 @@ import weekly
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 
+# 업계 벤치마크 — 콘텐츠 분석(build_analysis.py)과 같은 값을 쓴다. 한쪽만 고치지 말 것.
+#   출처: Socialinsider "Instagram Benchmarks 2026"
+#   실제 기간은 2025-01~12 · 계정 447,613개 · 게시물 3,500만 개 · 전 세계 전 산업
+#   계산식: (좋아요 + 댓글) ÷ 팔로워 × 100   ← 저장·공유는 넣지 않는다
+BENCH_ER_FOLLOWERS = 0.48
+BENCH_SOURCE = "Socialinsider 2026 벤치마크"
+BENCH_NOTE = ("실제로는 2025년 1~12월 값 · 계정 447,613개 · 게시물 3,500만 개 · "
+              "전 세계 전 산업 기준")
+
 CSS = """
 :root {
   color-scheme: light only;
@@ -56,6 +65,14 @@ a { color:#8A6A00; text-decoration:none; } a:hover { text-decoration:underline; 
 .foot { font-size:11.5px; color:var(--text-muted); line-height:1.8; }
 .foot b { color:var(--text-secondary); }
 section h2::before, h3::before { content:"● "; color:#FFC800; font-size:11px; vertical-align:2px; }
+/* 반응률 근거·계산식 — 본문보다 작고 흐리게. 콘텐츠 분석의 .basis 와 같은 모양 */
+.basis { margin:0 0 16px; padding:10px 12px; border:1px solid #EEE0B8; border-radius:8px;
+  background:#FDFBF4; font-size:12px; color:var(--text-secondary); line-height:1.65; }
+.basis .eq { font-variant-numeric:tabular-nums; color:var(--text-primary); font-weight:600; }
+.basis .src { display:block; margin-top:5px; font-size:11px; color:var(--text-muted);
+  line-height:1.55; }
+.basis .cmp { font-weight:700; }
+.basis .cmp.good { color:var(--good); } .basis .cmp.bad { color:var(--critical); }
 
 """
 
@@ -88,6 +105,36 @@ def hero(rate, note):
     return (f'<div class="hero-box"><span class="hn">{rate:.2f}</span>'
             f'<span class="hu">%</span><span class="hl">반응률</span></div>'
             f'<p class="hero-s">{note}</p>')
+
+
+def basis_ig(m):
+    """반응률 바로 아래 붙는 근거 한 칸 — 어떤 식으로 뭘 나눴는지, 업계 평균과 어떻게 다른지.
+
+    반응률이 없으면 아무것도 안 그린다. 업계 비교값은 팔로워 수가 있어야 낼 수 있으므로
+    낼 수 없으면 그 줄만 뺀다 (없는 값을 0으로 채우지 않는다).
+    """
+    if m.get("react_rate") is None:
+        return ""
+    cnt = m.get("react_n") or 0
+    out = ('<div class="basis">'
+           f'근거 · <span class="eq">(좋아요+댓글+저장+공유) ÷ 도달 × 100</span> 으로 냈습니다. '
+           f'수치가 있는 게시물 {cnt}개, 팔로워 {n(m.get("followers"), "명")} 기준입니다.')
+    br = m.get("bench_rate")
+    if br is not None:
+        x = br / BENCH_ER_FOLLOWERS
+        cls = "good" if br >= BENCH_ER_FOLLOWERS else "bad"
+        out += ('<br>업계 평균은 저장·공유를 빼고 재기 때문에 그대로 견줄 수 없습니다. '
+                f'같은 식 <span class="eq">(좋아요+댓글) ÷ 팔로워 × 100</span> 으로 다시 재면 '
+                f'<b>{br:.2f}%</b>로, '
+                f'<span class="cmp {cls}">업계 평균 {BENCH_ER_FOLLOWERS}%의 {x:.1f}배</span>입니다 '
+                f'(최근 {m.get("bench_n") or 0}개 게시물 평균 · 콘텐츠 분석 페이지와 같은 값).'
+                f'<span class="src">출처 {BENCH_SOURCE} · {BENCH_NOTE}. '
+                '전 세계 전 산업 평균이라 인천 지역 소형 계정과는 조건이 달라 '
+                '방향만 참고합니다.</span>')
+    else:
+        out += ('<span class="src">팔로워 수가 아직 안 모여 업계 평균 비교는 '
+                '내지 않았습니다.</span>')
+    return out + "</div>"
 
 
 def tile(label, value, note=""):
@@ -138,6 +185,7 @@ def build_ig():
   <h2>{esc(m['label'])}</h2>
   <p class="sub">@{esc(m['user'])} · 이번 주 올린 게시물 {m['posted']}개</p>
   {hero(m['react_rate'], '본 사람 100명 중 반응한 수 · 최근 게시물 기준')}
+  {basis_ig(m)}
   <div class="kpi-row">
     {tile('신규 팔로워', n(m['new_followers'], '명'),
           delta_note(m['new_followers_delta'], m['new_followers_pct'], '명'))}
