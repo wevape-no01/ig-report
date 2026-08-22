@@ -62,6 +62,17 @@ table.trend th { color:var(--text-muted); font-weight:500; font-size:10.5px;
 table.trend td { font-variant-numeric:tabular-nums; }
 table.trend tr.now td { font-weight:700; background:#FFFBEE; }
 .wrap-x { overflow-x:auto; }
+/* 10줄 고정 높이. 마지막 쪽이 짧아도 페이지가 위아래로 흔들리지 않게 한다. */
+.tbl-box { min-height:352px; }
+/* 쪽 번호 — 지난 리포트(weekly-past)와 같은 모양을 쓴다 */
+.pager { display:flex; justify-content:center; gap:5px; margin-top:11px; }
+.pager button { border:1px solid var(--border); background:var(--surface-1); border-radius:7px;
+  font-family:inherit; font-size:11px; min-width:26px; height:26px; cursor:pointer;
+  color:var(--text-secondary); }
+.pager button[aria-current="true"] { background:var(--series-1); border-color:var(--series-1);
+  color:#FFC800; font-weight:700; }
+.pager button:disabled { opacity:.35; cursor:default; }
+.pager .range { align-self:center; font-size:11px; color:var(--text-muted); margin-left:8px; }
 """
 
 JS = """<script>
@@ -89,7 +100,8 @@ JS = """<script>
   }
 
   // 일일 리포트의 drawLine 과 같은 좌표계·같은 클래스를 쓴다. 모양이 달라지면 안 된다.
-  function drawLine(svg, rows, dec, unit, yUnit) {
+  // xUnit 은 가로축, yUnit 은 세로축. 둘을 같은 값으로 넘기면 안 된다 (그런 적 있다).
+  function drawLine(svg, rows, dec, xUnit, yUnit) {
     const W = 860, H = 240, T = 30, B = 46, PAD = 44;
     if (rows.length < 2) {
       svg.setAttribute('viewBox', '0 0 860 70');
@@ -129,7 +141,7 @@ JS = """<script>
         s += `<text class="axis-label" x="${p.x.toFixed(1)}" y="${H - B + 20}" text-anchor="middle">${md(p.d)}</text>`;
       }
     });
-    if (unit) s += `<text class="unit-label" x="${W - 6}" y="${H - 6}" text-anchor="end">${unit}</text>`;
+    if (xUnit) s += `<text class="unit-label" x="${W - 6}" y="${H - 6}" text-anchor="end">${xUnit}</text>`;
     svg.innerHTML = s;
   }
 
@@ -142,6 +154,42 @@ JS = """<script>
     return `<span class="${cls}">${d > 0 ? '+' : ''}${num(d, dec)}</span>`;
   }
 
+  // ---- 주간 기록표: 최신부터 10줄씩. 쪽을 눌러도 표만 바뀐다 (화면은 그대로).
+  const PER = 10;
+  let page = 0;
+
+  function tableRows() {
+    return RAW[user].slice().reverse();       // 최신이 맨 위
+  }
+
+  function drawTable() {
+    const all = tableRows();
+    const start = page * PER;
+    const part = all.slice(start, start + PER);
+    const head = '<tr><th>기준 주</th>' + META.map(x => `<th>${x.name}</th>`).join('')
+               + '<th>분석 글</th></tr>';
+    const body = part.map((r, i) => `
+      <tr class="${start + i === 0 ? 'now' : ''}">
+        <td>${r.date}${r.estimated ? '<span class="est">소급</span>' : ''}</td>`
+      + META.map(x => `<td>${num(r[x.key], x.dec)}</td>`).join('')
+      + `<td>${r.n}</td></tr>`).join('');
+    document.getElementById('tbl').innerHTML =
+      '<thead>' + head + '</thead><tbody>' + body + '</tbody>';
+
+    const pages = Math.ceil(all.length / PER);
+    let p = `<button ${page === 0 ? 'disabled' : ''} data-p="${page - 1}" aria-label="이전">‹</button>`;
+    for (let i = 0; i < pages; i++)
+      p += `<button data-p="${i}" aria-current="${i === page}">${i + 1}</button>`;
+    p += `<button ${page >= pages - 1 ? 'disabled' : ''} data-p="${page + 1}" aria-label="다음">›</button>`;
+    p += `<span class="range">${part.length ? part[part.length-1].date + ' ~ ' + part[0].date : ''}</span>`;
+    const pg = document.getElementById('pager');
+    pg.innerHTML = pages > 1 ? p : '';
+    // 쪽 번호는 표만 다시 그린다. 페이지 이동이 아니므로 스크롤이 튀지 않는다.
+    pg.querySelectorAll('button').forEach(b => b.onclick = () => {
+      page = +b.dataset.p; drawTable();
+    });
+  }
+
   function draw() {
     const rows = RAW[user];
     const m = META.find(x => x.key === key);
@@ -149,31 +197,30 @@ JS = """<script>
                     .map(r => ({ d: r.date, v: r[key], est: r.estimated }));
     document.getElementById('metricName').textContent = m.name;
     document.getElementById('metricWhy').textContent = m.why;
-    drawLine(document.getElementById('sv'), pts, m.dec, m.unit, m.unit);
+    // 가로축은 기준 주(월요일), 세로축은 그 지표의 단위
+    drawLine(document.getElementById('sv'), pts, m.dec, '(기준 주 · 월/일)', m.unit);
+    const first = pts.length ? pts[0].d : '';
+    const last = pts.length ? pts[pts.length - 1].d : '';
+    document.getElementById('xNote').textContent = pts.length
+      ? `가로축은 각 주의 월요일입니다 · ${first} ~ ${last} · 점 ${pts.length}개`
+      : '';
 
-    const last = rows[rows.length - 1];
+    const now = rows[rows.length - 1];
     document.getElementById('mini').innerHTML = META.slice(0, 4).map(x => `
       <div class="stat-tile"><div class="label">${x.name}</div>
-        <div class="value">${num(last[x.key], x.dec)}</div>
+        <div class="value">${num(now[x.key], x.dec)}</div>
         <div class="note">4주 전 대비 ${delta(rows, x.key, 4, x.dec)}
           · 12주 전 ${delta(rows, x.key, 12, x.dec)}</div></div>`).join('');
 
     document.querySelectorAll('.chips button').forEach(b =>
       b.setAttribute('aria-pressed', b.dataset.k === key));
-
-    const head = '<tr><th>기준 주</th>' + META.map(x => `<th>${x.name}</th>`).join('')
-               + '<th>분석 글</th></tr>';
-    const body = rows.slice().reverse().map((r, i) => `
-      <tr class="${i === 0 ? 'now' : ''}"><td>${r.date}${r.estimated ? '<span class="est">소급</span>' : ''}</td>`
-      + META.map(x => `<td>${num(r[x.key], x.dec)}</td>`).join('')
-      + `<td>${r.n}</td></tr>`).join('');
-    document.getElementById('tbl').innerHTML = '<thead>' + head + '</thead><tbody>' + body + '</tbody>';
+    drawTable();
   }
 
   document.querySelectorAll('.chips button').forEach(b =>
     b.onclick = () => { key = b.dataset.k; draw(); });
   const sel = document.getElementById('userSel');
-  if (sel) sel.onchange = () => { user = sel.value; draw(); };
+  if (sel) sel.onchange = () => { user = sel.value; page = 0; draw(); };
   draw();
 })();
 </script>"""
@@ -222,11 +269,13 @@ def build():
   <p class="sub" id="metricWhy"></p>
   <div class="chips">{chips}</div>
   <svg id="sv"></svg>
+  <p class="sub" id="xNote" style="margin:8px 0 0"></p>
 </section>
 
 <section>
   <h2>주간 기록</h2>
-  <p class="sub">매주 월요일 아침 한 줄씩 쌓입니다 · 모두 {len(store[users[0]])}주</p>
+  <p class="sub">매주 월요일 아침 한 줄씩 쌓입니다 · 모두 {len(store[users[0]])}주 ·
+    최신순 10줄씩, 아래 번호로 넘깁니다</p>
   <div class="note-box">
     <b>소급</b> 표시가 붙은 줄은 지금 데이터로 과거를 거슬러 계산한 값입니다
     ({first}부터 {n_est}주). 게시물 지표는 한 달만 지나면 거의 변하지 않아 오차가 작지만,
@@ -235,7 +284,8 @@ def build():
     실제로 그 주에 재서 남긴 기록은 {n_real}주치이고, 앞으로 매주 한 줄씩 늘어납니다.
     그래프에서 속이 빈 점이 소급분입니다.
   </div>
-  <div class="wrap-x"><table class="trend" id="tbl"></table></div>
+  <div class="tbl-box"><div class="wrap-x"><table class="trend" id="tbl"></table></div></div>
+  <div class="pager" id="pager"></div>
 </section>
 
 <script id="trend-data" type="application/json">{json.dumps(store, ensure_ascii=False)}</script>
